@@ -9,10 +9,10 @@ on:
     branches:
       - main
     paths:
-      - 'docs-site/**'
-      - 'src/**'
-      - 'README.md'
-      - '.github/workflows/deploy-docs.yml'
+      - "docs-site/**"
+      - "src/**"
+      - "README.md"
+      - ".github/workflows/deploy-docs.yml"
   workflow_dispatch:
 
 permissions:
@@ -38,7 +38,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -60,7 +60,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build package
         run: pnpm run build
