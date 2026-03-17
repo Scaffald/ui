@@ -31,41 +31,50 @@
  * ```
  */
 
-import { forwardRef, useMemo } from 'react'
-import { Pressable, Text, View, ActivityIndicator, Platform } from 'react-native'
-import type { ButtonProps, ButtonSize } from './Button.types'
-import { getButtonStyles, getButtonIconSize } from './Button.styles'
-import { useThemeContext } from '../../theme'
-import { useInteractiveState } from '../../hooks/useInteractiveState'
+import { forwardRef, useMemo } from "react";
+import {
+  Pressable,
+  Text,
+  View,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
+import type { ButtonProps, ButtonSize } from "./Button.types";
+import { getButtonStyles, getButtonIconSize } from "./Button.styles";
+import { useThemeContext } from "../../theme";
+import { useInteractiveState } from "../../hooks/useInteractiveState";
 
-export const Button = forwardRef<View, ButtonProps>(function Button({
-  children,
-  color = 'gray',
-  variant = 'filled',
-  size = 'md',
-  disabled = false,
-  fullWidth = false,
-  iconStart: IconStart,
-  iconEnd: IconEnd,
-  iconOnly = false,
-  loading = false,
-  style,
-  textStyle,
-  onPress,
-  ...pressableProps
-}, ref) {
-  const isDisabled = disabled || loading
-  const { theme } = useThemeContext()
-  const { isHovered, interactiveProps } = useInteractiveState(isDisabled)
+export const Button = forwardRef<View, ButtonProps>(function Button(
+  {
+    children,
+    color = "gray",
+    variant = "filled",
+    size = "md",
+    disabled = false,
+    fullWidth = false,
+    iconStart: IconStart,
+    iconEnd: IconEnd,
+    iconOnly = false,
+    loading = false,
+    style,
+    textStyle,
+    onPress,
+    ...pressableProps
+  },
+  ref,
+) {
+  const isDisabled = disabled || loading;
+  const { theme } = useThemeContext();
+  const { isHovered, interactiveProps } = useInteractiveState(isDisabled);
 
   // Get styles based on current props and theme
   const styles = useMemo(
     () => getButtonStyles(color, variant, size, isDisabled, iconOnly, theme),
-    [color, variant, size, isDisabled, iconOnly, theme]
-  )
+    [color, variant, size, isDisabled, iconOnly, theme],
+  );
 
   // Calculate icon size based on button size (16px for consistency with inputs)
-  const iconSize = 16
+  const iconSize = 16;
 
   return (
     <Pressable
@@ -76,9 +85,9 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
       {...interactiveProps}
       style={({ pressed }) => [
         styles.container,
-        fullWidth && { width: '100%' },
+        fullWidth && { width: "100%" },
         // Hover state (web only) - darken background instead of reducing opacity
-        isHovered && !isDisabled && Platform.OS === 'web' && styles.hover,
+        isHovered && !isDisabled && Platform.OS === "web" && styles.hover,
         // Pressed state - darken background more instead of reducing opacity
         pressed && !isDisabled && styles.pressed,
         style,
@@ -88,11 +97,11 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
       {loading ? (
         <View
           style={{
-            width: loadingSize,
-            height: loadingSize,
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
+            width: iconSize,
+            height: iconSize,
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
           }}
         >
           <ActivityIndicator size="small" color={styles.iconColor} />
@@ -109,7 +118,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
           {/* Button Text */}
           {!iconOnly && children && (
             <Text style={[styles.text, textStyle]}>
-              {typeof children === 'string' ? children : children}
+              {typeof children === "string" ? children : children}
             </Text>
           )}
 
@@ -122,10 +131,15 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
         </>
       )}
     </Pressable>
-  )
-})
+  );
+});
 
-Button.displayName = 'Button'
+Button.displayName = "Button";
 
 // Export types
-export type { ButtonProps, ButtonColor, ButtonVariant, ButtonSize } from './Button.types'
+export type {
+  ButtonProps,
+  ButtonColor,
+  ButtonVariant,
+  ButtonSize,
+} from "./Button.types";
