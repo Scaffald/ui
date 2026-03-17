@@ -3,6 +3,10 @@
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      "@scaffald/ui": ["../src/index.ts"],
+      "@scaffald/ui/*": ["../src/*"]
+    },
     "skipLibCheck": true
   },
   "exclude": [".docusaurus", "build"]

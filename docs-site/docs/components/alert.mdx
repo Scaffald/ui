@@ -16,9 +16,7 @@ import { Alert } from '@scaffald/ui';
 
 ## Basic Usage
 
-<LivePreview code={`<ThemeProvider initialTheme="light">
-  <Alert>Content</Alert>
-</ThemeProvider>`} />
+<LivePreview code={`<Alert>Content</Alert>`} />
 
 ## Props
 
@@ -41,14 +39,14 @@ All Alert components accept standard React Native [View props](https://reactnati
 
 ### Advanced Usage
 
-<LivePreview code={`<ThemeProvider initialTheme="light">
-  <Stack gap={12}>
+<LivePreview
+  code={`<Stack gap={12}>
     <Alert variant="info">Informational message</Alert>
     <Alert variant="success">Success message</Alert>
     <Alert variant="warning">Warning message</Alert>
     <Alert variant="error">Error message</Alert>
-  </Stack>
-</ThemeProvider>`} />
+  </Stack>`}
+/>
 
 ## Accessibility
 

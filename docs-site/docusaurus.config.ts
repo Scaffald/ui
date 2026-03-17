@@ -48,6 +48,7 @@ const config: Config = {
   plugins: [
     function reactNativeWebPlugin() {
       const mockDir = path.resolve(__dirname, '../.storybook/mocks');
+      const uiSrc = path.resolve(__dirname, '../src');
       return {
         name: 'react-native-web-docusaurus-plugin',
         configureWebpack() {
@@ -65,6 +66,7 @@ const config: Config = {
                 'react-native': 'react-native-web',
                 'react-native-svg': path.join(mockDir, 'react-native-svg.jsx'),
                 'lucide-react-native': 'lucide-react',
+                '@scaffald/ui': uiSrc,
               },
             },
             module: {
@@ -76,11 +78,15 @@ const config: Config = {
                 },
                 {
                   test: /\.(js|jsx|ts|tsx)$/,
-                  include: /node_modules\/(react-native-web|@scaffald\/ui)/,
+                  include: [uiSrc, /node_modules\/react-native-web/],
                   use: {
                     loader: 'babel-loader',
                     options: {
-                      presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
+                      presets: [
+                        '@babel/preset-env',
+                        ['@babel/preset-react', { runtime: 'automatic' }],
+                        '@babel/preset-typescript',
+                      ],
                     },
                   },
                 },

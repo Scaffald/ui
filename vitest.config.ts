@@ -1,20 +1,17 @@
-import { resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { mergeConfig } from 'vitest/config'
-import baseConfig from '../../vitest.config'
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { defineConfig } from 'vitest/config';
 
-const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
-const packageRoot = fileURLToPath(new URL('.', import.meta.url))
+const packageRoot = fileURLToPath(new URL('.', import.meta.url));
 
-const packageConfig = {
-  root: workspaceRoot,
+export default defineConfig({
   resolve: {
     dedupe: ['react', 'react-dom'],
     alias: [
       { find: 'react-native', replacement: 'react-native-web' },
       {
         find: 'react-native-svg',
-        replacement: resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/react-native-svg.tsx'),
+        replacement: resolve(packageRoot, 'src/__tests__/mocks/react-native-svg.tsx'),
       },
       {
         find: '@scaffald/ui',
@@ -23,8 +20,8 @@ const packageConfig = {
     ],
   },
   test: {
-    include: ['packages/scaffald-ui/src/**/*.{test,spec}.{ts,tsx}'],
-    watchExclude: ['**/dist/**'],
+    // environment: 'jsdom',
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
     setupFiles: [resolve(packageRoot, 'vitest.setup.ts')],
     coverage: {
       provider: 'v8',
@@ -38,8 +35,4 @@ const packageConfig = {
       ],
     },
   },
-}
-
-const merged = mergeConfig(baseConfig, packageConfig)
-merged.test.include = ['packages/scaffald-ui/src/**/*.{test,spec}.{ts,tsx}']
-export default merged
+});
