@@ -101,38 +101,91 @@ If you don't see loading indicator updates after changing the UI package, rebuil
 
 ## Examples
 
-<LivePreview
-  code={`<p>Hi</p>`} />
-<!--<LivePreview
-  code={`<div className="flex-row-with-gap">
-  <Button variant="filled" color="primary" size="sm">
-    <span>Small</span>
-  </Button>
-  <Button variant="filled" color="primary" size="md">
-    <span>Medium</span>
-  </Button>
-  <Button variant="filled" color="primary" size="lg">
-    <span>Large</span>
-  </Button>
-</div>`}
-/> -->
-
 ### With Icon
 
 ```tsx
-// Example: multiple variants
+// Example: Icons
 <Stack gap={12} direction="row" flexWrap="wrap">
-  <Button variant="filled" color="primary">
-    Filled
+  <Button variant="filled" color="primary" iconStart={<Icon />}>
+    Icon at start
   </Button>
-  <Button variant="outline" color="primary">
-    Outline
+  <Button variant="outline" color="primary" iconEnd={<Icon />}>
+    Icon at end
   </Button>
-  <Button variant="ghost" color="primary">
-    Ghost
+  <Button variant="outline" color="light" iconOnly>
+    Icon only
   </Button>
 </Stack>
 ```
+
+### Live Examples
+
+<div className="flex-row-with-gap just-decoration margin-bottom">
+  <div className="flex-row-with-gap">
+    <Button variant="filled" color="primary">
+      <span>Filled Primary</span>
+    </Button>
+    <Button variant="outline" color="primary">
+      <span>Outline Primary</span>
+    </Button>
+    <Button variant="light" color="primary">
+      <span>Light Primary</span>
+    </Button>
+    <Button variant="text" color="primary">
+      <span>Text Primary</span>
+    </Button>
+  </div>
+  <div className="flex-row-with-gap">
+    <Button variant="filled" color="gray">
+      <span>Filled Gray</span>
+    </Button>
+    <Button variant="outline" color="gray">
+      <span>Outline Gray</span>
+    </Button>
+    <Button variant="light" color="gray">
+      <span>Light Gray</span>
+    </Button>
+    <Button variant="text" color="gray">
+      <span>Text Gray</span>
+    </Button>
+  </div>
+  <div className="flex-row-with-gap">
+    <Button variant="filled" color="error">
+      <span>Filled Error</span>
+    </Button>
+    <Button variant="outline" color="error">
+      <span>Outline Error</span>
+    </Button>
+    <Button variant="light" color="error">
+      <span>Light Error</span>
+    </Button>
+    <Button variant="text" color="error">
+      <span>Text Error</span>
+    </Button>
+  </div>
+  <div className="flex-row-with-gap">
+    <Button variant="filled" color="primary" disabled>
+      <span>Disabled</span>
+    </Button>
+  </div>
+</div>
+
+<LivePreview
+  code={`<div className="flex-row-with-gap just-decoration">
+    <Button variant="filled" color="primary">
+      <span>Filled Primary</span>
+    </Button>
+    <Button variant="outline" color="primary">
+      <span>Outline Primary</span>
+    </Button>
+    <Button variant="light" color="primary">
+      <span>Light Primary</span>
+    </Button>
+    <Button variant="text" color="primary">
+      <span>Text Primary</span>
+    </Button>
+</div>`}
+/>
 
 ## Accessibility
 

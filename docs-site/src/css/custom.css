@@ -40,3 +40,10 @@
 .fex-justify-center {
   justify-content: center;
 }
+
+.just-decoration {
+  padding: 10px;
+}
+.margin-bottom {
+  margin-bottom: var(--ifm-leading);
+}
