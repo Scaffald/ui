@@ -29,12 +29,12 @@ export default function LivePreview({ code, noInline = false }: LivePreviewProps
         </button>
       </div>
       <LiveProvider code={code} scope={scope} noInline={noInline} theme={prismThemes.github}>
-        <div style={{ padding: 24, background: isDark ? '#1a1a2e' : '#fafafa', minHeight: 80 }}>
+        <div style={{ padding: 24, background: isDark ? '#1a232d' : 'var(--ifm-background-surface-color, #fbf8f3)', minHeight: 80, transition: 'background 0.2s ease' }}>
           <ScaffaldUI.ThemeProvider initialTheme={isDark ? 'dark' : 'light'}>
             <ReactLivePreview />
           </ScaffaldUI.ThemeProvider>
         </div>
-        <LiveError style={{ color: '#e53e3e', background: '#fff5f5', padding: '8px 12px', fontSize: 13, fontFamily: 'monospace', margin: 0 }} />
+        <LiveError style={{ color: 'var(--ifm-color-danger)', background: 'var(--ifm-color-danger-contrast-background, #fff5f5)', padding: '8px 12px', fontSize: 13, fontFamily: 'monospace', margin: 0 }} />
         <LiveEditor style={{ fontSize: 13 }} />
       </LiveProvider>
     </div>
