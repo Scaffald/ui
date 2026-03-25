@@ -181,7 +181,18 @@ h6 {
   font-weight: 500;
 }
 
-body, p {
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-weight: 400;
+  /* Override React Native Web runtime injection of background-color: rgb(255,255,255) */
+  background-color: var(--ifm-background-color) !important;
+  overflow: visible !important;
+}
+
+p {
   font-family: 'Roboto', sans-serif;
   font-size: 1rem;
   line-height: 1.5;
