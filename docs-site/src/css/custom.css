@@ -94,21 +94,30 @@
   --ifm-color-primary-lighter: #ffc4a8;
   --ifm-color-primary-lightest: #ffe3d4;
 
+  /* Text colors - CRITICAL for readability */
+  --ifm-font-color-base: #e5e7eb;
+  --ifm-font-color-secondary: #97a1af;
+  --ifm-heading-color: #f9fafb;
+
+  /* Backgrounds */
   --ifm-background-color: #1a232d;
   --ifm-background-surface-color: #27313f;
   --ifm-background-surface-secondary: #344051;
 
-  --ifm-heading-color: #f9fafb;
-
+  /* Navbar */
   --ifm-navbar-background-color: rgba(26, 35, 45, 0.98);
   --ifm-navbar-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --ifm-navbar-link-color: #e5e7eb;
 
+  /* Code */
   --ifm-code-background: #344051;
   --docusaurus-highlighted-code-line-bg: rgba(255, 122, 79, 0.15);
 
+  /* Sidebar */
   --ifm-menu-color-background-active: rgba(255, 122, 79, 0.15);
   --ifm-menu-color-background-hover: rgba(255, 122, 79, 0.08);
 
+  /* Shadows */
   --ifm-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   --ifm-card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
 }
@@ -198,6 +207,14 @@ body, p {
 
 [data-theme='dark'] .navbar {
   border-bottom: 2px solid rgba(255, 122, 79, 0.18);
+}
+
+[data-theme='dark'] .navbar__brand {
+  color: #f9fafb;
+}
+
+[data-theme='dark'] .navbar__link:hover {
+  background-color: rgba(255, 122, 79, 0.08);
 }
 
 .navbar__brand {
