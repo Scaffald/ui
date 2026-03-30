@@ -198,20 +198,36 @@ export function useFocusTrap<T extends { focus?: () => void } | null>(
     }
   }, [enabled, escapeDeactivates, clickOutsideDeactivates, containerRef, deactivate])
 
+  // Store latest deactivate in a ref so cleanup never triggers stale onDeactivate
+  const deactivateRef = useRef(deactivate)
+  deactivateRef.current = deactivate
+
   // Activate/deactivate based on enabled prop
+  // Only re-run when `enabled` changes — not when callback refs change —
+  // so that dependency-driven cleanup doesn't call onDeactivate and close the modal.
   useEffect(() => {
     if (enabled) {
       activate()
     } else {
-      deactivate()
+      deactivateRef.current()
     }
 
     return () => {
       if (isActiveRef.current) {
-        deactivate()
+        // On unmount or when enabled flips to false, clean up the trap
+        // but do NOT call onDeactivate — the consumer handles close logic separately
+        isActiveRef.current = false
+        if (Platform.OS === 'web' && returnFocus && previousFocusRef.current) {
+          if (typeof returnFocus === 'boolean') {
+            previousFocusRef.current?.focus?.()
+          } else if (returnFocus.current) {
+            returnFocus.current.focus()
+          }
+        }
       }
     }
-  }, [enabled, activate, deactivate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled])
 
   return {
     activate,
