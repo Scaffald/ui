@@ -16,5 +16,9 @@ export function useStyles<T, Deps extends readonly unknown[]>(
   factory: (...args: Deps) => T,
   deps: Deps
 ): T {
-  return useMemo(() => factory(...deps), [factory, deps])
+  // Spread deps into useMemo's dependency array so React compares each
+  // element individually instead of the array reference (which is new
+  // every render, defeating memoization).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => factory(...deps), [factory, ...deps])
 }

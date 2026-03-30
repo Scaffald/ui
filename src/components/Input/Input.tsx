@@ -61,14 +61,19 @@
  * ```
  */
 
-import { useState, forwardRef } from 'react'
-import { View, TextInput, Platform } from 'react-native'
+import { useState, forwardRef, useCallback, useRef } from 'react'
+import { Animated, View, TextInput, Platform } from 'react-native'
 import type { TextInputProps as RNTextInputProps, TextInput as TextInputType } from 'react-native'
 import type { InputProps } from './Input.types'
 import { getInputStyles, getFocusBoxShadow, getFocusShadowStyle } from './Input.styles'
+import { memo } from 'react'
 import { InputLabel } from './InputLabel'
 import { InputHelperText } from './InputHelperText'
 import { InputExternalAddon, InputLeftSide, InputRightSide } from './InputAddon'
+
+// Memoize InputLeftSide to prevent SVG icon re-renders during focus
+// state changes, which causes iOS to drop the TextInput first responder.
+const MemoizedInputLeftSide = memo(InputLeftSide)
 import { PasswordStrength } from '../PasswordStrength/PasswordStrength'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -107,13 +112,19 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input(
   },
   ref
 ) {
+  // On iOS, avoid useState for focus — a React re-render that changes
+  // parent View styles (border, shadow) during the focus transition
+  // causes the native UITextField to resign first responder.
+  // Instead, drive visual changes through Animated (no re-render).
   const [internalFocused, setInternalFocused] = useState(false)
+  const focusAnim = useRef(new Animated.Value(0)).current
   const { theme } = useThemeContext()
 
   // Resolve error display
   const shouldShowError = showError && error
 
   // Determine actual state (controlled or derived)
+  // On iOS, internalFocused is never set — focus visuals are Animated-driven
   const isFocused = controlledState === 'focused' || internalFocused
   const isError = error || controlledState === 'error'
   const isFilled = controlledState === 'filled' || (!!value && value.length > 0)
@@ -134,21 +145,62 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input(
   const hasExternalAddon = !!externalAddon
   const styles = useStyles(getInputStyles, [actualState || 'default', type, disabled, hasExternalAddon, theme] as const)
 
-  const handleFocus: RNTextInputProps['onFocus'] = (e) => {
+  const handleFocus: RNTextInputProps['onFocus'] = useCallback((e) => {
     if (!disabled) {
-      setInternalFocused(true)
       onFocus?.(e)
+      if (Platform.OS === 'ios') {
+        // Animate border colour without triggering a React re-render.
+        Animated.timing(focusAnim, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: false,
+        }).start()
+      } else {
+        setInternalFocused(true)
+      }
     }
-  }
+  }, [disabled, onFocus, focusAnim])
 
-  const handleBlur: RNTextInputProps['onBlur'] = (e) => {
-    setInternalFocused(false)
+  const handleBlur: RNTextInputProps['onBlur'] = useCallback((e) => {
+    if (Platform.OS === 'ios') {
+      Animated.timing(focusAnim, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: false,
+      }).start()
+    } else {
+      setInternalFocused(false)
+    }
     onBlur?.(e)
-  }
+  }, [onBlur, focusAnim])
 
   // Get focus shadow for web
   const focusBoxShadow = getFocusBoxShadow(actualState || 'default')
   const focusShadowStyle = getFocusShadowStyle(actualState || 'default')
+
+  // On iOS, derive an animated border colour so focus feedback happens
+  // without a React re-render (which drops first responder).
+  const defaultBorderColor = isError
+    ? colors.border[theme].error
+    : colors.border[theme].default
+  const focusBorderColor = colors.primary[600]
+
+  const animatedBorderColor = Platform.OS === 'ios'
+    ? focusAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [defaultBorderColor, focusBorderColor],
+      })
+    : undefined
+
+  const animatedShadowOpacity = Platform.OS === 'ios'
+    ? focusAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [type === 'classic' && !disabled ? 0.039 : 0, 0],
+      })
+    : undefined
+
+  // Choose View vs Animated.View for the input container
+  const InputContainerView = Platform.OS === 'ios' ? Animated.View : View
 
   return (
     <View
@@ -199,8 +251,8 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input(
           </InputExternalAddon>
         )}
 
-        {/* Main Input */}
-        <View
+        {/* Main Input — Animated.View on iOS to avoid re-render on focus */}
+        <InputContainerView
           style={[
             styles.input,
             !hasExternalAddon && {
@@ -211,10 +263,17 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input(
             },
             focusBoxShadow && Platform.OS === 'web' && { boxShadow: focusBoxShadow },
             focusShadowStyle,
+            // iOS animated overrides — applied on top of static styles
+            Platform.OS === 'ios' && animatedBorderColor != null && {
+              borderColor: animatedBorderColor as unknown as string,
+            },
+            Platform.OS === 'ios' && animatedShadowOpacity != null && {
+              shadowOpacity: animatedShadowOpacity as unknown as number,
+            },
           ]}
         >
           {/* Left Side - Leading Icon or Text */}
-          {IconStart && <InputLeftSide icon={IconStart} color={styles.iconColor} />}
+          {IconStart && <MemoizedInputLeftSide icon={IconStart} color={styles.iconColor} />}
 
           {/* Text Input */}
           <TextInput
@@ -244,7 +303,7 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input(
               }
             />
           )}
-        </View>
+        </InputContainerView>
       </View>
 
       {/* Helper Text / Error Message */}

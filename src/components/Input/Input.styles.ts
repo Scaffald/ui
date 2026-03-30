@@ -107,9 +107,22 @@ export function getInputStyles(
     borderColor = colors.border[resolvedTheme].default
   }
 
-  // Apply shadow only for default/classic type (button-shadow)
-  if (type === 'classic' && !isFocused && !disabled) {
-    shadowStyle = shadows.button
+  // Apply shadow only for default/classic type (button-shadow).
+  // Always include shadow properties (zeroed when inactive) so iOS
+  // doesn't see properties added/removed during focus transitions,
+  // which can cause a native layout pass that drops first responder.
+  if (type === 'classic') {
+    if (!isFocused && !disabled) {
+      shadowStyle = shadows.button
+    } else {
+      shadowStyle = {
+        shadowColor: 'transparent',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0,
+        shadowRadius: 0,
+        elevation: 0,
+      }
+    }
   }
 
   // Line type has no border radius
