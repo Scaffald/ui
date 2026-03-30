@@ -191,7 +191,7 @@ function ReanimatedScale({
         opacity: withFade ? opacity.value : 1,
       }
     },
-    [scale, opacity, withFade]
+    [withFade]
   )
 
   useEffect(() => {

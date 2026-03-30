@@ -102,7 +102,7 @@ function AnimatedFill({
         width: `${progress.value}%`,
       }
     },
-    [progress]
+    []
   )
 
   return <AnimatedView style={[baseStyle, animatedStyle]} />

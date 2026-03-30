@@ -154,7 +154,7 @@ function ReanimatedPressable({
     return {
       transform: [{ scale: scale.value }],
     }
-  }, [scale])
+  }, [])
 
   const pressScaleValue = pressScale ?? 0.95
 

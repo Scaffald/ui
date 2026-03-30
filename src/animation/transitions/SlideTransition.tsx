@@ -220,7 +220,7 @@ function ReanimatedSlide({
         opacity: withFade ? opacity.value : 1,
       }
     },
-    [translate, opacity, isVertical, withFade]
+    [isVertical, withFade]
   )
 
   // Handle visibility changes

@@ -188,7 +188,7 @@ function ReanimatedStepTransition({
         opacity: opacity.value,
       }
     },
-    [translateX, opacity]
+    []
   )
 
   return (

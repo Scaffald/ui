@@ -90,7 +90,7 @@ export function ToggleAnimated({
     () => ({
       transform: [{ translateX: thumbPosition.value }],
     }),
-    [thumbPosition]
+    []
   )
 
   const handlePress = () => {

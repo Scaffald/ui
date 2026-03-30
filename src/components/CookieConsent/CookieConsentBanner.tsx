@@ -24,9 +24,7 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
   const [pendingAction, setPendingAction] = useState<'accept' | 'reject' | null>(null)
   const { theme } = useThemeContext()
 
-  if (!isReady || !shouldShowBanner) {
-    return null
-  }
+  const isVisible = isReady && shouldShowBanner
 
   const isWeb = Platform.OS === 'web'
   const maxWidth = styleProp?.maxWidth ?? 500
@@ -39,6 +37,7 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
 
   return (
     <View
+      pointerEvents={isVisible ? 'box-none' : 'none'}
       style={{
         position: 'absolute',
         bottom: spacing[16],
@@ -47,6 +46,7 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
         zIndex: 1000,
         paddingHorizontal: spacing[8],
         alignItems: 'center',
+        opacity: isVisible ? 1 : 0,
       }}
     >
       <View
