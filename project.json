@@ -1,7 +1,7 @@
 {
   "name": "@scaffald/ui",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/scaffald-ui/src",
+  "sourceRoot": "packages/ui/src",
   "projectType": "library",
   "tags": ["scope:shared", "type:ui", "next-gen"],
   "targets": {
@@ -9,14 +9,14 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec tsup",
-        "cwd": "packages/scaffald-ui"
+        "cwd": "packages/ui"
       },
       "outputs": ["{projectRoot}/dist"]
     },
     "test": {
       "executor": "@nx/vitest:test",
       "options": {
-        "config": "packages/scaffald-ui/vitest.config.ts",
+        "config": "packages/ui/vitest.config.ts",
         "passWithNoTests": true
       },
       "outputs": ["{workspaceRoot}/tests/reports/coverage/beyond-ui"]
@@ -24,14 +24,14 @@
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "biome lint packages/scaffald-ui/src",
+        "command": "biome lint packages/ui/src",
         "cwd": "."
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "biome lint --write packages/scaffald-ui/src",
+        "command": "biome lint --write packages/ui/src",
         "cwd": "."
       }
     },
@@ -39,14 +39,14 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "tsc --noEmit",
-        "cwd": "packages/scaffald-ui"
+        "cwd": "packages/ui"
       }
     },
     "watch": {
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec tsup --watch",
-        "cwd": "packages/scaffald-ui"
+        "cwd": "packages/ui"
       }
     }
   }
