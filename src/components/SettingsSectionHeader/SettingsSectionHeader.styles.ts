@@ -9,9 +9,9 @@ import { borderRadius } from '../../tokens/borders'
 import { shadows } from '../../tokens/shadows'
 import { typography } from '../../tokens/typography'
 import type { SettingsSectionHeaderStyleConfig } from './SettingsSectionHeader.types'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 
-export function getSettingsSectionHeaderStyles(theme: ThemeMode): SettingsSectionHeaderStyleConfig {
+export function getSettingsSectionHeaderStyles(theme: ResolvedThemeMode): SettingsSectionHeaderStyleConfig {
   const isLight = theme === 'light'
 
   const container: ViewStyle = {

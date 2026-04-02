@@ -5,7 +5,7 @@
 
 import type { ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import type { DatePickerSize } from './DatePicker.types'
@@ -16,7 +16,7 @@ import type { DatePickerSize } from './DatePicker.types'
  */
 export function getContainerStyles(
   size: DatePickerSize,
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): ViewStyle {
   const baseContainer: ViewStyle = {
     backgroundColor: colors.bg[theme].default,

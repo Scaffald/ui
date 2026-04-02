@@ -93,7 +93,7 @@ export function ToolbarButton({
       testID={testID}
       style={[
         { opacity: disabled ? 0.4 : 1 },
-        ({ pressed }) => pressed && !disabled ? { opacity: 0.6 } : undefined,
+        ({ pressed }: { pressed: boolean }) => pressed && !disabled ? { opacity: 0.6 } : undefined,
         style,
       ] as any}
     >

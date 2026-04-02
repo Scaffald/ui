@@ -7,10 +7,10 @@ import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import type { AppearanceThemeCardStyleConfig, AppearanceThemeCardVariant } from './AppearanceThemeCard.types'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 
 export function getAppearanceThemeCardStyles(
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   _variant: AppearanceThemeCardVariant,
   selected: boolean
 ): AppearanceThemeCardStyleConfig {

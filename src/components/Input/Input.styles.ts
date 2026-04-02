@@ -5,7 +5,7 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
@@ -20,9 +20,9 @@ export function getInputStyles(
   type: InputType,
   disabled: boolean,
   hasExternalAddon: boolean,
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): InputStyleConfig {
-  const resolvedTheme = theme === 'system' ? 'light' : theme
+  const resolvedTheme = theme
   const isError = state === 'error'
   const isFocused = state === 'focused'
   const isFilled = state === 'filled'

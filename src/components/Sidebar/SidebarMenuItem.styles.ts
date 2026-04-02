@@ -6,7 +6,7 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
@@ -36,7 +36,7 @@ export interface SidebarMenuItemStyleConfig {
 export function getSidebarMenuItemStyles(
   type: SidebarItemType,
   state: SidebarItemState,
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   collapsed: boolean,
   activeColor: string
 ): SidebarMenuItemStyleConfig {
@@ -233,7 +233,7 @@ export function getSidebarMenuItemStyles(
 /**
  * Get icon color based on state and theme
  */
-export function getIconColor(state: SidebarItemState, theme: ThemeMode): string {
+export function getIconColor(state: SidebarItemState, theme: ResolvedThemeMode): string {
   const isLight = theme === 'light'
 
   if (state === 'disabled') {

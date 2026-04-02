@@ -23,6 +23,11 @@ const packageConfig = {
     ],
   },
   test: {
+    // TODO: Fix NX vitest executor path resolution so this config can use
+    // the correct include pattern. Currently kept as scaffald-ui to avoid
+    // a double-path esbuild error in the NX executor. The new test files
+    // (Input, Checkbox, Radio, Toggle, Dropdown, useSidebarState) inline
+    // their mocks and run through the root vitest config instead.
     include: ['packages/scaffald-ui/src/**/*.{test,spec}.{ts,tsx}'],
     watchExclude: ['**/dist/**'],
     setupFiles: [resolve(packageRoot, 'vitest.setup.ts')],

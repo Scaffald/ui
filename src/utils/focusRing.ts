@@ -27,9 +27,17 @@
 
 import { Platform, type ViewStyle } from 'react-native'
 import { boxShadows } from '../tokens/shadows'
-import type { ThemeMode } from '../theme'
+import type { ResolvedThemeMode } from '../tokens/colors'
 
 export type ShadowType = 'base' | 'button' | 'card' | 'dropdown'
+
+/** Map semantic shadow types to boxShadow token keys */
+const shadowTypeToBoxShadow: Record<ShadowType, keyof typeof boxShadows> = {
+  base: 'xs',
+  button: 'button',
+  card: 's',
+  dropdown: 'l',
+} as const
 
 /**
  * Get focus ring style for an element
@@ -73,11 +81,11 @@ export function getFocusRingStyle(
  */
 export function getPlatformShadowStyle(
   shadowType: ShadowType,
-  _theme?: ThemeMode
+  _theme?: ResolvedThemeMode
 ): ViewStyle {
   return Platform.select({
     web: {
-      boxShadow: boxShadows[shadowType],
+      boxShadow: boxShadows[shadowTypeToBoxShadow[shadowType]],
     } as ViewStyle,
     default: {
       // Native platforms use elevation
@@ -102,14 +110,14 @@ export function getCombinedFocusStyle(
   isFocused: boolean,
   disabled: boolean,
   shadowType: ShadowType,
-  theme?: ThemeMode
+  theme?: ResolvedThemeMode
 ): ViewStyle {
   if (Platform.OS !== 'web') {
     return getPlatformShadowStyle(shadowType, theme)
   }
 
   // On web, combine base shadow with focus ring if focused
-  const baseShadow = boxShadows[shadowType]
+  const baseShadow = boxShadows[shadowTypeToBoxShadow[shadowType]]
 
   if (!isFocused || disabled) {
     return { boxShadow: baseShadow } as ViewStyle

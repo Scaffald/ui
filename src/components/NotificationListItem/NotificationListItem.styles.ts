@@ -6,7 +6,7 @@
 import { Platform } from 'react-native'
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography, lineHeight } from '../../tokens/typography'
@@ -18,7 +18,7 @@ import type { NotificationListItemVariant, NotificationState } from './Notificat
 export function getContainerStyles(
   state: NotificationState,
   disabled: boolean,
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): ViewStyle {
   const baseContainer: ViewStyle = {
     flexDirection: 'row',
@@ -104,7 +104,7 @@ export function getTextContainerStyles(): ViewStyle {
 /**
  * Get content text styles
  */
-export function getContentTextStyles(state: NotificationState, theme: ThemeMode = 'light'): TextStyle {
+export function getContentTextStyles(state: NotificationState, theme: ResolvedThemeMode = 'light'): TextStyle {
   return {
     ...typography.paragraphSRegular,
     color: state === 'new' ? colors.text[theme].primary : colors.text[theme].secondary,
@@ -115,7 +115,7 @@ export function getContentTextStyles(state: NotificationState, theme: ThemeMode 
 /**
  * Get timestamp text styles
  */
-export function getTimestampTextStyles(theme: ThemeMode = 'light'): TextStyle {
+export function getTimestampTextStyles(theme: ResolvedThemeMode = 'light'): TextStyle {
   return {
     ...typography.captionRegular,
     color: colors.text[theme].tertiary,
@@ -139,7 +139,7 @@ export function getActionsContainerStyles(): ViewStyle {
  */
 export function getActionButtonStyles(
   variant: 'primary' | 'secondary',
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): ViewStyle {
   const baseStyles: ViewStyle = {
     paddingHorizontal: spacing[12],
@@ -176,7 +176,7 @@ export function getActionButtonStyles(
  */
 export function getActionButtonTextStyles(
   variant: 'primary' | 'secondary',
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): TextStyle {
   return {
     ...typography.paragraphSMedium,
@@ -187,7 +187,7 @@ export function getActionButtonTextStyles(
 /**
  * Get link text styles
  */
-export function getLinkTextStyles(state: NotificationState, theme: ThemeMode = 'light'): TextStyle {
+export function getLinkTextStyles(state: NotificationState, theme: ResolvedThemeMode = 'light'): TextStyle {
   return {
     ...typography.paragraphSMedium,
     color: state === 'new' ? colors.primary[600] : colors.text[theme].secondary,

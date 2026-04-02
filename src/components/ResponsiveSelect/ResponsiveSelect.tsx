@@ -82,7 +82,7 @@ export function ResponsiveSelect({
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      paddingVertical: spacing[3],
+                      paddingVertical: spacing[4],
                       paddingHorizontal: spacing[4],
                       borderRadius: borderRadius.s,
                       backgroundColor: isSelected ? colors.primary[50] : 'transparent',

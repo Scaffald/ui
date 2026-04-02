@@ -4,7 +4,7 @@
 
 import type { ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderWidth } from '../../tokens/borders'
 
@@ -14,7 +14,7 @@ export interface SidebarItemGroupStyleConfig {
   content: ViewStyle
 }
 
-export function getSidebarItemGroupStyles(theme: ThemeMode): SidebarItemGroupStyleConfig {
+export function getSidebarItemGroupStyles(theme: ResolvedThemeMode): SidebarItemGroupStyleConfig {
   const isLight = theme === 'light'
 
   const container: ViewStyle = {

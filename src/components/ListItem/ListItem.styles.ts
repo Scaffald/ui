@@ -5,7 +5,7 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typographyVariants } from '../../tokens/typography'
 import type { ListItemVariant } from './ListItem.types'
@@ -29,7 +29,7 @@ export interface ListItemStyleConfig {
  */
 export function getListItemStyles(
   variant: ListItemVariant,
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): ListItemStyleConfig {
   // Base container styles (common across all variants)
   const baseContainer: ViewStyle = {

@@ -31,7 +31,7 @@ export function DropdownMenu({
   // Calculate menu position based on trigger layout and position prop
   const getMenuPosition = () => {
     const menuWidth = 246 // Fixed width from styles
-    const gap = spacing[13] // 13px gap between trigger and menu
+    const gap = spacing[12] // 13px gap between trigger and menu
     const estimatedMenuHeight = 200 // Estimate for top positioning
 
     const positionStyle: Record<string, number | string> = {

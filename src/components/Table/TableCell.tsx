@@ -453,9 +453,9 @@ export function TableCell(props: TableCellProps) {
 
       {/* Assignee cell (avatar group) */}
       {type === 'assignee' && avatars && (
-        <View style={{ flexDirection: 'row', marginLeft: -spacing[14] }}>
+        <View style={{ flexDirection: 'row', marginLeft: -spacing[12] }}>
           {avatars.slice(0, maxAvatars).map((avatarItem, index) => (
-            <View key={index} style={{ marginLeft: index > 0 ? -spacing[14] : 0 }}>
+            <View key={index} style={{ marginLeft: index > 0 ? -spacing[12] : 0 }}>
               {typeof avatarItem === 'string' ? (
                 <Avatar size={32} src={avatarItem} />
               ) : (

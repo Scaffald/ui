@@ -61,7 +61,7 @@ export function IconSelector({
             flexDirection: 'row',
             alignItems: 'center',
             gap: spacing[2],
-            padding: spacing[3],
+            padding: spacing[4],
             borderWidth: 1,
             borderColor: colors.border.light.default,
             borderRadius: borderRadius.m,
@@ -89,7 +89,7 @@ export function IconSelector({
           showCloseButton
         />
         <ModalContent>
-          <Stack gap={spacing[3]}>
+          <Stack gap={spacing[4]}>
             <Row align="center" gap={spacing[2]}>
               <Search size={16} color={colors.text.light.secondary} />
               <View style={{ flex: 1 }}>
@@ -114,7 +114,7 @@ export function IconSelector({
                 style={{
                   flexDirection: 'row',
                   flexWrap: 'wrap',
-                  gap: spacing[1],
+                  gap: spacing[2],
                   padding: spacing[2],
                 }}
               >

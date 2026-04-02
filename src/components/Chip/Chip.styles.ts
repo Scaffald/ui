@@ -4,7 +4,7 @@ import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import type { ChipSize } from './Chip.types'
 
 export const staticStyles = StyleSheet.create({
@@ -85,7 +85,7 @@ const sizeConfigs = {
 
 export function getChipStyles(
   size: ChipSize,
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   selected: boolean,
   isHovered: boolean,
   isFocused: boolean,
@@ -93,7 +93,7 @@ export function getChipStyles(
 ): ViewStyle[] {
   const sizeConfig = sizeConfigs[size]
   const isLight = theme === 'light'
-  const resolvedTheme = theme === 'system' ? 'light' : theme
+  const resolvedTheme = theme
   const baseStyles: ViewStyle[] = [
     staticStyles.chip,
     {
@@ -168,7 +168,7 @@ export function getChipStyles(
 
 export function getChipTextStyles(
   size: ChipSize,
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   selected: boolean,
   disabled: boolean
 ): TextStyle[] {

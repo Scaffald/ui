@@ -32,7 +32,7 @@ import { Search } from 'lucide-react-native'
 import type { WorkspaceMembersModalProps } from './WorkspaceMembersModal.types'
 import { useThemeContext } from '../../../theme'
 import { colors } from '../../../tokens/colors'
-import type { ThemeMode } from '../../../tokens/colors'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { borderRadius, } from '../../../tokens/borders'
 import { typography } from '../../../tokens/typography'
@@ -41,7 +41,7 @@ import { Input } from '../../Input'
 import { Avatar, AddAvatar } from '../../Avatar'
 
 // Helper functions for theme-dependent styles
-function getTabsContainer(theme: ThemeMode): ViewStyle {
+function getTabsContainer(theme: ResolvedThemeMode): ViewStyle {
   return {
     backgroundColor: colors.bg[theme].subtle,
     borderRadius: borderRadius.s, // 8px
@@ -52,7 +52,7 @@ function getTabsContainer(theme: ThemeMode): ViewStyle {
   }
 }
 
-function getTab(theme: ThemeMode, isSelected: boolean): ViewStyle {
+function getTab(theme: ResolvedThemeMode, isSelected: boolean): ViewStyle {
   return {
     flexDirection: 'row',
     alignItems: 'center',
@@ -74,7 +74,7 @@ function getTab(theme: ThemeMode, isSelected: boolean): ViewStyle {
   }
 }
 
-function getTabText(theme: ThemeMode, isSelected: boolean): TextStyle {
+function getTabText(theme: ResolvedThemeMode, isSelected: boolean): TextStyle {
   return {
     fontFamily: typography.paragraphMMedium.fontFamily,
     fontSize: typography.body.fontSize,
@@ -85,7 +85,7 @@ function getTabText(theme: ThemeMode, isSelected: boolean): TextStyle {
   }
 }
 
-function getBadge(_theme: ThemeMode): ViewStyle {
+function getBadge(_theme: ResolvedThemeMode): ViewStyle {
   return {
     backgroundColor: colors.gray[900], // foreground-01
     borderRadius: borderRadius.max, // Fully rounded
@@ -98,7 +98,7 @@ function getBadge(_theme: ThemeMode): ViewStyle {
   }
 }
 
-function getBadgeText(_theme: ThemeMode): TextStyle {
+function getBadgeText(_theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.captionMedium.fontFamily,
     fontSize: typography.captionMedium.fontSize,
@@ -109,7 +109,7 @@ function getBadgeText(_theme: ThemeMode): TextStyle {
   }
 }
 
-function getAddMemberButton(_theme: ThemeMode): ViewStyle {
+function getAddMemberButton(_theme: ResolvedThemeMode): ViewStyle {
   return {
     flexDirection: 'row',
     alignItems: 'center',
@@ -118,7 +118,7 @@ function getAddMemberButton(_theme: ThemeMode): ViewStyle {
   }
 }
 
-function getAddMemberText(theme: ThemeMode): TextStyle {
+function getAddMemberText(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.paragraphMMedium.fontFamily,
     fontSize: typography.paragraphMMedium.fontSize,
@@ -128,7 +128,7 @@ function getAddMemberText(theme: ThemeMode): TextStyle {
   }
 }
 
-function getMemberItem(_theme: ThemeMode): ViewStyle {
+function getMemberItem(_theme: ResolvedThemeMode): ViewStyle {
   return {
     flexDirection: 'row',
     alignItems: 'center',
@@ -137,7 +137,7 @@ function getMemberItem(_theme: ThemeMode): ViewStyle {
   }
 }
 
-function getMemberName(theme: ThemeMode): TextStyle {
+function getMemberName(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.paragraphMMedium.fontFamily,
     fontSize: typography.paragraphMMedium.fontSize,
@@ -147,7 +147,7 @@ function getMemberName(theme: ThemeMode): TextStyle {
   }
 }
 
-function getMemberUsername(theme: ThemeMode): TextStyle {
+function getMemberUsername(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.body.fontFamily,
     fontSize: typography.body.fontSize,

@@ -64,7 +64,7 @@ export function EmptyState({
         <Row
           align="center"
           justify="center"
-          gap={spacing[3]}
+          gap={spacing[4]}
           style={{ marginTop: spacing[6] }}
         >
           {action && (

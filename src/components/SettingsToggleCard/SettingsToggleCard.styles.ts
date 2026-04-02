@@ -9,10 +9,10 @@ import { borderRadius } from '../../tokens/borders'
 import { shadows } from '../../tokens/shadows'
 import { typography } from '../../tokens/typography'
 import type { SettingsToggleCardStyleConfig } from './SettingsToggleCard.types'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 
 export function getSettingsToggleCardStyles(
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   enabled: boolean,
   disabled: boolean
 ): SettingsToggleCardStyleConfig {

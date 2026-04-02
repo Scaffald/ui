@@ -6,9 +6,9 @@ import type { ViewStyle } from 'react-native'
 import { StyleSheet } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
-import type { ThemeMode } from '../../theme'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 
-export function getContainerStyles(theme: ThemeMode = 'light'): ViewStyle {
+export function getContainerStyles(theme: ResolvedThemeMode = 'light'): ViewStyle {
   return {
     flexDirection: 'column',
     gap: spacing[16],

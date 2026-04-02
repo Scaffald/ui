@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import type { RadioColor, RadioSize } from './Radio.types'
 
 export const staticStyles = StyleSheet.create({
@@ -71,7 +71,7 @@ export function getRadioColorConfig(
   checked: boolean,
   color: RadioColor,
   disabled: boolean,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ) {
   // Error state overrides color choice
   if (error) {

@@ -19,7 +19,7 @@ import { View, Text, StyleSheet, Platform, type ViewStyle, type TextStyle } from
 import { CheckCircle } from 'lucide-react-native'
 import type { ConfirmationModalProps } from './ConfirmationModal.types'
 import { useThemeContext } from '../../../theme'
-import type { ThemeMode } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { borderRadius, borderWidth } from '../../../tokens/borders'
@@ -60,7 +60,7 @@ export function ConfirmationModal({
   )
 }
 
-function getIconContainerStyle(_theme: ThemeMode): ViewStyle {
+function getIconContainerStyle(_theme: ResolvedThemeMode): ViewStyle {
   return {
     width: spacing[48],
     height: spacing[48],
@@ -85,7 +85,7 @@ function getIconContainerStyle(_theme: ThemeMode): ViewStyle {
   }
 }
 
-function getMessageStyle(theme: ThemeMode): TextStyle {
+function getMessageStyle(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.paragraphLMedium.fontFamily,
     fontSize: typography.paragraphLMedium.fontSize,

@@ -5,7 +5,7 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
 import type {
@@ -24,7 +24,7 @@ const ICON_SIZE = 18
 export function getContainerStyles(
   type: DatePickerHeaderType,
   position: DatePickerHeaderPosition,
-  _theme: ThemeMode = 'light'
+  _theme: ResolvedThemeMode = 'light'
 ): ViewStyle {
   const baseContainer: ViewStyle = {
     flexDirection: 'row',
@@ -52,7 +52,7 @@ export function getContainerStyles(
 /**
  * Get month/year text styles
  */
-export function getMonthYearTextStyles(theme: ThemeMode = 'light'): TextStyle {
+export function getMonthYearTextStyles(theme: ResolvedThemeMode = 'light'): TextStyle {
   return {
     ...typography.smallMedium,
     color: colors.text[theme].secondary,
@@ -82,7 +82,7 @@ export function getIconSize(): number {
 /**
  * Get icon color
  */
-export function getIconColor(disabled: boolean, theme: ThemeMode = 'light'): string {
+export function getIconColor(disabled: boolean, theme: ResolvedThemeMode = 'light'): string {
   if (disabled) {
     return colors.icon[theme].disabled
   }

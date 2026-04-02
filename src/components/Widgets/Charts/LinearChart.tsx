@@ -30,7 +30,7 @@ export function LinearChart({
 }: LinearChartWidgetProps) {
   // Convert data to ChartDataPoint format
   const chartData: ChartDataPoint[] = Array.isArray(data) && typeof data[0] === 'number'
-    ? data.map((value, index) => ({ x: index, y: value }))
+    ? (data as number[]).map((value, index) => ({ x: index, y: value }))
     : (data as Array<{ value: number; label?: string; color?: string }>).map((item, index) => ({
         x: index,
         y: item.value,

@@ -5,7 +5,7 @@
 import type { ViewStyle, DimensionValue } from 'react-native'
 import { Platform, StyleSheet } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { borderRadius, borderWidth } from '../../tokens/borders'
 import { shadows, boxShadows } from '../../tokens/shadows'
 
@@ -16,7 +16,7 @@ export interface ModalStyleConfig {
 }
 
 export function getModalStyles(
-  theme: ThemeMode = 'light',
+  theme: ResolvedThemeMode = 'light',
   width: number | string = 520
 ): ModalStyleConfig {
   // Modal uses shadow-m (medium shadow)

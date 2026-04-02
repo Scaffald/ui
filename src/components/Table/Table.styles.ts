@@ -5,7 +5,7 @@
 
 import type { ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderWidth } from '../../tokens/borders'
 import { borderRadius } from '../../tokens/borders'
@@ -25,7 +25,7 @@ export interface TableStyleConfig {
 /**
  * Get table styles based on theme
  */
-export function getTableStyles(theme: ThemeMode = 'light'): TableStyleConfig {
+export function getTableStyles(theme: ResolvedThemeMode = 'light'): TableStyleConfig {
   return {
     container: {
       flex: 1,
@@ -48,7 +48,7 @@ export function getTableStyles(theme: ThemeMode = 'light'): TableStyleConfig {
     headerActions: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: spacing[17],
+      gap: spacing[16],
     },
     body: {
       flex: 1,

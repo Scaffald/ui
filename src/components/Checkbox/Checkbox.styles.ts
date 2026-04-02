@@ -3,7 +3,7 @@ import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import type { CheckboxColor, CheckboxSize } from './Checkbox.types'
 
 export const staticStyles = StyleSheet.create({
@@ -73,7 +73,7 @@ export function getCheckboxColorConfig(
   isCheckedOrIndeterminate: boolean,
   color: CheckboxColor,
   disabled: boolean,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ) {
   const uncheckedBg = theme === 'light' ? colors.white : 'transparent'
 

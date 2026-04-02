@@ -4,7 +4,7 @@
 
 import type { ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderWidth } from '../../tokens/borders'
 import type { ModalActionsOrientation } from './ModalActions.types'
@@ -17,7 +17,7 @@ export interface ModalActionsStyleConfig {
 
 export function getModalActionsStyles(
   orientation: ModalActionsOrientation = 'center',
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): ModalActionsStyleConfig {
   const _isLight = theme === 'light'
 

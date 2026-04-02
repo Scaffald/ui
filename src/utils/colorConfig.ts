@@ -24,7 +24,7 @@
  */
 
 import { colors } from '../tokens/colors'
-import type { ThemeMode } from '../theme'
+import type { ResolvedThemeMode } from '../tokens/colors'
 
 export interface FormControlColorState {
   checked?: boolean
@@ -51,7 +51,7 @@ export interface FormControlColors {
  */
 export function getFormControlColors(
   color: 'primary' | 'gray',
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   state: FormControlColorState
 ): FormControlColors {
   const { checked, error, disabled, hovered } = state
@@ -94,7 +94,7 @@ export function getFormControlColors(
  */
 export function getTextColor(
   semantic: 'primary' | 'secondary' | 'tertiary' | 'disabled' | 'error',
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): string {
   if (semantic === 'error') {
     return colors.error[500]
@@ -112,7 +112,7 @@ export function getTextColor(
  */
 export function getBorderColor(
   semantic: 'default' | 'emphasis' | 'error',
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): string {
   if (semantic === 'error') {
     return colors.border[theme].error
@@ -130,7 +130,7 @@ export function getBorderColor(
  */
 export function getBackgroundColor(
   semantic: 'default' | 'subtle' | 'muted' | 'emphasis',
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): string {
   return colors.bg[theme][semantic]
 }
@@ -146,7 +146,7 @@ export function getBackgroundColor(
 export function getInteractiveBackgroundColor(
   baseColor: string,
   isHovered: boolean,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): string {
   if (!isHovered) {
     return baseColor

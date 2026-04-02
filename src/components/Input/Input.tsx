@@ -145,7 +145,7 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input(
   const hasExternalAddon = !!externalAddon
   const styles = useStyles(getInputStyles, [actualState || 'default', type, disabled, hasExternalAddon, theme] as const)
 
-  const handleFocus: RNTextInputProps['onFocus'] = useCallback((e) => {
+  const handleFocus = useCallback((e: Parameters<NonNullable<RNTextInputProps['onFocus']>>[0]) => {
     if (!disabled) {
       onFocus?.(e)
       if (Platform.OS === 'ios') {
@@ -161,7 +161,7 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input(
     }
   }, [disabled, onFocus, focusAnim])
 
-  const handleBlur: RNTextInputProps['onBlur'] = useCallback((e) => {
+  const handleBlur = useCallback((e: Parameters<NonNullable<RNTextInputProps['onBlur']>>[0]) => {
     if (Platform.OS === 'ios') {
       Animated.timing(focusAnim, {
         toValue: 0,

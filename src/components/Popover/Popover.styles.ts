@@ -9,7 +9,7 @@ import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import { shadows, boxShadows } from '../../tokens/shadows'
 import { spacing } from '../../tokens/spacing'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 
 export interface PopoverStyleConfig {
   container: ViewStyle
@@ -33,7 +33,7 @@ export interface PopoverFooterStyleConfig {
  * Get popover container and content styles
  */
 export function getPopoverStyles(
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   maxWidth: number,
   width?: number | 'auto' | 'trigger',
   triggerWidth?: number,
@@ -120,7 +120,7 @@ export function getPopoverStyles(
 /**
  * Get popover header styles
  */
-export function getPopoverHeaderStyles(theme: ThemeMode): PopoverHeaderStyleConfig {
+export function getPopoverHeaderStyles(theme: ResolvedThemeMode): PopoverHeaderStyleConfig {
   return {
     header: {
       paddingHorizontal: spacing[12],
@@ -151,7 +151,7 @@ export function getPopoverContentStyles(): PopoverContentStyleConfig {
  * Get popover footer styles
  */
 export function getPopoverFooterStyles(
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   align: 'left' | 'center' | 'right' | 'space-between'
 ): PopoverFooterStyleConfig {
   const alignMap = {

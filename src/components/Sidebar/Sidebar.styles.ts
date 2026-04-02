@@ -6,7 +6,7 @@
 import type { ViewStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderWidth } from '../../tokens/borders'
 import type { SidebarVariant, SidebarStyleConfig } from './Sidebar.types'
@@ -16,7 +16,7 @@ import type { SidebarVariant, SidebarStyleConfig } from './Sidebar.types'
  */
 export function getSidebarStyles(
   variant: SidebarVariant,
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   collapsed: boolean,
   expandedWidth: number,
   collapsedWidth: number,

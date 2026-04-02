@@ -5,7 +5,7 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { fontWeight } from '../../tokens/typography'
@@ -41,7 +41,7 @@ export function getContainerStyles(
   variant: NavIconButtonVariant,
   state: NavIconButtonState,
   disabled: boolean,
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): ViewStyle {
   const baseContainer: ViewStyle = {
     width: 30,
@@ -87,7 +87,7 @@ export function getIconColor(
   _variant: NavIconButtonVariant,
   _state: NavIconButtonState,
   disabled: boolean,
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): string {
   if (disabled) {
     return colors.icon[theme].disabled

@@ -90,7 +90,7 @@ export function ListItem(props: ListItemProps) {
                       justifyContent: 'center',
                     }}
                   >
-                    <Text style={{ color: colors.gray[0], fontSize: 10 }}>✓</Text>
+                    <Text style={{ color: colors.gray[50], fontSize: 10 }}>✓</Text>
                   </View>
                 )}
                 <Text style={styles.subtitle}>{username}</Text>
@@ -199,7 +199,7 @@ export function ListItem(props: ListItemProps) {
                     justifyContent: 'center',
                   }}
                 >
-                  <Text style={{ color: colors.gray[0], fontSize: 24 }}>*</Text>
+                  <Text style={{ color: colors.gray[50], fontSize: 24 }}>*</Text>
                 </View>
               )}
             </View>
@@ -369,7 +369,7 @@ export function ListItem(props: ListItemProps) {
                     ...(Platform.OS === 'web'
                       ? {
                           background: `linear-gradient(to bottom, ${colors.bg[theme].subtle || colors.gray[50]}, ${colors.bg[theme].default || colors.gray[100]})`,
-                          boxShadow: `0px 0px 0px 2px ${colors.gray[0]}, 0px 0px 0px 3px ${colors.gray[100]}`,
+                          boxShadow: `0px 0px 0px 2px ${colors.gray[50]}, 0px 0px 0px 3px ${colors.gray[100]}`,
                         }
                       : {
                           backgroundColor: colors.bg[theme].subtle || colors.gray[50],
@@ -417,7 +417,7 @@ export function ListItem(props: ListItemProps) {
                     justifyContent: 'center',
                   }}
                 >
-                  <Check size={16} color={colors.gray[0]} />
+                  <Check size={16} color={colors.gray[50]} />
                 </View>
               )}
             </View>
@@ -533,7 +533,7 @@ export function ListItem(props: ListItemProps) {
                     ...(Platform.OS === 'web'
                       ? {
                           background: `linear-gradient(to bottom, ${colors.bg[theme].subtle || colors.gray[50]}, ${colors.bg[theme].default || colors.gray[100]})`,
-                          boxShadow: `0px 0px 0px 2px ${colors.gray[0]}, 0px 0px 0px 3px ${colors.gray[100]}`,
+                          boxShadow: `0px 0px 0px 2px ${colors.gray[50]}, 0px 0px 0px 3px ${colors.gray[100]}`,
                         }
                       : {
                           backgroundColor: colors.bg[theme].subtle || colors.gray[50],

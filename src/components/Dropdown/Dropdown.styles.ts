@@ -61,7 +61,7 @@ export function getDropdownStyles(): DropdownStyleConfig {
       paddingHorizontal: spacing[10],
       paddingVertical: spacing[8],
       borderBottomWidth: 1,
-      borderBottomColor: colors.border.light[100], // border-100 (#f2f4f7)
+      borderBottomColor: colors.border.light.subtle, // border-100 (#f2f4f7)
     },
     // Menu item styles
     item: {
@@ -83,7 +83,7 @@ export function getDropdownStyles(): DropdownStyleConfig {
     // Divider styles
     divider: {
       height: 1,
-      backgroundColor: colors.border.light[100], // border-100 (#f2f4f7)
+      backgroundColor: colors.border.light.subtle, // border-100 (#f2f4f7)
       width: '100%',
       marginVertical: 0,
     },
@@ -170,7 +170,7 @@ export function getDropdownDarkStyles(): DropdownStyleConfig {
     sectionHeading: {
       ...baseStyles.sectionHeading,
       color: colors.text.dark.tertiary,
-      borderBottomColor: colors.border.dark[100],
+      borderBottomColor: colors.border.dark.subtle,
     },
     item: {
       ...baseStyles.item,
@@ -181,7 +181,7 @@ export function getDropdownDarkStyles(): DropdownStyleConfig {
     },
     divider: {
       ...baseStyles.divider,
-      backgroundColor: colors.border.dark[100],
+      backgroundColor: colors.border.dark.subtle,
     },
     badge: {
       ...baseStyles.badge,

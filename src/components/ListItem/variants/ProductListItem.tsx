@@ -56,7 +56,7 @@ export function ProductListItem({
               justifyContent: 'center',
             }}
           >
-            <Text style={{ color: colors.gray[0], fontSize: 24 }}>*</Text>
+            <Text style={{ color: colors.gray[50], fontSize: 24 }}>*</Text>
           </View>
         )}
       </View>

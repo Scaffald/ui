@@ -58,7 +58,7 @@ export function TaskListItem({
               justifyContent: 'center',
             }}
           >
-            <Check size={16} color={colors.gray[0]} />
+            <Check size={16} color={colors.gray[50]} />
           </View>
         )}
       </View>

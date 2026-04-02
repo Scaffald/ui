@@ -29,7 +29,7 @@ export function TableAddRecordModal({
         <Stack gap={spacing[4]}>
           <Paragraph color="secondary">{description}</Paragraph>
           {children ?? (
-            <Stack gap={spacing[3]}>
+            <Stack gap={spacing[4]}>
               <Text size="lg" weight="semibold">
                 Placeholder Form
               </Text>

@@ -6,7 +6,7 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography, lineHeight } from '../../tokens/typography'
@@ -15,7 +15,7 @@ import { typography, lineHeight } from '../../tokens/typography'
  * Get container styles
  * Height: 72px (default), 128px (with tabs below)
  */
-export function getContainerStyles(tabsBelow: boolean, _theme: ThemeMode = 'light'): ViewStyle {
+export function getContainerStyles(tabsBelow: boolean, _theme: ResolvedThemeMode = 'light'): ViewStyle {
   return {
     flexDirection: 'column',
     gap: spacing[0],
@@ -55,7 +55,7 @@ export function getLeftSectionStyles(): ViewStyle {
  * Get featured icon container styles
  * Matches Figma: gradient from bg-50 to bg-100 with double border effect
  */
-export function getFeaturedIconStyles(_theme: ThemeMode = 'light'): ViewStyle {
+export function getFeaturedIconStyles(_theme: ResolvedThemeMode = 'light'): ViewStyle {
   const base: ViewStyle = {
     width: 32,
     height: 32,
@@ -97,7 +97,7 @@ export function getTextContainerStyles(): ViewStyle {
 /**
  * Get title text styles
  */
-export function getTitleStyles(theme: ThemeMode = 'light'): TextStyle {
+export function getTitleStyles(theme: ResolvedThemeMode = 'light'): TextStyle {
   return {
     ...typography.paragraphLMedium,
     color: colors.text[theme].primary,
@@ -108,7 +108,7 @@ export function getTitleStyles(theme: ThemeMode = 'light'): TextStyle {
 /**
  * Get description text styles
  */
-export function getDescriptionStyles(theme: ThemeMode = 'light'): TextStyle {
+export function getDescriptionStyles(theme: ResolvedThemeMode = 'light'): TextStyle {
   return {
     ...typography.paragraphSRegular,
     color: colors.text[theme].secondary,
@@ -151,7 +151,7 @@ export function getTimePeriodContainerStyles(): ViewStyle {
 /**
  * Get sub-header text styles (smaller variant)
  */
-export function getSubHeaderTextStyles(theme: ThemeMode = 'light'): TextStyle {
+export function getSubHeaderTextStyles(theme: ResolvedThemeMode = 'light'): TextStyle {
   return {
     ...typography.paragraphSMedium,
     color: colors.text[theme].primary,

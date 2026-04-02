@@ -21,7 +21,7 @@ import { Pressable, } from 'react-native'
 import { getTableStyles } from './Table.styles'
 import { useStyles } from '../../hooks'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 
 // Legacy component - TableRowProps moved to Table component
 interface TableRowProps {
@@ -34,7 +34,7 @@ interface TableRowProps {
 }
 
 // Helper function for row styles
-function getRowStyles(selected: boolean, expanded: boolean, theme: ThemeMode = 'light') {
+function getRowStyles(selected: boolean, expanded: boolean, theme: ResolvedThemeMode = 'light') {
   return {
     backgroundColor: selected
       ? (theme === 'light' ? colors.primary[50] : colors.primary[900])

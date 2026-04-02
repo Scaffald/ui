@@ -6,7 +6,7 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography, lineHeight } from '../../tokens/typography'
@@ -17,7 +17,7 @@ import { typography, lineHeight } from '../../tokens/typography'
 export function getContainerStyles(
   variant: string,
   showTabs: boolean,
-  _theme: ThemeMode = 'light'
+  _theme: ResolvedThemeMode = 'light'
 ): ViewStyle {
   // Height mapping from Figma
   let minHeight = 96 // Default: Main Navigation without tabs
@@ -73,7 +73,7 @@ export function getHeaderContentStyles(): ViewStyle {
  * Get featured icon styles
  * Matches Figma: gradient from bg-50 to bg-100 with double border effect
  */
-export function getFeaturedIconStyles(_theme: ThemeMode = 'light'): ViewStyle {
+export function getFeaturedIconStyles(_theme: ResolvedThemeMode = 'light'): ViewStyle {
   // Figma uses gradient from bg-50 (#f9fafb) to bg-100 (#f2f4f7)
   // With double border: 2px white, 3px gray-100
   const base: ViewStyle = {
@@ -106,7 +106,7 @@ export function getFeaturedIconStyles(_theme: ThemeMode = 'light'): ViewStyle {
 /**
  * Get title text styles
  */
-export function getTitleStyles(theme: ThemeMode = 'light'): TextStyle {
+export function getTitleStyles(theme: ResolvedThemeMode = 'light'): TextStyle {
   return {
     ...typography.h6Medium,
     color: colors.text[theme].primary,
@@ -118,7 +118,7 @@ export function getTitleStyles(theme: ThemeMode = 'light'): TextStyle {
 /**
  * Get description text styles
  */
-export function getDescriptionStyles(theme: ThemeMode = 'light'): TextStyle {
+export function getDescriptionStyles(theme: ResolvedThemeMode = 'light'): TextStyle {
   return {
     ...typography.paragraphSRegular,
     color: colors.text[theme].secondary,

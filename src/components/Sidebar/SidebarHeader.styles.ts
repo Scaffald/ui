@@ -5,7 +5,7 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
@@ -19,7 +19,7 @@ export interface SidebarHeaderStyleConfig {
 }
 
 export function getSidebarHeaderStyles(
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   collapsed: boolean
 ): SidebarHeaderStyleConfig {
   const isLight = theme === 'light'

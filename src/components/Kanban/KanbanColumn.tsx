@@ -30,7 +30,7 @@ export function KanbanColumn({
         backgroundColor: colors.gray[50],
         borderRadius: borderRadius.l,
         padding: spacing[4],
-        gap: spacing[3],
+        gap: spacing[4],
       }}
       testID={`kanban-column-${id}`}
     >
@@ -60,7 +60,7 @@ export function KanbanColumn({
             </View>
           )}
         </Row>
-        <Row gap={spacing[1]}>
+        <Row gap={spacing[2]}>
           {onAdd && (
             <Button variant="text" color="gray" size="sm" onPress={onAdd} iconStart={Plus} />
           )}

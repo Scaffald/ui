@@ -5,7 +5,7 @@
 
 import { colors } from '../../tokens/colors'
 import type { AlertType, AlertVariant } from './Alert.types'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 
 interface AlertColors {
   icon: string
@@ -70,7 +70,7 @@ export const getAlertColors = (type: AlertType): AlertColors => {
 export const getBackgroundColor = (
   variant: AlertVariant,
   type: AlertType,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): string => {
   const alertColors = getAlertColors(type)
 
@@ -91,7 +91,7 @@ export const getBackgroundColor = (
  */
 export const getTextColor = (
   variant: AlertVariant,
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   type: 'title' | 'description'
 ): string => {
   if (variant === 'filled') {
@@ -120,7 +120,7 @@ export const getIconColor = (variant: AlertVariant, type: AlertType): string => 
 /**
  * Get close icon color based on variant and theme
  */
-export const getCloseIconColor = (variant: AlertVariant, theme: ThemeMode): string => {
+export const getCloseIconColor = (variant: AlertVariant, theme: ResolvedThemeMode): string => {
   if (variant === 'filled') {
     return colors.white
   }
@@ -134,7 +134,7 @@ export const getCloseIconColor = (variant: AlertVariant, theme: ThemeMode): stri
 export const getActionTextColor = (
   variant: AlertVariant,
   type: AlertType,
-  _theme: ThemeMode
+  _theme: ResolvedThemeMode
 ): string => {
   if (variant === 'filled') {
     return colors.white

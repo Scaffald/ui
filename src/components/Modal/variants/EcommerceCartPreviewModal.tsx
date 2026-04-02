@@ -31,7 +31,8 @@ import { useMemo } from 'react'
 import { View, Text, Image, Pressable, StyleSheet, type ViewStyle, type TextStyle } from 'react-native'
 import { Minus, Plus } from 'lucide-react-native'
 import type { EcommerceCartPreviewModalProps } from './EcommerceCartPreviewModal.types'
-import { useThemeContext, type ThemeMode } from '../../../theme'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { borderRadius, borderWidth } from '../../../tokens/borders'
@@ -198,7 +199,7 @@ export function EcommerceCartPreviewModal({
 }
 
 // Helper style functions
-function getProductItemBorder(theme: ThemeMode): ViewStyle {
+function getProductItemBorder(theme: ResolvedThemeMode): ViewStyle {
   return {
     borderBottomWidth: borderWidth.thin,
     borderBottomColor: colors.border[theme].default,
@@ -206,7 +207,7 @@ function getProductItemBorder(theme: ThemeMode): ViewStyle {
   }
 }
 
-function getProductTitle(theme: ThemeMode): TextStyle {
+function getProductTitle(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.paragraphMMedium.fontFamily,
     fontSize: typography.paragraphMMedium.fontSize,
@@ -216,7 +217,7 @@ function getProductTitle(theme: ThemeMode): TextStyle {
   }
 }
 
-function getProductDescription(theme: ThemeMode): TextStyle {
+function getProductDescription(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.body.fontFamily,
     fontSize: typography.body.fontSize,
@@ -226,7 +227,7 @@ function getProductDescription(theme: ThemeMode): TextStyle {
   }
 }
 
-function getQuantityControls(theme: ThemeMode): ViewStyle {
+function getQuantityControls(theme: ResolvedThemeMode): ViewStyle {
   return {
     flexDirection: 'row',
     alignItems: 'center',
@@ -238,7 +239,7 @@ function getQuantityControls(theme: ThemeMode): ViewStyle {
   }
 }
 
-function getQuantityButton(theme: ThemeMode): ViewStyle {
+function getQuantityButton(theme: ResolvedThemeMode): ViewStyle {
   return {
     width: spacing[32],
     height: spacing[32],
@@ -250,7 +251,7 @@ function getQuantityButton(theme: ThemeMode): ViewStyle {
   }
 }
 
-function getQuantityValue(theme: ThemeMode): ViewStyle {
+function getQuantityValue(theme: ResolvedThemeMode): ViewStyle {
   return {
     minWidth: spacing[48],
     height: spacing[32],
@@ -263,7 +264,7 @@ function getQuantityValue(theme: ThemeMode): ViewStyle {
   }
 }
 
-function getQuantityText(theme: ThemeMode): TextStyle {
+function getQuantityText(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.paragraphMMedium.fontFamily,
     fontSize: typography.paragraphMMedium.fontSize,
@@ -274,7 +275,7 @@ function getQuantityText(theme: ThemeMode): TextStyle {
   }
 }
 
-function getProductPrice(theme: ThemeMode): TextStyle {
+function getProductPrice(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.paragraphMMedium.fontFamily,
     fontSize: typography.paragraphMMedium.fontSize,
@@ -286,7 +287,7 @@ function getProductPrice(theme: ThemeMode): TextStyle {
   }
 }
 
-function getPriceLabel(theme: ThemeMode): TextStyle {
+function getPriceLabel(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.paragraphMMedium.fontFamily,
     fontSize: typography.body.fontSize,
@@ -296,7 +297,7 @@ function getPriceLabel(theme: ThemeMode): TextStyle {
   }
 }
 
-function getPriceValue(theme: ThemeMode): TextStyle {
+function getPriceValue(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.paragraphMMedium.fontFamily,
     fontSize: typography.paragraphMMedium.fontSize,
@@ -306,7 +307,7 @@ function getPriceValue(theme: ThemeMode): TextStyle {
   }
 }
 
-function getTotalRow(theme: ThemeMode): ViewStyle {
+function getTotalRow(theme: ResolvedThemeMode): ViewStyle {
   return {
     borderTopWidth: borderWidth.thin,
     borderTopColor: colors.border[theme].default,
@@ -316,7 +317,7 @@ function getTotalRow(theme: ThemeMode): ViewStyle {
   }
 }
 
-function getTotalLabel(theme: ThemeMode): TextStyle {
+function getTotalLabel(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.paragraphMMedium.fontFamily,
     fontSize: typography.paragraphMMedium.fontSize,
@@ -326,7 +327,7 @@ function getTotalLabel(theme: ThemeMode): TextStyle {
   }
 }
 
-function getTotalValue(theme: ThemeMode): TextStyle {
+function getTotalValue(theme: ResolvedThemeMode): TextStyle {
   return {
     fontFamily: typography.paragraphLMedium.fontFamily,
     fontSize: typography.paragraphLMedium.fontSize,

@@ -5,7 +5,7 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
 import { boxShadows } from '../../tokens/shadows'
@@ -67,7 +67,7 @@ const sizeConfig = {
 export function getTabsStyles(
   orientation: TabOrientation,
   fullWidth: boolean,
-  _theme: ThemeMode = 'light'
+  _theme: ResolvedThemeMode = 'light'
 ): ViewStyle {
   return {
     flexDirection: orientation === 'horizontal' ? 'row' : 'column',
@@ -80,7 +80,7 @@ export function getTabsStyles(
  */
 export function getTabListStyles(
   orientation: TabOrientation,
-  _theme: ThemeMode = 'light',
+  _theme: ResolvedThemeMode = 'light',
   options?: { gap?: number }
 ): ViewStyle {
   const gap = options?.gap ?? (orientation === 'horizontal' ? spacing[8] : 0)
@@ -104,7 +104,7 @@ export function getTabTriggerStyles(
   isDisabled: boolean,
   isHovered: boolean,
   iconOnly: boolean,
-  theme: ThemeMode = 'light',
+  theme: ResolvedThemeMode = 'light',
   triggerSizing: 'auto' | 'equal' | 'fixed' = 'auto'
 ): TabStyleConfig {
   const sizeStyles = sizeConfig[size]
@@ -305,7 +305,7 @@ export interface TabContentStyleConfig {
 
 export function getTabContentStyles(
   contentVariant: 'default' | 'bordered',
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): TabContentStyleConfig {
   const container: ViewStyle = {
     paddingTop: spacing[12],

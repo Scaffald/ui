@@ -126,7 +126,7 @@ export function SelectionCard({
       })
     } else if (isHovered && !disabled) {
       baseStyles.push({
-        borderColor: isLight ? colors.border.light['100'] : colors.border.dark['100'],
+        borderColor: isLight ? colors.border.light.subtle : colors.border.dark.subtle,
         borderWidth: 1,
       })
     } else {
@@ -140,7 +140,7 @@ export function SelectionCard({
     if (disabled) {
       baseStyles.push({
         opacity: 0.4,
-        borderColor: isLight ? colors.border.light['100'] : colors.border.dark['100'],
+        borderColor: isLight ? colors.border.light.subtle : colors.border.dark.subtle,
       })
     }
 
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     padding: spacing[16],
   },
   focusRing: {
-    shadowColor: colors.icon.light['300'],
+    shadowColor: colors.gray[300],
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 0,
@@ -315,10 +315,10 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: borderRadius.max,
-    backgroundColor: colors.bg.light['50'],
+    backgroundColor: colors.bg.light.subtle,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: colors.icon.light['100'],
+    shadowColor: colors.gray[100],
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 0,

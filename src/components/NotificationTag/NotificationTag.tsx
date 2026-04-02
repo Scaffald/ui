@@ -12,12 +12,12 @@ import type { NotificationTagProps } from './NotificationTag.types'
 const sizeStyles = {
   sm: {
     paddingHorizontal: spacing[2],
-    paddingVertical: spacing[1],
+    paddingVertical: spacing[2],
     fontSize: 12 as const,
   },
   md: {
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[1],
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
     fontSize: 14 as const,
   },
 }

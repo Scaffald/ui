@@ -6,7 +6,7 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
@@ -118,7 +118,7 @@ export function getButtonStyles(
   size: ButtonSize,
   disabled: boolean,
   iconOnly: boolean,
-  theme: ThemeMode = 'light',
+  theme: ResolvedThemeMode = 'light',
   destructive: boolean = false
 ): ButtonStyleConfig {
   // Use iOS size config for iOS variants
@@ -201,7 +201,7 @@ function getVariantStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   iconSize: number,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): ButtonStyleConfig {
   // Filled variant
   if (variant === 'filled') {
@@ -235,7 +235,7 @@ function getGlassStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   _iconSize: number,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): ButtonStyleConfig {
   const vibrant = glassVibrantColors[theme]
   const container: ViewStyle = {
@@ -277,7 +277,7 @@ function getFilledStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   _iconSize: number,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): ButtonStyleConfig {
   const colorMap = {
     gray: {
@@ -341,7 +341,7 @@ function getOutlineStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   _iconSize: number,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): ButtonStyleConfig {
   const colorMap = {
     gray: {
@@ -359,7 +359,7 @@ function getOutlineStyles(
       text: disabled ? colors.primary[300] : colors.primary[600],
       icon: disabled ? colors.primary[300] : colors.primary[600],
       bg: colors.bg[theme].default,
-      hoverBg: theme === 'light' ? colors.primary[50] : colors.primary[950],
+      hoverBg: theme === 'light' ? colors.primary[50] : colors.primary[900],
       pressedBg: theme === 'light' ? colors.primary[100] : colors.primary[900],
     },
     success: {
@@ -375,7 +375,7 @@ function getOutlineStyles(
       text: disabled ? colors.error[300] : colors.error[600],
       icon: disabled ? colors.error[300] : colors.error[600],
       bg: colors.bg[theme].default,
-      hoverBg: theme === 'light' ? colors.error[50] : colors.error[950],
+      hoverBg: theme === 'light' ? colors.error[50] : colors.error[900],
       pressedBg: theme === 'light' ? colors.error[100] : colors.error[900],
     },
   }
@@ -412,7 +412,7 @@ function getLightStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   _iconSize: number,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): ButtonStyleConfig {
   const colorMap = {
     gray: {
@@ -480,7 +480,7 @@ function getIOSVariantStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   _iconSize: number,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): ButtonStyleConfig {
   const accent = destructive
     ? colors.accents[theme].red
@@ -539,7 +539,7 @@ function getTextStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   _iconSize: number,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): ButtonStyleConfig {
   const colorMap = {
     gray: {
@@ -551,7 +551,7 @@ function getTextStyles(
     primary: {
       text: disabled ? colors.primary[300] : colors.primary[600],
       icon: disabled ? colors.primary[300] : colors.primary[600],
-      hoverBg: theme === 'light' ? colors.primary[50] : colors.primary[950],
+      hoverBg: theme === 'light' ? colors.primary[50] : colors.primary[900],
       pressedBg: theme === 'light' ? colors.primary[100] : colors.primary[900],
     },
     success: {
@@ -563,7 +563,7 @@ function getTextStyles(
     error: {
       text: disabled ? colors.error[300] : colors.error[600],
       icon: disabled ? colors.error[300] : colors.error[600],
-      hoverBg: theme === 'light' ? colors.error[50] : colors.error[950],
+      hoverBg: theme === 'light' ? colors.error[50] : colors.error[900],
       pressedBg: theme === 'light' ? colors.error[100] : colors.error[900],
     },
   }

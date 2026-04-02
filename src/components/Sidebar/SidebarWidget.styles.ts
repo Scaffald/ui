@@ -4,7 +4,7 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
@@ -27,7 +27,7 @@ export interface SidebarWidgetStyleConfig {
 }
 
 export function getSidebarWidgetStyles(
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   progressValue: number
 ): SidebarWidgetStyleConfig {
   const isLight = theme === 'light'
@@ -36,7 +36,7 @@ export function getSidebarWidgetStyles(
     height: 4,
     marginHorizontal: spacing[12],
     marginVertical: spacing[4],
-    backgroundColor: colors.bg.light['200'],
+    backgroundColor: colors.bg.light.muted,
     borderRadius: borderRadius.max,
     overflow: 'hidden',
   }

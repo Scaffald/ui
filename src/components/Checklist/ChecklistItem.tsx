@@ -17,7 +17,7 @@ export function ChecklistItem({ item, onPress }: ChecklistItemProps) {
           alignItems: 'flex-start',
           justifyContent: 'flex-start',
           paddingVertical: spacing[4],
-          paddingHorizontal: spacing[3],
+          paddingHorizontal: spacing[4],
           borderRadius: 16,
           borderWidth: 1,
           borderColor: colors.border.light.default,
@@ -29,7 +29,7 @@ export function ChecklistItem({ item, onPress }: ChecklistItemProps) {
         },
       ]}
     >
-      <Row gap={spacing[3]} align="flex-start" style={{ flex: 1 }}>
+      <Row gap={spacing[4]} align="flex-start" style={{ flex: 1 }}>
         <View
           style={{
             width: 24,

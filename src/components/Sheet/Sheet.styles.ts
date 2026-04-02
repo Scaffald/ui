@@ -9,7 +9,7 @@ import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import { shadows, boxShadows } from '../../tokens/shadows'
 import { spacing } from '../../tokens/spacing'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 
 export interface SheetStyleConfig {
   overlay: ViewStyle
@@ -48,7 +48,7 @@ export interface SheetFooterStyleConfig {
  * Get sheet container and overlay styles
  */
 export function getSheetStyles(
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   sheetHeight: number,
   isAutoHeight: boolean
 ): SheetStyleConfig {
@@ -98,7 +98,7 @@ export function getSheetStyles(
 /**
  * Get sheet header styles
  */
-export function getSheetHeaderStyles(theme: ThemeMode): SheetHeaderStyleConfig {
+export function getSheetHeaderStyles(theme: ResolvedThemeMode): SheetHeaderStyleConfig {
   return {
     header: {
       paddingHorizontal: spacing[16],
@@ -165,7 +165,7 @@ export function getSheetHeaderStyles(theme: ThemeMode): SheetHeaderStyleConfig {
 /**
  * Get sheet content styles
  */
-export function getSheetContentStyles(_theme: ThemeMode): SheetContentStyleConfig {
+export function getSheetContentStyles(_theme: ResolvedThemeMode): SheetContentStyleConfig {
   return {
     content: {
       flex: 1,
@@ -184,7 +184,7 @@ export function getSheetContentStyles(_theme: ThemeMode): SheetContentStyleConfi
  * Get sheet footer styles
  */
 export function getSheetFooterStyles(
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   align: 'left' | 'center' | 'right' | 'space-between'
 ): SheetFooterStyleConfig {
   const alignMap = {

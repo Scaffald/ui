@@ -46,7 +46,7 @@ export function SaveStatusIndicator({
   if (status === 'idle' && !lastSavedAt) return null
 
   return (
-    <Stack gap={spacing[1]} align="flex-end">
+    <Stack gap={spacing[2]} align="flex-end">
       {status === 'saving' && (
         <Row gap={spacing[2]} align="center">
           <Spinner size="sm" color="primary" />

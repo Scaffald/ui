@@ -5,7 +5,7 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderWidth } from '../../tokens/borders'
 import { typographyVariants } from '../../tokens/typography'
@@ -35,7 +35,7 @@ export interface TableColumnHeaderStyleConfig {
 export function getTableColumnHeaderStyles(
   state: TableColumnHeaderState = 'default',
   align: TableColumnHeaderAlign = 'left',
-  theme: ThemeMode = 'light',
+  theme: ResolvedThemeMode = 'light',
   width?: number | string
 ): TableColumnHeaderStyleConfig {
   // Base container styles

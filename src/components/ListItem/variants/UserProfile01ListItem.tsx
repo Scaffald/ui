@@ -70,7 +70,7 @@ export function UserProfile01ListItem({
                 justifyContent: 'center',
               }}
             >
-              <Text style={{ color: colors.gray[0], fontSize: 10 }}>✓</Text>
+              <Text style={{ color: colors.gray[50], fontSize: 10 }}>✓</Text>
             </View>
           )}
           <Text style={styles.subtitle}>{username}</Text>

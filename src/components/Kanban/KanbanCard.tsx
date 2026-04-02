@@ -8,7 +8,7 @@ export function KanbanCard({ id, isDragging = false, children }: KanbanCardProps
   return (
     <View
       style={{
-        padding: spacing[3],
+        padding: spacing[4],
         backgroundColor: colors.bg.light.default,
         borderRadius: borderRadius.m,
         borderWidth: 1,

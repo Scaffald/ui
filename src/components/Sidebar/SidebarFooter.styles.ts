@@ -5,7 +5,7 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
@@ -27,7 +27,7 @@ export interface SidebarFooterStyleConfig {
 }
 
 export function getSidebarFooterStyles(
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   collapsed: boolean
 ): SidebarFooterStyleConfig {
   const isLight = theme === 'light'

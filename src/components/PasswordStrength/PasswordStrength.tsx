@@ -74,7 +74,7 @@ function getStrengthConfig(strength: PasswordStrengthLevel) {
     default:
       return {
         filledBars: 0,
-        color: colors.bg.light['200'],
+        color: colors.bg.light.muted,
         label: 'Password strength',
         labelColor: colors.text.light.secondary,
       }
@@ -149,7 +149,7 @@ function PasswordStrengthBar({
               backgroundColor:
                 index < config.filledBars
                   ? config.color
-                  : colors.bg.light['200'],
+                  : colors.bg.light.muted,
             }}
           />
         ))}

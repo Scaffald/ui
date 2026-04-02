@@ -5,7 +5,7 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
 
@@ -20,7 +20,7 @@ export interface FileUploadStyleConfig {
  * Get file upload styles based on theme and disabled state
  */
 export function getFileUploadStyles(
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   disabled: boolean
 ): FileUploadStyleConfig {
   const isLight = theme === 'light'

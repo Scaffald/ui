@@ -5,7 +5,7 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typographyVariants } from '../../tokens/typography'
 
@@ -21,7 +21,7 @@ export interface ListStyleConfig {
 /**
  * Get list styles based on theme
  */
-export function getListStyles(theme: ThemeMode = 'light', gap: number = 10): ListStyleConfig {
+export function getListStyles(theme: ResolvedThemeMode = 'light', gap: number = 10): ListStyleConfig {
   return {
     container: {
       flexDirection: 'column',

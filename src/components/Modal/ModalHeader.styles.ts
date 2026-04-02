@@ -4,7 +4,7 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius, borderWidth } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
@@ -22,7 +22,7 @@ export interface ModalHeaderStyleConfig {
 
 export function getModalHeaderStyles(
   orientation: ModalHeaderOrientation = 'left',
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): ModalHeaderStyleConfig {
   const _isLight = theme === 'light'
 

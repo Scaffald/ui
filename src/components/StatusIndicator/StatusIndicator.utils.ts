@@ -5,7 +5,7 @@
 
 import { colors } from '../../tokens/colors'
 import type { StatusIndicatorType, StatusIndicatorStyle } from './StatusIndicator.types'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 
 interface StatusColors {
   icon: string
@@ -20,7 +20,7 @@ interface StatusColors {
 export const getStatusColors = (
   type: StatusIndicatorType,
   variant: StatusIndicatorStyle,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): StatusColors => {
   // Base colors for each type
   const typeColors = {

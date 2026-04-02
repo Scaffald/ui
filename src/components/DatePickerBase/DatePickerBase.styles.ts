@@ -5,14 +5,14 @@
  */
 
 import type { ViewStyle } from 'react-native'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 
 /**
  * Get container styles
  * Matches Figma: 280px width, 312px height, 12px gap between header and calendar
  */
-export function getContainerStyles(_theme: ThemeMode = 'light'): ViewStyle {
+export function getContainerStyles(_theme: ResolvedThemeMode = 'light'): ViewStyle {
   return {
     width: 280, // From Figma
     height: 312, // From Figma

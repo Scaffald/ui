@@ -46,7 +46,7 @@ export function SearchResult03ListItem({
               ...(Platform.OS === 'web'
                 ? {
                     background: `linear-gradient(to bottom, ${colors.bg[theme].subtle || colors.gray[50]}, ${colors.bg[theme].default || colors.gray[100]})`,
-                    boxShadow: `0px 0px 0px 2px ${colors.gray[0]}, 0px 0px 0px 3px ${colors.gray[100]}`,
+                    boxShadow: `0px 0px 0px 2px ${colors.gray[50]}, 0px 0px 0px 3px ${colors.gray[100]}`,
                   }
                 : {
                     backgroundColor: colors.bg[theme].subtle || colors.gray[50],

@@ -6,7 +6,7 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderWidth } from '../../tokens/borders'
 import { typographyVariants } from '../../tokens/typography'
@@ -38,7 +38,7 @@ export function getTableCellStyles(
   type: TableCellType = 'interactive-default',
   state: TableCellState = 'default',
   align: TableCellAlign = 'left',
-  theme: ThemeMode = 'light',
+  theme: ResolvedThemeMode = 'light',
   width?: number | string
 ): TableCellStyleConfig {
   // Base container styles
@@ -88,7 +88,7 @@ function getTypeSpecificStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   descriptionText: TextStyle,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): TableCellStyleConfig {
   // Interactive cells
   if (type.startsWith('interactive-')) {
@@ -238,7 +238,7 @@ function getInteractiveCellStyles(
   state: TableCellState,
   baseContainer: ViewStyle,
   _baseText: TextStyle,
-  theme: ThemeMode
+  theme: ResolvedThemeMode
 ): TableCellStyleConfig {
   // Determine state from type if not explicitly provided
   let actualState: TableCellState = state
@@ -330,7 +330,7 @@ function getInteractiveCellStyles(
 export function getTextCellStyles(
   state: TableCellState,
   align: TableCellAlign,
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   width?: number | string
 ): TableCellStyleConfig {
   return getTableCellStyles('text-default', state, align, theme, width)
@@ -341,7 +341,7 @@ export function getTextCellStyles(
  */
 export function getSelectionCellStyles(
   type: 'checkbox-only' | 'radio-only' | 'switch-only',
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   width?: number | string
 ): TableCellStyleConfig {
   return getTableCellStyles(type, 'default', 'center', theme, width)
@@ -352,7 +352,7 @@ export function getSelectionCellStyles(
  */
 export function getIconCellStyles(
   type: 'icon-open' | 'icon-close',
-  theme: ThemeMode,
+  theme: ResolvedThemeMode,
   width?: number | string
 ): TableCellStyleConfig {
   return getTableCellStyles(type, 'default', 'center', theme, width)

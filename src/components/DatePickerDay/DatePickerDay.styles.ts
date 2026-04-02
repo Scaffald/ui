@@ -6,7 +6,7 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography, fontWeight } from '../../tokens/typography'
@@ -24,7 +24,7 @@ const INDICATOR_SIZE = 4
 export function getContainerStyles(
   state: DatePickerDayState,
   disabled: boolean,
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): ViewStyle {
   const baseContainer: ViewStyle = {
     width: 40,
@@ -106,7 +106,7 @@ export function getTextStyles(
   state: DatePickerDayState,
   disabled: boolean,
   isLabel: boolean,
-  theme: ThemeMode = 'light'
+  theme: ResolvedThemeMode = 'light'
 ): TextStyle {
   const baseText: TextStyle = {
     ...(isLabel ? typography.caption : typography.paragraphSRegular),

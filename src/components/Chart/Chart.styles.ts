@@ -5,14 +5,14 @@
 
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import type { ThemeMode } from '../../tokens/colors'
+import type { ResolvedThemeMode } from '../../tokens/colors'
 import { typography } from '../../tokens/typography'
 import type { ChartStyleConfig } from './Chart.types'
 
 /**
  * Get chart styles based on theme
  */
-export function getChartStyles(theme: ThemeMode = 'light'): ChartStyleConfig {
+export function getChartStyles(theme: ResolvedThemeMode = 'light'): ChartStyleConfig {
 
   // Base container styles
   const container: ViewStyle = {
