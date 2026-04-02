@@ -32,7 +32,7 @@ export function extractPlainText(content: JSONContent | string | null | undefine
  * for use with RichTextEditor and compatible editors.
  */
 export function plainTextToTipTap(text: string): JSONContent {
-  if (!text || !text.trim()) {
+  if (!text?.trim()) {
     return { type: 'doc', content: [{ type: 'paragraph' }] }
   }
   const lines = text.split('\n')

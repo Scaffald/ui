@@ -102,7 +102,7 @@ export function ThemeProvider(props: ThemeProviderProps) {
           }
           setIsReady(true)
         }
-      } catch (e) {
+      } catch (_e) {
         if (isMounted) {
           setThemePreference(props.initialTheme ?? 'system')
           setResolved(resolveTheme(props.initialTheme ?? 'system', Appearance.getColorScheme()))
@@ -154,7 +154,7 @@ export function ThemeProvider(props: ThemeProviderProps) {
         } else if (AsyncStorage) {
           await AsyncStorage.setItem(THEME_STORAGE_KEY, themePreference)
         }
-      } catch (e) {
+      } catch (_e) {
         // ignore storage errors
       }
     }

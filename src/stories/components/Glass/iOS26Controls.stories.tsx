@@ -11,7 +11,7 @@ import { PageControl } from '../../../components/PageControl'
 import { ProgressBarBase } from '../../../components/ProgressBar/ProgressBarBase'
 import { Spinner } from '../../../components/Spinner/Spinner'
 import { Stack, Row } from '../../../components/Layout'
-import { Text, H4 } from '../../../components/Typography'
+import { Text, } from '../../../components/Typography'
 
 const meta: Meta = {
   title: 'Components/iOS 26 Controls',

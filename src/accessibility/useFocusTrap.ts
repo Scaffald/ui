@@ -227,7 +227,7 @@ export function useFocusTrap<T extends { focus?: () => void } | null>(
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled])
+  }, [enabled, activate, returnFocus])
 
   return {
     activate,

@@ -67,7 +67,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
 
   // Calculate icon/loading size based on button size
   const iconSize = getButtonIconSize(size)
-  const loadingSize = iconSize
+  const _loadingSize = iconSize
 
   return (
     <Pressable

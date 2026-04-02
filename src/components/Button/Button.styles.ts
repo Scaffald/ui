@@ -479,7 +479,7 @@ function getIOSVariantStyles(
   destructive: boolean,
   baseContainer: ViewStyle,
   baseText: TextStyle,
-  iconSize: number,
+  _iconSize: number,
   theme: ThemeMode
 ): ButtonStyleConfig {
   const accent = destructive

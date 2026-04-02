@@ -41,7 +41,7 @@ export function ToolbarSearchBar({
   const inputRef = useRef<TextInput>(null)
   const [isFocused, setIsFocused] = useState(false)
 
-  const isActive = active ?? isFocused
+  const _isActive = active ?? isFocused
   const hasValue = value.length > 0
 
   const handleFocus = useCallback(() => {

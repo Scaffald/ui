@@ -6,7 +6,6 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
-import { borderRadius } from '../../tokens/borders'
 import type { ResolvedThemeMode } from '../../tokens/colors'
 
 const GLASS_BG = {

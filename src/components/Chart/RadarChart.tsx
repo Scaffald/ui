@@ -76,7 +76,7 @@ function buildDataPath(
     return getPointOnCircle(cx, cy, r, i, count)
   })
   if (points.length === 0) return ''
-  return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z'
+  return `${points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')} Z`
 }
 
 export function RadarChart({
@@ -171,7 +171,7 @@ export function RadarChart({
               strokeOpacity={0.8}
             />
             {/* Comparison data points */}
-            {comparison!.map((c, i) => {
+            {comparison?.map((c, i) => {
               const r = (Math.min(c.value, maxValue) / maxValue) * maxRadius
               const pt = getPointOnCircle(cx, cy, r, i, count)
               return (
@@ -224,7 +224,7 @@ export function RadarChart({
 
           const isLeft = pt.x < cx - 5
           const isRight = pt.x > cx + 5
-          const isTop = pt.y < cy - 5
+          const _isTop = pt.y < cy - 5
 
           return (
             <View

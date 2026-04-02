@@ -20,5 +20,5 @@ export function useStyles<T, Deps extends readonly unknown[]>(
   // element individually instead of the array reference (which is new
   // every render, defeating memoization).
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => factory(...deps), [factory, ...deps])
+  return useMemo(() => factory(...deps), [factory, ...deps, deps])
 }

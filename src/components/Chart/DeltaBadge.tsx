@@ -27,7 +27,7 @@ export function DeltaBadge({
   const delta = current - previous
   const isPositive = delta > 0.05
   const isNegative = delta < -0.05
-  const isNeutral = !isPositive && !isNegative
+  const _isNeutral = !isPositive && !isNegative
 
   const badgeColor = isPositive
     ? colors.green[500]

@@ -147,7 +147,7 @@ export function getNavigationListStyles(
       marginHorizontal: 4,
     },
     itemContainerSelected: {
-      backgroundColor: colors.accents[theme].blue + '1A', // ~10% opacity
+      backgroundColor: `${colors.accents[theme].blue}1A`, // ~10% opacity
     },
 
     itemIconContainer: {

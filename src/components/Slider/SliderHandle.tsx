@@ -44,7 +44,7 @@ export function SliderHandle({
   style,
 }: SliderHandleProps) {
   const { theme } = useThemeContext()
-  const isLight = theme === 'light'
+  const _isLight = theme === 'light'
 
   // iOS 26: White circle thumb with shadow, no visible border
   const baseStyle: ViewStyle = {

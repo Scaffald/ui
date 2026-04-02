@@ -86,7 +86,7 @@ function TabBarItemView({
   onPress,
 }: TabBarItemViewProps): React.ReactElement {
   const hasLabel = item.label != null && item.label.length > 0
-  const iconColor = isSelected ? styles.selectedColor : styles.unselectedColor
+  const _iconColor = isSelected ? styles.selectedColor : styles.unselectedColor
 
   // Choose icon: prefer selectedIcon when active
   const icon = isSelected && item.selectedIcon != null

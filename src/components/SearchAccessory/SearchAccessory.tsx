@@ -44,7 +44,7 @@ export function SearchAccessory({
 
   const hasScopes = scopes != null && scopes.length > 0
   const selectedScopeIndex = hasScopes && selectedScope
-    ? scopes!.findIndex((s) => s.value === selectedScope)
+    ? scopes?.findIndex((s) => s.value === selectedScope)
     : 0
 
   return (
@@ -62,10 +62,10 @@ export function SearchAccessory({
         {hasScopes && (
           <View style={styles.scopeWrapper}>
             <SegmentedControl
-              segments={scopes!.map((s) => s.label)}
+              segments={scopes?.map((s) => s.label)}
               selectedIndex={selectedScopeIndex >= 0 ? selectedScopeIndex : 0}
               onSelectionChange={(index) => {
-                onScopeChange?.(scopes![index]!.value)
+                onScopeChange?.(scopes?.[index]?.value)
               }}
             />
           </View>
