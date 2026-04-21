@@ -751,6 +751,12 @@ export type {
   PaginationType,
 } from "./components/Pagination";
 
+export { CarouselArrows, CarouselDots } from "./components/CarouselPager";
+export type {
+  CarouselArrowsProps,
+  CarouselDotsProps,
+} from "./components/CarouselPager";
+
 export { Step, Stepper } from "./components/Stepper";
 export { Breadcrumb as BreadcrumbDeprecated } from "./components/Stepper";
 export type {
