@@ -19,6 +19,10 @@ export interface BottomBarContextValue {
   registerPageBar: (id: string) => void
   /** Called by page-level BottomBars on unmount to show global bar */
   unregisterPageBar: (id: string) => void
+  /** Height (px) of the global nav bar — page bars offset themselves by this amount */
+  navBarHeight: number
+  /** Called by the global nav bar to register its height */
+  setNavBarHeight: (height: number) => void
 }
 
 // ---------------------------------------------------------------------------

@@ -43,7 +43,7 @@ function BottomBarInner({
   const { theme } = useThemeContext()
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const insets = useSafeAreaInsets()
-  const { globalBarHidden } = useBottomBarContext()
+  const { globalBarHidden, navBarHeight } = useBottomBarContext()
 
   // Page bars auto-register to hide the global bar.
   // Always call the hook (rules of hooks) but pass enabled flag.
@@ -54,7 +54,7 @@ function BottomBarInner({
     return null
   }
 
-  const styles = getBottomBarStyles(resolvedTheme, level, insets.bottom)
+  const styles = getBottomBarStyles(resolvedTheme, level, insets.bottom, navBarHeight)
 
   return (
     <View

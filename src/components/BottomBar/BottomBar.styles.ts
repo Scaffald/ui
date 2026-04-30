@@ -29,6 +29,7 @@ export function getBottomBarStyles(
   theme: ResolvedThemeMode,
   level: BottomBarLevel,
   bottomInset: number,
+  navBarHeight = 0,
 ): BottomBarStyleConfig {
   const wrapper: ViewStyle = {
     position: Platform.OS === 'web' ? ('fixed' as never) : 'absolute',
@@ -37,7 +38,7 @@ export function getBottomBarStyles(
     right: 0,
     zIndex: Z_INDEX[level],
     alignItems: 'center',
-    paddingBottom: bottomInset + 8,
+    paddingBottom: bottomInset + 8 + (level === 'page' ? navBarHeight : 0),
     paddingHorizontal: 16,
     paddingTop: 8,
   }

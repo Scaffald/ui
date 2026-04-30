@@ -13,10 +13,13 @@ const BottomBarContext = createContext<BottomBarContextValue>({
   globalBarHidden: false,
   registerPageBar: () => {},
   unregisterPageBar: () => {},
+  navBarHeight: 0,
+  setNavBarHeight: () => {},
 })
 
 export function BottomBarProvider({ children }: { children: ReactNode }) {
   const [pageBarCount, setPageBarCount] = useState(0)
+  const [navBarHeight, setNavBarHeight] = useState(0)
   const registeredIds = useRef(new Set<string>())
 
   const registerPageBar = useCallback((id: string) => {
@@ -38,8 +41,10 @@ export function BottomBarProvider({ children }: { children: ReactNode }) {
       globalBarHidden: pageBarCount > 0,
       registerPageBar,
       unregisterPageBar,
+      navBarHeight,
+      setNavBarHeight,
     }),
-    [pageBarCount, registerPageBar, unregisterPageBar]
+    [pageBarCount, registerPageBar, unregisterPageBar, navBarHeight]
   )
 
   return (
