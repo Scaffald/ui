@@ -38,6 +38,10 @@ export interface AvatarProps {
   verified?: boolean
   /** Star badge */
   star?: boolean
+  /** Notification count badge (top-right). Renders nothing when 0/undefined. Displays "99+" above 99. */
+  badgeCount?: number
+  /** Optional max count before showing "{max}+". Defaults to 99. */
+  badgeMax?: number
   /** Custom container style */
   containerStyle?: ViewStyle
   /** Custom avatar style */

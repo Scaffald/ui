@@ -52,6 +52,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
   destructive = false,
   style,
   textStyle,
+  iconColor: iconColorOverride,
   onPress,
   ...pressableProps
 }, ref) {
@@ -68,6 +69,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
   // Calculate icon/loading size based on button size
   const iconSize = getButtonIconSize(size)
   const _loadingSize = iconSize
+  const resolvedIconColor = iconColorOverride ?? styles.iconColor
 
   return (
     <Pressable
@@ -97,14 +99,14 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
             overflow: 'hidden',
           }}
         >
-          <ActivityIndicator size="small" color={styles.iconColor} />
+          <ActivityIndicator size="small" color={resolvedIconColor} />
         </View>
       ) : (
         <>
           {/* Icon Start */}
           {IconStart && (
             <View style={{ width: iconSize, height: iconSize }}>
-              <IconStart size={iconSize} color={styles.iconColor} />
+              <IconStart size={iconSize} color={resolvedIconColor} />
             </View>
           )}
 
@@ -118,7 +120,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
           {/* Icon End */}
           {IconEnd && !iconOnly && (
             <View style={{ width: iconSize, height: iconSize }}>
-              <IconEnd size={iconSize} color={styles.iconColor} />
+              <IconEnd size={iconSize} color={resolvedIconColor} />
             </View>
           )}
         </>

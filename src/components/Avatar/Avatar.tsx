@@ -45,6 +45,8 @@ export function Avatar({
   badge,
   verified = false,
   star = false,
+  badgeCount,
+  badgeMax = 99,
   containerStyle,
   avatarStyle,
   onPress,
@@ -315,6 +317,38 @@ export function Avatar({
         </View>
       )}
 
+      {/* Notification count badge (top-right) */}
+      {typeof badgeCount === 'number' && badgeCount > 0 && (
+        <View
+          style={[
+            styles.countBadge,
+            {
+              minWidth: Math.max(dimensions.badgeSize, 16),
+              height: Math.max(dimensions.badgeSize, 16),
+              borderRadius: Math.max(dimensions.badgeSize, 16) / 2,
+              backgroundColor: colors.error[500],
+              borderWidth: dimensions.badgeSize > 12 ? 2 : 1.5,
+              borderColor: colors.bg[theme].default,
+              paddingHorizontal: 4,
+            },
+          ]}
+          accessibilityLabel={`${badgeCount} unread`}
+        >
+          <Text
+            style={[
+              styles.badgeText,
+              {
+                fontSize: Math.max(dimensions.badgeSize * 0.55, 9),
+                lineHeight: Math.max(dimensions.badgeSize * 0.7, 11),
+                fontWeight: '700',
+              },
+            ]}
+          >
+            {badgeCount > badgeMax ? `${badgeMax}+` : badgeCount}
+          </Text>
+        </View>
+      )}
+
       {/* Custom badge */}
       {badge && !verified && !star && (
         <View
@@ -382,6 +416,13 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  countBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
