@@ -40,4 +40,6 @@ export interface OnboardingControlsProps {
   skipLabel?: string;
   continueLabel?: string;
   getStartedLabel?: string;
+  /** Match the parent Onboarding overlay so buttons are legible on the background */
+  overlay?: 'light' | 'dark';
 }

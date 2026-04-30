@@ -143,6 +143,7 @@ export function Onboarding({ onOnboarded, autoSwipe, steps, staticMode = false, 
             onChange={setStepIdx}
             stepsCount={stepsCount}
             onFinish={onOnboarded}
+            overlay={overlay}
           />
         )}
       </Stack>

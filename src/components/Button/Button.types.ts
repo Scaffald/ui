@@ -118,6 +118,11 @@ export interface ButtonProps extends Omit<PressableProps, 'style' | 'children'> 
   textStyle?: TextStyle
 
   /**
+   * Override the computed icon color (e.g. to force white icons on a dark background)
+   */
+  iconColor?: string
+
+  /**
    * Press handler
    */
   onPress?: () => void
