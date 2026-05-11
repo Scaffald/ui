@@ -1,78 +1,48 @@
 /**
  * FadeTransition component
- * Provides fade in/out animations for mounting/unmounting content
+ * Fade in/out on mount/unmount, powered by vanilla `Animated`.
  *
  * @example
  * ```tsx
- * import { FadeTransition } from '@scaffald/ui'
- *
- * function TooltipContent({ visible }) {
- *   return (
- *     <FadeTransition visible={visible} duration="fast">
- *       <View style={styles.tooltip}>
- *         <Text>Tooltip content</Text>
- *       </View>
- *     </FadeTransition>
- *   )
- * }
+ * <FadeTransition visible={visible} duration="fast">
+ *   <View style={styles.tooltip}>
+ *     <Text>Tooltip content</Text>
+ *   </View>
+ * </FadeTransition>
  * ```
  */
 
-import { forwardRef, useState, useEffect } from 'react'
-import { View, type ViewProps, type ViewStyle } from 'react-native'
-import { AnimatedView } from '../AnimatedView'
-import { useAnimatedTiming, type EasingType } from '../useAnimatedTiming'
+import { forwardRef, useEffect, useRef, useState } from 'react'
+import { Animated, View, type ViewProps, type ViewStyle } from 'react-native'
 import type { TimingConfigKey } from '../presets'
+import { timingConfigs } from '../presets'
 import { useReducedMotion } from '../useReducedMotion'
+import { useAnimatedTiming, type EasingType } from '../useAnimatedTiming'
 
 export interface FadeTransitionProps extends Omit<ViewProps, 'style'> {
-  /**
-   * Whether the content is visible
-   */
+  /** Whether the content is visible. */
   visible: boolean
-
-  /**
-   * Duration of the fade animation
-   * @default 'normal'
-   */
+  /** Duration of the fade animation. @default 'normal' */
   duration?: TimingConfigKey | number
-
-  /**
-   * Easing function for the animation
-   * @default 'easeOut'
-   */
+  /** Easing function for the animation. @default 'easeOut' */
   easing?: EasingType
-
-  /**
-   * Whether to unmount content when not visible
-   * @default true
-   */
+  /** Whether to unmount content when not visible. @default true */
   unmountOnHide?: boolean
-
-  /**
-   * Callback when fade in animation completes
-   */
+  /** Callback when fade-in animation completes. */
   onFadeInComplete?: () => void
-
-  /**
-   * Callback when fade out animation completes
-   */
+  /** Callback when fade-out animation completes. */
   onFadeOutComplete?: () => void
-
-  /**
-   * Style for the container
-   */
+  /** Style for the container. */
   style?: ViewStyle
-
-  /**
-   * Children to render
-   */
+  /** Children to render. */
   children: React.ReactNode
 }
 
-/**
- * Fade transition component with mount/unmount support
- */
+function resolveDurationMs(duration: TimingConfigKey | number): number {
+  if (typeof duration === 'number') return duration
+  return timingConfigs[duration]?.duration ?? 300
+}
+
 export const FadeTransition = forwardRef<View, FadeTransitionProps>(
   function FadeTransition(
     {
@@ -90,55 +60,46 @@ export const FadeTransition = forwardRef<View, FadeTransitionProps>(
   ) {
     const prefersReducedMotion = useReducedMotion()
     const [shouldRender, setShouldRender] = useState(visible)
+    const durationMs = resolveDurationMs(duration)
 
-    const { animatedStyle, animate, isAnimated } = useAnimatedTiming({
+    const { animatedStyle, animate } = useAnimatedTiming({
       initialValue: visible ? 1 : 0,
-      duration: prefersReducedMotion ? 0 : duration,
+      duration: prefersReducedMotion ? 0 : durationMs,
       easing,
       property: 'opacity',
     })
 
-    // Handle visibility changes
+    // Track the latest visible state in a ref so the effect can read it
+    // without re-running on every animate callback change.
+    const visibleRef = useRef(visible)
+    visibleRef.current = visible
+
     useEffect(() => {
       if (visible) {
-        // Show immediately, then animate in
         setShouldRender(true)
-        // Small delay to ensure component is mounted before animating
         requestAnimationFrame(() => {
-          animate(1, onFadeInComplete)
+          animate(1, () => {
+            if (visibleRef.current) onFadeInComplete?.()
+          })
         })
       } else {
-        // Animate out, then hide
         animate(0, () => {
-          if (unmountOnHide) {
-            setShouldRender(false)
+          if (!visibleRef.current) {
+            if (unmountOnHide) setShouldRender(false)
+            onFadeOutComplete?.()
           }
-          onFadeOutComplete?.()
         })
       }
     }, [visible, animate, unmountOnHide, onFadeInComplete, onFadeOutComplete])
 
-    // Don't render if hidden and unmountOnHide is true
     if (!shouldRender && unmountOnHide) {
       return null
     }
 
-    // If reduced motion or no animation available, just show/hide
-    if (prefersReducedMotion || !isAnimated) {
-      if (!visible && unmountOnHide) {
-        return null
-      }
-      return (
-        <View ref={ref} style={[style, { opacity: visible ? 1 : 0 }]} {...props}>
-          {children}
-        </View>
-      )
-    }
-
     return (
-      <AnimatedView ref={ref} style={[style, animatedStyle]} {...props}>
+      <Animated.View ref={ref} style={[style, animatedStyle]} {...props}>
         {children}
-      </AnimatedView>
+      </Animated.View>
     )
   }
 )

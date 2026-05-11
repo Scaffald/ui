@@ -1,13 +1,11 @@
 /**
  * useAnimatedSpring hook
- * Provides spring-based animations with graceful fallback
- *
- * Uses Reanimated when available, falls back to instant state updates otherwise.
- * Respects user's reduced motion preferences.
+ * Spring-based animations powered by React Native's vanilla `Animated` API.
  *
  * @example
  * ```tsx
- * import { useAnimatedSpring } from '@scaffald/ui'
+ * import { Animated } from 'react-native'
+ * import { AnimatedView, useAnimatedSpring } from '@scaffald/ui'
  *
  * function ScaleButton() {
  *   const { animatedStyle, animate } = useAnimatedSpring({
@@ -17,187 +15,156 @@
  *   })
  *
  *   return (
- *     <AnimatedView
- *       style={animatedStyle}
- *       onPressIn={() => animate(0.95)}
- *       onPressOut={() => animate(1)}
- *     >
- *       <Text>Press me</Text>
+ *     <AnimatedView style={animatedStyle}>
+ *       <Pressable
+ *         onPressIn={() => animate(0.95)}
+ *         onPressOut={() => animate(1)}
+ *       >
+ *         <Text>Press me</Text>
+ *       </Pressable>
  *     </AnimatedView>
  *   )
  * }
  * ```
  */
 
-import { useState, useCallback, useMemo } from 'react'
-import type { ViewStyle } from 'react-native'
+import { useCallback, useMemo, useRef } from 'react'
+import { Animated, type ViewStyle } from 'react-native'
 import { springConfigs, type SpringConfigKey } from './presets'
 import { useReducedMotion } from './useReducedMotion'
-import {
-  isReanimatedLoaded,
-  useSharedValueAsserted,
-  useAnimatedStyleAsserted,
-  withSpringAsserted,
-  type SpringConfig,
-} from './reanimated.types'
+
+export interface SpringConfig {
+  damping?: number
+  stiffness?: number
+  mass?: number
+  overshootClamping?: boolean
+  restDisplacementThreshold?: number
+  restSpeedThreshold?: number
+}
+
+export type AnimatedSpringProperty =
+  | 'scale'
+  | 'opacity'
+  | 'translateX'
+  | 'translateY'
+  | 'rotate'
 
 export interface UseAnimatedSpringOptions {
   /**
-   * Initial value for the animation
+   * Initial value for the animation.
    * @default 0
    */
   initialValue?: number
 
   /**
-   * Spring configuration preset or custom config
+   * Spring configuration preset or custom config.
    * @default 'default'
    */
   springConfig?: SpringConfigKey | SpringConfig
 
   /**
-   * Which style property to animate
+   * Which style property to animate.
    * @default 'scale'
    */
-  property?: 'scale' | 'opacity' | 'translateX' | 'translateY' | 'rotate'
+  property?: AnimatedSpringProperty
 }
 
 export interface UseAnimatedSpringReturn {
-  /**
-   * Current animation value
-   */
-  value: number
-
-  /**
-   * Style object to apply to AnimatedView
-   */
+  /** Underlying `Animated.Value`. */
+  value: Animated.Value
+  /** Style object to apply to an `Animated.View`. */
   animatedStyle: ViewStyle
-
-  /**
-   * Animate to a new value
-   */
+  /** Animate to a new value. */
   animate: (toValue: number) => void
-
-  /**
-   * Whether Reanimated is being used
-   */
+  /** Always true — kept for backwards compatibility with the old API. */
   isAnimated: boolean
 }
 
-/**
- * Convert property and value to ViewStyle
- */
+function getSpringConfig(
+  springConfig: SpringConfigKey | SpringConfig | undefined
+): SpringConfig {
+  if (!springConfig) return springConfigs.default
+  if (typeof springConfig === 'string') return springConfigs[springConfig]
+  return springConfig
+}
+
 function createStyle(
-  property: 'scale' | 'opacity' | 'translateX' | 'translateY' | 'rotate',
-  value: number
+  property: AnimatedSpringProperty,
+  value: Animated.Value
 ): ViewStyle {
   switch (property) {
     case 'scale':
-      return { transform: [{ scale: value }] }
+      return { transform: [{ scale: value }] } as unknown as ViewStyle
     case 'opacity':
-      return { opacity: value }
+      return { opacity: value } as unknown as ViewStyle
     case 'translateX':
-      return { transform: [{ translateX: value }] }
+      return { transform: [{ translateX: value }] } as unknown as ViewStyle
     case 'translateY':
-      return { transform: [{ translateY: value }] }
+      return { transform: [{ translateY: value }] } as unknown as ViewStyle
     case 'rotate':
-      return { transform: [{ rotate: `${value}deg` }] }
+      return {
+        transform: [
+          {
+            rotate: value.interpolate({
+              inputRange: [0, 360],
+              outputRange: ['0deg', '360deg'],
+            }),
+          },
+        ],
+      } as unknown as ViewStyle
     default:
       return {}
   }
 }
 
-/**
- * Get spring config from preset or custom config
- */
-function getSpringConfig(
-  springConfig: SpringConfigKey | SpringConfig | undefined
-): SpringConfig {
-  if (!springConfig) {
-    return springConfigs.default
-  }
-  if (typeof springConfig === 'string') {
-    return springConfigs[springConfig]
-  }
-  return springConfig
-}
+// `opacity` and `transform` are native-driver compatible.
+const NATIVE_DRIVER_PROPERTIES: ReadonlySet<AnimatedSpringProperty> = new Set([
+  'scale',
+  'opacity',
+  'translateX',
+  'translateY',
+  'rotate',
+])
 
-/**
- * Reanimated-based spring implementation (only used when Reanimated is available)
- */
-function useAnimatedSpringReanimated(
+export function useAnimatedSpring(
   options: UseAnimatedSpringOptions = {}
 ): UseAnimatedSpringReturn {
-  const {
-    initialValue = 0,
-    springConfig,
-    property = 'scale',
-  } = options
+  const { initialValue = 0, springConfig, property = 'scale' } = options
 
   const prefersReducedMotion = useReducedMotion()
   const config = getSpringConfig(springConfig)
 
-  // Use asserted versions since this function only runs when Reanimated is available
-  const sharedValue = useSharedValueAsserted(initialValue)
+  const animValue = useRef(new Animated.Value(initialValue)).current
 
-  const animatedStyle = useAnimatedStyleAsserted(() => {
-    'worklet'
-    return createStyle(property, sharedValue.value)
-  }, [property])
+  const animatedStyle = useMemo(
+    () => createStyle(property, animValue),
+    [property, animValue]
+  )
 
   const animate = useCallback(
     (toValue: number) => {
       if (prefersReducedMotion) {
-        // Skip animation for reduced motion - instant transition
-        sharedValue.value = toValue
-      } else {
-        sharedValue.value = withSpringAsserted(toValue, config)
+        animValue.setValue(toValue)
+        return
       }
+      Animated.spring(animValue, {
+        toValue,
+        damping: config.damping,
+        stiffness: config.stiffness,
+        mass: config.mass,
+        overshootClamping: config.overshootClamping,
+        restDisplacementThreshold: config.restDisplacementThreshold,
+        restSpeedThreshold: config.restSpeedThreshold,
+        useNativeDriver: NATIVE_DRIVER_PROPERTIES.has(property),
+      }).start()
     },
-    [sharedValue, config, prefersReducedMotion]
+    [animValue, config, prefersReducedMotion, property]
   )
 
   return {
-    value: sharedValue.value,
+    value: animValue,
     animatedStyle,
     animate,
     isAnimated: !prefersReducedMotion,
   }
 }
-
-/**
- * Fallback state-based implementation (instant transitions)
- */
-function useAnimatedSpringFallback(
-  options: UseAnimatedSpringOptions = {}
-): UseAnimatedSpringReturn {
-  const {
-    initialValue = 0,
-    property = 'scale',
-  } = options
-
-  const [currentValue, setCurrentValue] = useState(initialValue)
-
-  const animatedStyle = useMemo(
-    () => createStyle(property, currentValue),
-    [property, currentValue]
-  )
-
-  const animate = useCallback((toValue: number) => {
-    setCurrentValue(toValue)
-  }, [])
-
-  return {
-    value: currentValue,
-    animatedStyle,
-    animate,
-    isAnimated: false,
-  }
-}
-
-/**
- * Hook for spring-based animations with graceful fallback.
- * Uses Reanimated when available, instant state updates otherwise.
- */
-export const useAnimatedSpring = isReanimatedLoaded
-  ? useAnimatedSpringReanimated
-  : useAnimatedSpringFallback

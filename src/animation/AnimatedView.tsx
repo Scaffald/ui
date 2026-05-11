@@ -1,25 +1,28 @@
 /**
  * AnimatedView component
- * A drop-in replacement for View that supports Reanimated animations
+ * Thin wrapper around React Native's `Animated.View`.
  *
- * This component gracefully degrades to a regular View if Reanimated
- * is not installed, making it safe to use without the optional dependency.
+ * Previous versions of this file branched on whether Reanimated was loaded
+ * and accepted `layout` / `entering` / `exiting` props. Reanimated has been
+ * removed; consumers that need mount/unmount animations should use the
+ * `FadeTransition` / `ScaleTransition` / `SlideTransition` components, and
+ * layout-change animations should call `useLayoutAnimation()` before the
+ * state update.
  *
  * @example
  * ```tsx
  * import { AnimatedView } from '@scaffald/ui'
- * import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
+ * import { Animated } from 'react-native'
  *
  * function MyComponent() {
- *   const scale = useSharedValue(1)
- *
- *   const animatedStyle = useAnimatedStyle(() => ({
- *     transform: [{ scale: scale.value }],
- *   }))
+ *   const opacity = useRef(new Animated.Value(0)).current
+ *   useEffect(() => {
+ *     Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }).start()
+ *   }, [opacity])
  *
  *   return (
- *     <AnimatedView style={animatedStyle}>
- *       <Text>Animated content</Text>
+ *     <AnimatedView style={{ opacity }}>
+ *       <Text>Fading content</Text>
  *     </AnimatedView>
  *   )
  * }
@@ -27,64 +30,36 @@
  */
 
 import { forwardRef } from 'react'
-import { View, type ViewProps } from 'react-native'
-import { ReanimatedView as ReanimatedViewComponent, isReanimatedLoaded } from './reanimated.types'
+import { Animated, View, type ViewProps } from 'react-native'
 
 export interface AnimatedViewProps extends ViewProps {
   /**
-   * When true, forces use of regular View even if Reanimated is available.
-   * Useful for conditional animation or performance optimization.
+   * When true, renders a plain `View` instead of `Animated.View`. Useful when
+   * you want to opt out of the native-driver wrapper for performance or to
+   * sidestep RN's restrictions on what props can be animated.
+   * @default false
    */
   disableAnimation?: boolean
-  /**
-   * Optional Reanimated layout transition
-   */
-  // biome-ignore lint/suspicious/noExplicitAny: Reanimated types are optional dependency
-  layout?: any
-  /**
-   * Optional Reanimated entering animation
-   */
-  // biome-ignore lint/suspicious/noExplicitAny: Reanimated types are optional dependency
-  entering?: any
-  /**
-   * Optional Reanimated exiting animation
-   */
-  // biome-ignore lint/suspicious/noExplicitAny: Reanimated types are optional dependency
-  exiting?: any
 }
 
-/**
- * Animated View component that supports Reanimated animations.
- * Falls back to regular View if Reanimated is not installed.
- */
 export const AnimatedView = forwardRef<View, AnimatedViewProps>(
-  function AnimatedView({ disableAnimation = false, layout, entering, exiting, ...props }, ref) {
-    // Use regular View if animation is disabled or Reanimated is not available
-    if (disableAnimation || !isReanimatedLoaded || !ReanimatedViewComponent) {
+  function AnimatedView({ disableAnimation = false, ...props }, ref) {
+    if (disableAnimation) {
       return <View ref={ref} {...props} />
     }
-
-    // Use Reanimated's Animated.View
-    // Cast is needed because Reanimated's View has slightly different props signature
-    // biome-ignore lint/suspicious/noExplicitAny: cast needed for optional Reanimated dependency
-    const AnimatedComponent = ReanimatedViewComponent as any
-    return (
-      <AnimatedComponent 
-        ref={ref} 
-        layout={layout} 
-        entering={entering} 
-        exiting={exiting} 
-        {...props} 
-      />
-    )
+    return <Animated.View ref={ref} {...props} />
   }
 )
 
 AnimatedView.displayName = 'AnimatedView'
 
 /**
- * Check if Reanimated is available
+ * Kept for backwards compatibility with the previous Reanimated-aware API.
+ * Always returns `true` now — animations are built on the React Native
+ * `Animated` module, which ships with RN itself.
+ *
+ * @deprecated Animations now always work; this check is unnecessary.
  */
 export function isReanimatedAvailable(): boolean {
-  return isReanimatedLoaded
+  return true
 }

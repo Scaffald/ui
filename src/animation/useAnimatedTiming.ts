@@ -1,14 +1,10 @@
 /**
  * useAnimatedTiming hook
- * Provides a simple API for timing-based animations with Reanimated
- *
- * This hook wraps Reanimated's useSharedValue and withTiming for common
- * animation patterns. Falls back to a simple state-based implementation
- * if Reanimated is not available.
+ * Timing-based animations powered by React Native's vanilla `Animated` API.
  *
  * @example
  * ```tsx
- * import { useAnimatedTiming } from '@scaffald/ui'
+ * import { useAnimatedTiming, AnimatedView } from '@scaffald/ui'
  *
  * function FadeComponent() {
  *   const { animatedStyle, animate } = useAnimatedTiming({
@@ -17,9 +13,7 @@
  *     duration: 'normal',
  *   })
  *
- *   useEffect(() => {
- *     animate(1) // Fade in on mount
- *   }, [])
+ *   useEffect(() => { animate(1) }, [animate])
  *
  *   return (
  *     <AnimatedView style={animatedStyle}>
@@ -30,131 +24,119 @@
  * ```
  */
 
-import { useState, useCallback, useMemo } from 'react'
-import type { ViewStyle } from 'react-native'
+import { useCallback, useMemo, useRef } from 'react'
+import { Animated, Easing, type ViewStyle } from 'react-native'
 import { timingConfigs, type TimingConfigKey } from './presets'
 import { useReducedMotion } from './useReducedMotion'
-import {
-  Easing,
-  isReanimatedLoaded,
-  useSharedValueAsserted,
-  useAnimatedStyleAsserted,
-  withTimingAsserted,
-  type TimingConfig,
-  type EasingFunctions,
-} from './reanimated.types'
 
 export type EasingType = 'linear' | 'easeIn' | 'easeOut' | 'easeInOut'
 
+export type AnimatedTimingProperty =
+  | 'scale'
+  | 'opacity'
+  | 'translateX'
+  | 'translateY'
+  | 'rotate'
+  | 'height'
+
 export interface UseAnimatedTimingOptions {
   /**
-   * Initial value for the animation
+   * Initial value for the animation.
    * @default 0
    */
   initialValue?: number
 
   /**
-   * Timing duration preset or custom duration in ms
+   * Timing duration preset or custom duration in ms.
    * @default 'normal'
    */
   duration?: TimingConfigKey | number
 
   /**
-   * Easing function type
+   * Easing function type.
    * @default 'easeOut'
    */
   easing?: EasingType
 
   /**
-   * Property to animate
+   * Property to animate.
    * @default 'opacity'
    */
-  property?: 'scale' | 'opacity' | 'translateX' | 'translateY' | 'rotate' | 'height'
+  property?: AnimatedTimingProperty
 }
 
 export interface UseAnimatedTimingReturn {
-  /**
-   * Current animated value
-   */
-  value: number
-
-  /**
-   * Animated style object to spread on an AnimatedView
-   */
+  /** Underlying `Animated.Value`. */
+  value: Animated.Value
+  /** Style object to spread on an `Animated.View`. */
   animatedStyle: ViewStyle
-
-  /**
-   * Animate to a new value
-   */
+  /** Animate to a new value. */
   animate: (toValue: number, callback?: () => void) => void
-
-  /**
-   * Whether Reanimated is being used
-   */
+  /** Always true — kept for backwards compatibility with the old API. */
   isAnimated: boolean
 }
 
-type AnimatedProperty = 'scale' | 'opacity' | 'translateX' | 'translateY' | 'rotate' | 'height'
+function getEasing(type: EasingType): (t: number) => number {
+  switch (type) {
+    case 'linear':
+      return Easing.linear
+    case 'easeIn':
+      return Easing.in(Easing.quad)
+    case 'easeOut':
+      return Easing.out(Easing.quad)
+    case 'easeInOut':
+      return Easing.inOut(Easing.quad)
+    default:
+      return Easing.out(Easing.quad)
+  }
+}
 
-/**
- * Convert property and value to ViewStyle
- */
-function createStyle(property: AnimatedProperty, value: number): ViewStyle {
+function getDurationMs(duration: TimingConfigKey | number): number {
+  if (typeof duration === 'number') return duration
+  return timingConfigs[duration]?.duration ?? 300
+}
+
+function createStyle(
+  property: AnimatedTimingProperty,
+  value: Animated.Value
+): ViewStyle {
   switch (property) {
     case 'scale':
-      return { transform: [{ scale: value }] }
+      return { transform: [{ scale: value }] } as unknown as ViewStyle
     case 'opacity':
-      return { opacity: value }
+      return { opacity: value } as unknown as ViewStyle
     case 'translateX':
-      return { transform: [{ translateX: value }] }
+      return { transform: [{ translateX: value }] } as unknown as ViewStyle
     case 'translateY':
-      return { transform: [{ translateY: value }] }
+      return { transform: [{ translateY: value }] } as unknown as ViewStyle
     case 'rotate':
-      return { transform: [{ rotate: `${value}deg` }] }
+      return {
+        transform: [
+          {
+            rotate: value.interpolate({
+              inputRange: [0, 360],
+              outputRange: ['0deg', '360deg'],
+            }),
+          },
+        ],
+      } as unknown as ViewStyle
     case 'height':
-      return { height: value }
+      return { height: value } as unknown as ViewStyle
     default:
       return {}
   }
 }
 
-/**
- * Get Reanimated Easing function from type
- */
-function getEasingFunction(
-  easingFns: EasingFunctions | null,
-  type: EasingType
-): ((t: number) => number) | undefined {
-  if (!easingFns) return undefined
+// `height` can't run on the native driver in RN; the others can.
+const NATIVE_DRIVER_PROPERTIES: ReadonlySet<AnimatedTimingProperty> = new Set([
+  'scale',
+  'opacity',
+  'translateX',
+  'translateY',
+  'rotate',
+])
 
-  switch (type) {
-    case 'linear':
-      return easingFns.linear
-    case 'easeIn':
-      return easingFns.in(easingFns.quad)
-    case 'easeOut':
-      return easingFns.out(easingFns.quad)
-    case 'easeInOut':
-      return easingFns.inOut(easingFns.quad)
-    default:
-      return easingFns.out(easingFns.quad)
-  }
-}
-
-/**
- * Get duration in milliseconds from preset or number
- */
-function getDurationMs(duration: TimingConfigKey | number): number {
-  if (typeof duration === 'number') {
-    return duration
-  }
-  return timingConfigs[duration]?.duration ?? 300
-}
-
-/**
- * Reanimated-based timing implementation (only used when Reanimated is available)
- */
-function useAnimatedTimingReanimated(
+export function useAnimatedTiming(
   options: UseAnimatedTimingOptions = {}
 ): UseAnimatedTimingReturn {
   const {
@@ -166,82 +148,39 @@ function useAnimatedTimingReanimated(
 
   const prefersReducedMotion = useReducedMotion()
   const durationMs = getDurationMs(duration)
-  const easingFn = getEasingFunction(Easing, easing)
+  const easingFn = getEasing(easing)
+  const useNativeDriver = NATIVE_DRIVER_PROPERTIES.has(property)
 
-  // Use asserted versions since this function only runs when Reanimated is available
-  const sharedValue = useSharedValueAsserted(initialValue)
+  const animValue = useRef(new Animated.Value(initialValue)).current
 
-  const animatedStyle = useAnimatedStyleAsserted(() => {
-    'worklet'
-    return createStyle(property, sharedValue.value)
-  }, [property])
-
-  // Build timing config
-  const timingConfig: TimingConfig = useMemo(
-    () => ({ duration: prefersReducedMotion ? 0 : durationMs, easing: easingFn }),
-    [durationMs, easingFn, prefersReducedMotion]
+  const animatedStyle = useMemo(
+    () => createStyle(property, animValue),
+    [property, animValue]
   )
 
   const animate = useCallback(
     (toValue: number, callback?: () => void) => {
       if (prefersReducedMotion) {
-        // Skip animation for reduced motion - instant transition
-        sharedValue.value = toValue
+        animValue.setValue(toValue)
         callback?.()
-      } else {
-        sharedValue.value = withTimingAsserted(
-          toValue,
-          timingConfig,
-          callback ? () => { 'worklet'; callback() } : undefined
-        )
+        return
       }
+      Animated.timing(animValue, {
+        toValue,
+        duration: durationMs,
+        easing: easingFn,
+        useNativeDriver,
+      }).start(({ finished }) => {
+        if (finished) callback?.()
+      })
     },
-    [sharedValue, timingConfig, prefersReducedMotion]
+    [animValue, durationMs, easingFn, prefersReducedMotion, useNativeDriver]
   )
 
   return {
-    value: sharedValue.value,
+    value: animValue,
     animatedStyle,
     animate,
     isAnimated: !prefersReducedMotion,
   }
 }
-
-/**
- * Fallback state-based implementation (instant transitions)
- */
-function useAnimatedTimingFallback(
-  options: UseAnimatedTimingOptions = {}
-): UseAnimatedTimingReturn {
-  const {
-    initialValue = 0,
-    property = 'opacity',
-  } = options
-
-  const [currentValue, setCurrentValue] = useState(initialValue)
-
-  const animatedStyle = useMemo(
-    () => createStyle(property, currentValue),
-    [property, currentValue]
-  )
-
-  const animate = useCallback((toValue: number, callback?: () => void) => {
-    setCurrentValue(toValue)
-    callback?.()
-  }, [])
-
-  return {
-    value: currentValue,
-    animatedStyle,
-    animate,
-    isAnimated: false,
-  }
-}
-
-/**
- * Hook for timing-based animations with graceful fallback.
- * Uses Reanimated when available, instant state updates otherwise.
- */
-export const useAnimatedTiming = isReanimatedLoaded
-  ? useAnimatedTimingReanimated
-  : useAnimatedTimingFallback

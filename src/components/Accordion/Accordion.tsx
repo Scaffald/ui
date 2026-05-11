@@ -1,27 +1,13 @@
 /**
  * Accordion component
- * Compound component for creating collapsible accordion menus
+ * Compound component for creating collapsible accordion menus.
+ *
+ * Expand/collapse layout changes are animated via `LayoutAnimation`; on web
+ * `LayoutAnimation` is a no-op and the change happens instantly.
  *
  * @example
  * ```tsx
- * import { Accordion } from '@scaffald/ui'
- *
- * // Single mode - only one item open at a time
  * <Accordion mode="single">
- *   <Accordion.Item value="item1">
- *     <Accordion.Trigger>Section 1</Accordion.Trigger>
- *     <Accordion.Content>Content 1</Accordion.Content>
- *   </Accordion.Item>
- *   <Accordion.Item value="item2">
- *     <Accordion.Trigger icon={<Icon />} hintMessage="2 issues">
- *       Section 2
- *     </Accordion.Trigger>
- *     <Accordion.Content>Content 2</Accordion.Content>
- *   </Accordion.Item>
- * </Accordion>
- *
- * // Multiple mode - many items can be open
- * <Accordion mode="multiple" defaultValue={['item1', 'item2']}>
  *   <Accordion.Item value="item1">
  *     <Accordion.Trigger>Section 1</Accordion.Trigger>
  *     <Accordion.Content>Content 1</Accordion.Content>
@@ -30,15 +16,13 @@
  * ```
  */
 
-import { createContext, useContext } from 'react'
-import { StyleSheet } from 'react-native'
+import { createContext, useContext, useMemo } from 'react'
+import { StyleSheet, View } from 'react-native'
 import type { AccordionProps, AccordionContextValue } from './Accordion.types'
 import { spacing } from '../../tokens/spacing'
 import { useAccordion } from './useAccordion'
-import { AnimatedView } from '../../animation'
-import { LinearTransition } from '../../animation/reanimated.types'
+import { useLayoutAnimation } from '../../animation/useLayoutAnimation'
 
-// Accordion context
 const AccordionContext = createContext<AccordionContextValue | null>(null)
 
 export function useAccordionContext() {
@@ -68,14 +52,22 @@ export function Accordion({
     disabled,
   })
 
+  const prepareLayoutAnimation = useLayoutAnimation()
+
+  const contextValue = useMemo<AccordionContextValue>(
+    () => ({
+      ...accordion,
+      onValueChange: (itemValue: string) => {
+        prepareLayoutAnimation()
+        accordion.onValueChange(itemValue)
+      },
+    }),
+    [accordion, prepareLayoutAnimation]
+  )
+
   return (
-    <AccordionContext.Provider value={accordion}>
-      <AnimatedView 
-        style={[styles.container, containerStyle]}
-        layout={LinearTransition ? LinearTransition.springify().damping(20).stiffness(150) : undefined}
-      >
-        {children}
-      </AnimatedView>
+    <AccordionContext.Provider value={contextValue}>
+      <View style={[styles.container, containerStyle]}>{children}</View>
     </AccordionContext.Provider>
   )
 }

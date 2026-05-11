@@ -11,7 +11,6 @@ Beyond-UI keeps **runtime dependencies minimal** and uses **optional peer depend
 
 - **react-native** (`>=0.74.0`) – **optional** peer. Omit for web-only apps; required for React Native.
 - **react-native-svg** (`>=13.0.0`) – required for Chart components (BarChart, DonutChart, LinearChart, StackedBarChart, PopulationPyramid, etc.) and any component that uses SVG. If you don’t use those components, you can still install it to satisfy the peer or rely on optional handling if we ever make it optional.
-- **react-native-reanimated** (`>=3.0.0`) – **optional** peer. Used for advanced animation (AnimatedView, etc.). If not installed, the library degrades gracefully.
 - **react-native-gesture-handler** (`>=2.0.0`) – **optional** peer. Used for gesture-driven components. If not installed, those features may be no-ops or use fallbacks.
 - **react-native-safe-area-context** (`>=4.0.0`) – **optional** peer. Used for safe area insets. If not installed, layout may not respect notches/status bar.
 
@@ -22,7 +21,7 @@ All Storybook, testing, type, and build tools are **devDependencies**. They are 
 ## Policy
 
 1. **No required heavy runtimes** – No theme compiler, charting lib, rich-text editor, or map library as a required dependency.
-2. **Optional/peer for platform or feature-specific libs** – React Native, Reanimated, Gesture Handler, and Safe Area are optional peers so web-only or minimal apps don’t pay the cost.
+2. **Optional/peer for platform or feature-specific libs** – React Native, Gesture Handler, and Safe Area are optional peers so web-only or minimal apps don’t pay the cost. Animations use React Native's bundled `Animated` API — no separate animation runtime is required.
 3. **react-native-svg** – Currently a required peer for chart and SVG-based components. Making it optional would require runtime checks and fallbacks; for now it remains peer (and many RN apps already have it).
 4. **New features** – Prefer optional or peer dependencies for new capabilities (e.g. maps adapter, rich text, DnD). Document in this file when adding.
 
@@ -34,7 +33,6 @@ All Storybook, testing, type, and build tools are **devDependencies**. They are 
 | lucide-react-native       | direct   | No       | Icons                             |
 | react-native              | peer     | Yes      | RN-only features                  |
 | react-native-svg          | peer     | No       | Charts, SVG icons                 |
-| react-native-reanimated   | peer     | Yes      | Advanced animation                |
 | react-native-gesture-handler | peer  | Yes      | Gestures                          |
 | react-native-safe-area-context | peer | Yes  | Safe areas                        |
 

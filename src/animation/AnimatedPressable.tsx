@@ -1,82 +1,63 @@
 /**
  * AnimatedPressable component
- * A Pressable with built-in press animation using Reanimated
- *
- * Provides smooth scale animation on press by default, with customizable
- * spring configuration. Falls back to regular Pressable opacity behavior
- * if Reanimated is not installed.
+ * A Pressable with a built-in scale-on-press animation, driven by React
+ * Native's vanilla `Animated` API on the native driver. No Reanimated
+ * dependency.
  *
  * @example
  * ```tsx
  * import { AnimatedPressable } from '@scaffald/ui'
  *
- * // Basic usage with default scale animation
- * <AnimatedPressable onPress={handlePress}>
+ * <AnimatedPressable onPress={handlePress} pressScale={0.95}>
  *   <Text>Press me</Text>
- * </AnimatedPressable>
- *
- * // Custom scale value
- * <AnimatedPressable pressScale={0.9} onPress={handlePress}>
- *   <Text>Press me harder</Text>
- * </AnimatedPressable>
- *
- * // Disable animation
- * <AnimatedPressable animateOnPress={false} onPress={handlePress}>
- *   <Text>No animation</Text>
  * </AnimatedPressable>
  * ```
  */
 
-import { forwardRef, useState, useCallback, useMemo } from 'react'
-import { Pressable } from 'react-native'
-import type { PressableProps, ViewStyle, GestureResponderEvent, View } from 'react-native'
-import { useReducedMotion } from './useReducedMotion'
-import { springConfigs } from './presets'
+import { forwardRef, useCallback, useMemo, useRef } from 'react'
 import {
-  createAnimatedComponent,
-  isReanimatedLoaded,
-  useSharedValueAsserted,
-  useAnimatedStyleAsserted,
-  withSpringAsserted,
-} from './reanimated.types'
+  Animated,
+  Pressable,
+  type GestureResponderEvent,
+  type PressableProps,
+  type View,
+  type ViewStyle,
+} from 'react-native'
+import { springConfigs } from './presets'
+import { useReducedMotion } from './useReducedMotion'
 
-// Create animated Pressable component if Reanimated is available
-const AnimatedPressableBase = isReanimatedLoaded ? createAnimatedComponent(Pressable) : null
+const AnimatedPressableNative = Animated.createAnimatedComponent(Pressable)
 
 export interface AnimatedPressableProps extends Omit<PressableProps, 'style'> {
   /**
-   * Whether to animate on press
+   * Whether to animate on press.
    * @default true
    */
   animateOnPress?: boolean
 
   /**
-   * Scale value when pressed (0-1)
+   * Scale value when pressed (0-1).
    * @default 0.95
    */
   pressScale?: number
 
   /**
-   * Spring configuration preset
+   * Spring configuration preset.
    * @default 'press'
    */
   springConfig?: keyof typeof springConfigs
 
   /**
-   * Style for the pressable container
+   * Style for the pressable container.
    */
   style?: ViewStyle | ViewStyle[] | ((state: { pressed: boolean }) => ViewStyle | ViewStyle[])
 
   /**
-   * Children to render inside the pressable
+   * Children to render inside the pressable.
    */
   children?: React.ReactNode
 }
 
-/**
- * Animated Pressable with built-in scale animation on press.
- * Falls back to opacity-based feedback if Reanimated is not available.
- */
 export const AnimatedPressable = forwardRef<View, AnimatedPressableProps>(
   function AnimatedPressable(
     {
@@ -94,37 +75,74 @@ export const AnimatedPressable = forwardRef<View, AnimatedPressableProps>(
   ) {
     const prefersReducedMotion = useReducedMotion()
     const shouldAnimate = animateOnPress && !prefersReducedMotion && !disabled
-    const canAnimate = isReanimatedLoaded && AnimatedPressableBase
 
-    if (canAnimate && shouldAnimate) {
-      return (
-        <ReanimatedPressable
-          ref={ref}
-          pressScale={pressScale}
-          springConfig={springConfig}
-          style={style}
-          disabled={disabled}
-          onPressIn={onPressIn}
-          onPressOut={onPressOut}
-          {...props}
-        >
-          {children}
-        </ReanimatedPressable>
-      )
-    }
+    const scale = useRef(new Animated.Value(1)).current
+    const config = springConfigs[springConfig]
 
-    // Fallback to regular Pressable with opacity feedback
+    const animateTo = useCallback(
+      (toValue: number) => {
+        Animated.spring(scale, {
+          toValue,
+          damping: config.damping,
+          stiffness: config.stiffness,
+          mass: config.mass,
+          useNativeDriver: true,
+        }).start()
+      },
+      [scale, config.damping, config.stiffness, config.mass]
+    )
+
+    const handlePressIn = useCallback(
+      (event: GestureResponderEvent) => {
+        if (shouldAnimate) {
+          animateTo(pressScale)
+        }
+        onPressIn?.(event)
+      },
+      [shouldAnimate, animateTo, pressScale, onPressIn]
+    )
+
+    const handlePressOut = useCallback(
+      (event: GestureResponderEvent) => {
+        if (shouldAnimate) {
+          animateTo(1)
+        }
+        onPressOut?.(event)
+      },
+      [shouldAnimate, animateTo, onPressOut]
+    )
+
+    const transformStyle = useMemo<ViewStyle>(
+      () => ({ transform: [{ scale }] }) as unknown as ViewStyle,
+      [scale]
+    )
+
+    const combinedStyle = useMemo(() => {
+      if (typeof style === 'function') {
+        return (state: { pressed: boolean }) => {
+          const resolved = style(state)
+          return Array.isArray(resolved)
+            ? [...resolved, transformStyle]
+            : [resolved, transformStyle]
+        }
+      }
+      if (Array.isArray(style)) {
+        return [...style, transformStyle]
+      }
+      return [style, transformStyle]
+    }, [style, transformStyle])
+
     return (
-      <FallbackPressable
-        ref={ref}
-        style={style}
+      <AnimatedPressableNative
+        ref={ref as never}
         disabled={disabled}
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        style={combinedStyle}
         {...props}
       >
         {children}
-      </FallbackPressable>
+      </AnimatedPressableNative>
     )
   }
 )
@@ -132,121 +150,11 @@ export const AnimatedPressable = forwardRef<View, AnimatedPressableProps>(
 AnimatedPressable.displayName = 'AnimatedPressable'
 
 /**
- * Internal component using Reanimated for smooth animations
- */
-function ReanimatedPressable({
-  ref,
-  pressScale,
-  springConfig,
-  style,
-  disabled,
-  onPressIn,
-  onPressOut,
-  children,
-  ...props
-}: AnimatedPressableProps & { ref: React.Ref<View> }) {
-  // Use asserted versions since this component only renders when Reanimated is available
-  const scale = useSharedValueAsserted(1)
-  const config = springConfigs[springConfig || 'press']
-
-  const animatedStyle = useAnimatedStyleAsserted(() => {
-    'worklet'
-    return {
-      transform: [{ scale: scale.value }],
-    }
-  }, [])
-
-  const pressScaleValue = pressScale ?? 0.95
-
-  const handlePressIn = useCallback(
-    (event: GestureResponderEvent) => {
-      scale.value = withSpringAsserted(pressScaleValue, config)
-      onPressIn?.(event)
-    },
-    [scale, pressScaleValue, config, onPressIn]
-  )
-
-  const handlePressOut = useCallback(
-    (event: GestureResponderEvent) => {
-      scale.value = withSpringAsserted(1, config)
-      onPressOut?.(event)
-    },
-    [scale, config, onPressOut]
-  )
-
-  const combinedStyle = useMemo(() => {
-    if (typeof style === 'function') {
-      return (state: { pressed: boolean }) => [style(state), animatedStyle]
-    }
-    return [style, animatedStyle]
-  }, [style, animatedStyle])
-
-  // Cast to Pressable type since we know AnimatedPressableBase is available here
-  const AnimatedComponent = AnimatedPressableBase as typeof Pressable
-
-  return (
-    <AnimatedComponent
-      // biome-ignore lint/suspicious/noExplicitAny: Reanimated animated ref type mismatch
-      ref={ref as any}
-      disabled={disabled}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={combinedStyle}
-      {...props}
-    >
-      {children}
-    </AnimatedComponent>
-  )
-}
-
-/**
- * Fallback Pressable using built-in opacity feedback
- */
-const FallbackPressable = forwardRef<
-  View,
-  Omit<AnimatedPressableProps, 'animateOnPress' | 'pressScale' | 'springConfig'>
->(function FallbackPressable({ style, disabled, children, onPressIn, onPressOut, ...props }, ref) {
-  const [isPressed, setIsPressed] = useState(false)
-
-  const handlePressIn = useCallback(
-    (event: GestureResponderEvent) => {
-      setIsPressed(true)
-      onPressIn?.(event)
-    },
-    [onPressIn]
-  )
-
-  const handlePressOut = useCallback(
-    (event: GestureResponderEvent) => {
-      setIsPressed(false)
-      onPressOut?.(event)
-    },
-    [onPressOut]
-  )
-
-  const combinedStyle = useMemo(() => {
-    const baseStyle = typeof style === 'function' ? style({ pressed: isPressed }) : style
-    const pressedStyle = isPressed && !disabled ? { opacity: 0.8 } : {}
-    return [baseStyle, pressedStyle]
-  }, [style, isPressed, disabled])
-
-  return (
-    <Pressable
-      ref={ref}
-      disabled={disabled}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={combinedStyle}
-      {...props}
-    >
-      {children}
-    </Pressable>
-  )
-})
-
-/**
- * Check if animated press is available (Reanimated installed)
+ * Backwards-compatible helper that previously gated press animations on
+ * whether Reanimated was loaded. Animations are always available now.
+ *
+ * @deprecated Press animations now always work.
  */
 export function isAnimatedPressAvailable(): boolean {
-  return isReanimatedLoaded && AnimatedPressableBase !== null
+  return true
 }

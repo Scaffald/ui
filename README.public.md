@@ -27,7 +27,7 @@ npm install @scaffald/ui react react-native
 For Expo apps:
 
 ```bash
-npx expo install @scaffald/ui react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg
+npx expo install @scaffald/ui react-native-gesture-handler react-native-safe-area-context react-native-svg
 ```
 
 ## 🚀 Quick Start

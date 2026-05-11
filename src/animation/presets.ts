@@ -1,27 +1,33 @@
 /**
- * Animation presets for React Native Reanimated
+ * Animation presets
  *
- * These presets connect our design tokens to Reanimated-compatible configurations.
- * Import these when using withSpring, withTiming, or other Reanimated functions.
+ * Design-token-derived config for spring and timing animations. Compatible
+ * with React Native's `Animated.spring(value, { damping, stiffness, mass })`
+ * and `Animated.timing(value, { duration })`.
  *
  * @example
  * ```tsx
- * import { withSpring } from 'react-native-reanimated'
- * import { springConfigs, timingConfigs } from '@scaffald/ui/animation'
+ * import { Animated } from 'react-native'
+ * import { springConfigs, timingConfigs } from '@scaffald/ui'
  *
- * // Use spring preset
- * scale.value = withSpring(1, springConfigs.snappy)
+ * Animated.spring(scale, {
+ *   toValue: 1,
+ *   ...springConfigs.snappy,
+ *   useNativeDriver: true,
+ * }).start()
  *
- * // Use timing preset
- * opacity.value = withTiming(1, timingConfigs.normal)
+ * Animated.timing(opacity, {
+ *   toValue: 1,
+ *   duration: timingConfigs.normal.duration,
+ *   useNativeDriver: true,
+ * }).start()
  * ```
  */
 
 import { duration, springs } from '../tokens/animations'
 
 /**
- * Cubic bezier control points for Reanimated's Easing.bezier()
- * Extracted from the CSS cubic-bezier values in our tokens
+ * Cubic bezier control points, suitable for `Easing.bezier()`.
  */
 export const bezierCurves = {
   easeInQuad: [0.55, 0.085, 0.68, 0.53] as const,
@@ -35,8 +41,8 @@ export const bezierCurves = {
 } as const
 
 /**
- * Spring configurations for Reanimated's withSpring()
- * Maps directly to our design token spring values
+ * Spring configurations for `Animated.spring`. Maps directly to our design
+ * token spring values.
  */
 export const springConfigs = {
   /** Gentle spring - smooth and subtle */
@@ -78,18 +84,19 @@ export const springConfigs = {
 } as const
 
 /**
- * Timing configurations for Reanimated's withTiming()
- * Combines duration and easing from our tokens
- *
- * Note: The easing values here are string identifiers.
- * When using with Reanimated, map these to Easing functions:
+ * Timing configurations for `Animated.timing`. Pair with an
+ * `Easing` function from `react-native` at the call site.
  *
  * @example
  * ```tsx
- * import { Easing, withTiming } from 'react-native-reanimated'
+ * import { Animated, Easing } from 'react-native'
  *
- * // For 'easeOut', use:
- * withTiming(1, { duration: 200, easing: Easing.out(Easing.quad) })
+ * Animated.timing(opacity, {
+ *   toValue: 1,
+ *   duration: timingConfigs.normal.duration,
+ *   easing: Easing.out(Easing.quad),
+ *   useNativeDriver: true,
+ * }).start()
  * ```
  */
 export const timingConfigs = {
