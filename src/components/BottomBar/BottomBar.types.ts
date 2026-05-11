@@ -19,6 +19,10 @@ export interface BottomBarContextValue {
   registerPageBar: (id: string) => void
   /** Called by page-level BottomBars on unmount to show global bar */
   unregisterPageBar: (id: string) => void
+  /** Height of the mobile nav pill (0 when not visible) */
+  navBarHeight: number
+  /** Set by MobileBottomNav so page-level bars can offset above the pill */
+  setNavBarHeight: (height: number) => void
 }
 
 // ---------------------------------------------------------------------------
