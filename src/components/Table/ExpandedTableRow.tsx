@@ -1,12 +1,11 @@
 /**
  * ExpandedTableRow component
- * Expandable row component with detailed content
+ * Expandable row component with detailed content. The surrounding
+ * mount/unmount and layout shift are animated by `LayoutAnimation`,
+ * configured by the parent table before the row is added/removed.
  *
  * @example
  * ```tsx
- * import { ExpandedTableRow } from '@scaffald/ui'
- *
- * // Default variant with form inputs
  * <ExpandedTableRow
  *   variant="default"
  *   fields={[
@@ -15,32 +14,17 @@
  *   ]}
  *   onFieldChange={(type, value) => console.log(type, value)}
  * />
- *
- * // Variant2 with info items
- * <ExpandedTableRow
- *   variant="variant2"
- *   title="Company Name"
- *   infoItems={[
- *     { label: 'Address', value: '123 Main St' },
- *     { label: 'CEO', value: 'John Doe' },
- *   ]}
- * />
  * ```
  */
 
-import { View, Text } from 'react-native'
+import { Text, View } from 'react-native'
 import type { ExpandedTableRowProps } from './ExpandedTableRow.types'
 import { getExpandedTableRowStyles } from './ExpandedTableRow.styles'
 import { useThemeContext } from '../../theme'
 import { Input } from '../Input'
 import { TableCell } from './TableCell'
 import { spacing } from '../../tokens/spacing'
-import { AnimatedView } from '../../animation'
-import { FadeIn, FadeOut, LinearTransition } from '../../animation/reanimated.types'
 
-/**
- * ExpandedTableRow component
- */
 export function ExpandedTableRow({
   variant = 'default',
   children,
@@ -55,30 +39,20 @@ export function ExpandedTableRow({
   const { theme } = useThemeContext()
   const styles = getExpandedTableRowStyles(variant, theme)
 
-  const animatedProps = {
-    entering: FadeIn ? FadeIn.duration(200) : undefined,
-    exiting: FadeOut ? FadeOut.duration(200) : undefined,
-    layout: LinearTransition ? LinearTransition.springify().damping(20).stiffness(150) : undefined,
-  }
-
-  // Render custom content if provided
   if (children) {
     return (
-      <AnimatedView style={[styles.container, style]} {...animatedProps}>
+      <View style={[styles.container, style]}>
         <TableCell type="guideline-vertical-half" width={40} />
         <View style={[styles.contentArea, contentStyle]}>{children}</View>
-      </AnimatedView>
+      </View>
     )
   }
 
-  // Render variant2 (info items)
   if (variant === 'variant2') {
     return (
-      <AnimatedView style={[styles.container, style]} {...animatedProps}>
-        {/* Guideline cell - uses guideline-vertical-f-h type */}
+      <View style={[styles.container, style]}>
         <TableCell type="guideline-vertical-f-h" width={40} />
 
-        {/* Content area */}
         <View style={[styles.contentArea, contentStyle]}>
           {title && <Text style={styles.title}>{title}</Text>}
 
@@ -93,20 +67,16 @@ export function ExpandedTableRow({
             </View>
           )}
         </View>
-      </AnimatedView>
+      </View>
     )
   }
 
-  // Render default variant (form inputs)
   const fieldsPerColumn = Math.ceil((fields?.length || 0) / columns)
-  const _columnWidthPercent = 100 / columns
 
   return (
-    <AnimatedView style={[styles.container, style]} {...animatedProps}>
-      {/* Guideline cell - uses guideline-vertical-full type for default variant */}
+    <View style={[styles.container, style]}>
       <TableCell type="guideline-vertical-full" width={40} />
 
-      {/* Content area with form fields */}
       <View style={[styles.contentArea, contentStyle]}>
         {Array.from({ length: columns }).map((_, colIndex) => {
           const startIndex = colIndex * fieldsPerColumn
@@ -138,6 +108,6 @@ export function ExpandedTableRow({
           )
         })}
       </View>
-    </AnimatedView>
+    </View>
   )
 }

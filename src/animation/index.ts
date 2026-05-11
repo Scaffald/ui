@@ -1,9 +1,8 @@
 /**
  * Animation module for Beyond UI
  *
- * Provides animation utilities that integrate with React Native Reanimated.
- * All utilities gracefully fallback if Reanimated is not installed, making
- * it safe to use in projects where animations are optional.
+ * Animation primitives built on React Native's vanilla `Animated` API.
+ * No Reanimated dependency.
  *
  * @example
  * ```tsx
@@ -15,17 +14,14 @@
  *   springConfigs,
  * } from '@scaffald/ui'
  *
- * // Use AnimatedPressable for button with press animation
  * <AnimatedPressable onPress={handlePress} pressScale={0.95}>
  *   <Text>Press me</Text>
  * </AnimatedPressable>
  *
- * // Use FadeTransition for modal content
  * <FadeTransition visible={isVisible}>
  *   <ModalContent />
  * </FadeTransition>
  *
- * // Use hooks for custom animations
  * const { animatedStyle, animate } = useAnimatedSpring({
  *   initialValue: 1,
  *   springConfig: 'snappy',
@@ -35,20 +31,28 @@
 
 // Core animated components
 export { AnimatedView, isReanimatedAvailable, type AnimatedViewProps } from './AnimatedView'
-export { AnimatedPressable, isAnimatedPressAvailable, type AnimatedPressableProps } from './AnimatedPressable'
+export {
+  AnimatedPressable,
+  isAnimatedPressAvailable,
+  type AnimatedPressableProps,
+} from './AnimatedPressable'
 
 // Animation hooks
 export { useReducedMotion } from './useReducedMotion'
+export { useLayoutAnimation, type LayoutAnimationConfig } from './useLayoutAnimation'
 export {
   useAnimatedSpring,
   type UseAnimatedSpringOptions,
   type UseAnimatedSpringReturn,
+  type SpringConfig,
+  type AnimatedSpringProperty,
 } from './useAnimatedSpring'
 export {
   useAnimatedTiming,
   type UseAnimatedTimingOptions,
   type UseAnimatedTimingReturn,
   type EasingType,
+  type AnimatedTimingProperty,
 } from './useAnimatedTiming'
 
 // Transition components

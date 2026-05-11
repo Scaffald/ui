@@ -1,8 +1,9 @@
 /**
  * AssessmentProgressBar - A thin, animated progress bar for assessment flows.
  *
- * Unlike the full-featured ProgressBar component, this is a minimal visual
- * indicator designed for assessment headers and inline progress tracking.
+ * Width is animated with `Animated.timing` on the JS driver (RN's native
+ * driver does not support `width` animation). The progress bar updates
+ * infrequently, so the JS-driver cost is unnoticeable.
  *
  * @example
  * ```tsx
@@ -11,16 +12,9 @@
  * ```
  */
 
-import { useEffect, useMemo } from 'react'
-import { View } from 'react-native'
-import { AnimatedView } from '../../animation/AnimatedView'
+import { useEffect, useMemo, useRef } from 'react'
+import { Animated, Easing, View } from 'react-native'
 import { useReducedMotion } from '../../animation/useReducedMotion'
-import {
-  isReanimatedLoaded,
-  useSharedValueAsserted,
-  useAnimatedStyleAsserted,
-  withTimingAsserted,
-} from '../../animation/reanimated.types'
 import { timingConfigs } from '../../animation/presets'
 import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
@@ -38,7 +32,7 @@ export function AssessmentProgressBar({
   const { theme } = useThemeContext()
   const prefersReducedMotion = useReducedMotion()
   const clampedValue = Math.max(0, Math.min(100, value))
-  const canAnimate = animated && isReanimatedLoaded && !prefersReducedMotion
+  const canAnimate = animated && !prefersReducedMotion
 
   const fillColor = color ?? colors.primary[500]
   const bgColor = trackColor ?? colors.bg[theme].subtle
@@ -78,9 +72,6 @@ export function AssessmentProgressBar({
   )
 }
 
-/**
- * Internal animated fill (only rendered when Reanimated is available)
- */
 function AnimatedFill({
   value,
   baseStyle,
@@ -88,22 +79,27 @@ function AnimatedFill({
   value: number
   baseStyle: Record<string, unknown>
 }) {
-  const progress = useSharedValueAsserted(value)
+  const progress = useRef(new Animated.Value(value)).current
   const durationMs = timingConfigs.normal.duration
 
   useEffect(() => {
-    progress.value = withTimingAsserted(value, { duration: durationMs })
+    Animated.timing(progress, {
+      toValue: value,
+      duration: durationMs,
+      easing: Easing.out(Easing.quad),
+      // width can't run on the native driver
+      useNativeDriver: false,
+    }).start()
   }, [value, durationMs, progress])
 
-  const animatedStyle = useAnimatedStyleAsserted(
-    () => {
-      'worklet'
-      return {
-        width: `${progress.value}%`,
-      }
-    },
-    []
-  )
+  const widthInterpolated = progress.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['0%', '100%'],
+  })
 
-  return <AnimatedView style={[baseStyle, animatedStyle]} />
+  return (
+    <Animated.View
+      style={[baseStyle, { width: widthInterpolated as unknown as number }]}
+    />
+  )
 }

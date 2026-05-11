@@ -1,95 +1,45 @@
 /**
  * ScaleTransition component
- * Provides scale in/out animations for content
+ * Scale in/out on mount/unmount, powered by vanilla `Animated`.
  *
  * @example
  * ```tsx
- * import { ScaleTransition } from '@scaffald/ui'
- *
- * function Modal({ visible }) {
- *   return (
- *     <ScaleTransition visible={visible} fromScale={0.9}>
- *       <View style={styles.modal}>
- *         <Text>Modal content</Text>
- *       </View>
- *     </ScaleTransition>
- *   )
- * }
+ * <ScaleTransition visible={visible} fromScale={0.9}>
+ *   <View style={styles.modal}>
+ *     <Text>Modal content</Text>
+ *   </View>
+ * </ScaleTransition>
  * ```
  */
 
-import { forwardRef, useState, useEffect } from 'react'
-import { View, type ViewProps, type ViewStyle } from 'react-native'
-import { AnimatedView } from '../AnimatedView'
+import { forwardRef, useEffect, useRef, useState } from 'react'
+import { Animated, View, type ViewProps, type ViewStyle } from 'react-native'
 import { springConfigs, type SpringConfigKey } from '../presets'
 import { useReducedMotion } from '../useReducedMotion'
-import {
-  isReanimatedLoaded,
-  useSharedValueAsserted,
-  useAnimatedStyleAsserted,
-  withSpringAsserted,
-} from '../reanimated.types'
 
 export interface ScaleTransitionProps extends Omit<ViewProps, 'style'> {
-  /**
-   * Whether the content is visible
-   */
+  /** Whether the content is visible. */
   visible: boolean
-
-  /**
-   * Scale value when hidden
-   * @default 0.9
-   */
+  /** Scale value when hidden. @default 0.9 */
   fromScale?: number
-
-  /**
-   * Scale value when visible
-   * @default 1
-   */
+  /** Scale value when visible. @default 1 */
   toScale?: number
-
-  /**
-   * Spring config preset
-   * @default 'snappy'
-   */
+  /** Spring config preset. @default 'snappy' */
   springConfig?: SpringConfigKey
-
-  /**
-   * Whether to include fade with scale
-   * @default true
-   */
+  /** Whether to include fade with scale. @default true */
   withFade?: boolean
-
-  /**
-   * Whether to unmount content when not visible
-   * @default true
-   */
+  /** Whether to unmount content when not visible. @default true */
   unmountOnHide?: boolean
-
-  /**
-   * Callback when scale in animation completes
-   */
+  /** Callback when scale-in animation completes. */
   onScaleInComplete?: () => void
-
-  /**
-   * Callback when scale out animation completes
-   */
+  /** Callback when scale-out animation completes. */
   onScaleOutComplete?: () => void
-
-  /**
-   * Style for the container
-   */
+  /** Style for the container. */
   style?: ViewStyle
-
-  /**
-   * Children to render
-   */
+  /** Children to render. */
   children: React.ReactNode
 }
 
-/**
- * Scale transition component with mount/unmount support
- */
 export const ScaleTransition = forwardRef<View, ScaleTransitionProps>(
   function ScaleTransition(
     {
@@ -108,131 +58,113 @@ export const ScaleTransition = forwardRef<View, ScaleTransitionProps>(
     ref
   ) {
     const prefersReducedMotion = useReducedMotion()
-    const canAnimate = isReanimatedLoaded && !prefersReducedMotion
+    const [shouldRender, setShouldRender] = useState(visible)
 
-    if (canAnimate) {
-      return (
-        <ReanimatedScale
-          ref={ref}
-          visible={visible}
-          fromScale={fromScale}
-          toScale={toScale}
-          springConfig={springConfig}
-          withFade={withFade}
-          unmountOnHide={unmountOnHide}
-          onScaleInComplete={onScaleInComplete}
-          onScaleOutComplete={onScaleOutComplete}
-          style={style}
-          {...props}
-        >
-          {children}
-        </ReanimatedScale>
-      )
-    }
+    const scale = useRef(new Animated.Value(visible ? toScale : fromScale)).current
+    const opacity = useRef(new Animated.Value(visible ? 1 : 0)).current
+    const spring = springConfigs[springConfig]
 
-    // Fallback: instant show/hide
-    if (!visible && unmountOnHide) {
+    const visibleRef = useRef(visible)
+    visibleRef.current = visible
+
+    useEffect(() => {
+      if (prefersReducedMotion) {
+        scale.setValue(visible ? toScale : fromScale)
+        opacity.setValue(visible ? 1 : 0)
+        if (visible) {
+          setShouldRender(true)
+          onScaleInComplete?.()
+        } else {
+          if (unmountOnHide) setShouldRender(false)
+          onScaleOutComplete?.()
+        }
+        return
+      }
+
+      if (visible) {
+        setShouldRender(true)
+        requestAnimationFrame(() => {
+          const anims: Animated.CompositeAnimation[] = [
+            Animated.spring(scale, {
+              toValue: toScale,
+              damping: spring.damping,
+              stiffness: spring.stiffness,
+              mass: spring.mass,
+              useNativeDriver: true,
+            }),
+          ]
+          if (withFade) {
+            anims.push(
+              Animated.spring(opacity, {
+                toValue: 1,
+                damping: spring.damping,
+                stiffness: spring.stiffness,
+                mass: spring.mass,
+                useNativeDriver: true,
+              })
+            )
+          }
+          Animated.parallel(anims).start(({ finished }) => {
+            if (finished && visibleRef.current) onScaleInComplete?.()
+          })
+        })
+      } else {
+        const anims: Animated.CompositeAnimation[] = [
+          Animated.spring(scale, {
+            toValue: fromScale,
+            damping: spring.damping,
+            stiffness: spring.stiffness,
+            mass: spring.mass,
+            useNativeDriver: true,
+          }),
+        ]
+        if (withFade) {
+          anims.push(
+            Animated.spring(opacity, {
+              toValue: 0,
+              damping: spring.damping,
+              stiffness: spring.stiffness,
+              mass: spring.mass,
+              useNativeDriver: true,
+            })
+          )
+        }
+        Animated.parallel(anims).start(({ finished }) => {
+          if (finished && !visibleRef.current) {
+            if (unmountOnHide) setShouldRender(false)
+            onScaleOutComplete?.()
+          }
+        })
+      }
+    }, [
+      visible,
+      toScale,
+      fromScale,
+      withFade,
+      unmountOnHide,
+      onScaleInComplete,
+      onScaleOutComplete,
+      scale,
+      opacity,
+      spring,
+      prefersReducedMotion,
+    ])
+
+    if (!shouldRender && unmountOnHide) {
       return null
     }
 
+    const animatedStyle: ViewStyle = {
+      transform: [{ scale }],
+      ...(withFade ? { opacity } : {}),
+    } as unknown as ViewStyle
+
     return (
-      <View
-        ref={ref}
-        style={[
-          style,
-          {
-            opacity: visible ? 1 : 0,
-            transform: [{ scale: visible ? toScale : fromScale }],
-          },
-        ]}
-        {...props}
-      >
+      <Animated.View ref={ref} style={[style, animatedStyle]} {...props}>
         {children}
-      </View>
+      </Animated.View>
     )
   }
 )
 
 ScaleTransition.displayName = 'ScaleTransition'
-
-/**
- * Internal Reanimated-powered scale component
- */
-function ReanimatedScale({
-  ref,
-  visible,
-  fromScale,
-  toScale,
-  springConfig,
-  withFade,
-  unmountOnHide,
-  onScaleInComplete,
-  onScaleOutComplete,
-  style,
-  children,
-  ...props
-}: ScaleTransitionProps & { ref: React.Ref<View> }) {
-  const [shouldRender, setShouldRender] = useState(visible)
-
-  // Use concrete values (props have defaults at component level)
-  const fromScaleValue = fromScale ?? 0.9
-  const toScaleValue = toScale ?? 1
-
-  // Use asserted versions since this component only renders when Reanimated is available
-  const scale = useSharedValueAsserted(visible ? toScaleValue : fromScaleValue)
-  const opacity = useSharedValueAsserted(visible ? 1 : 0)
-  const spring = springConfigs[springConfig || 'snappy']
-
-  const animatedStyle = useAnimatedStyleAsserted(
-    () => {
-      'worklet'
-      return {
-        transform: [{ scale: scale.value }],
-        opacity: withFade ? opacity.value : 1,
-      }
-    },
-    [withFade]
-  )
-
-  useEffect(() => {
-    if (visible) {
-      setShouldRender(true)
-      requestAnimationFrame(() => {
-        scale.value = withSpringAsserted(toScaleValue, spring, (finished) => {
-          'worklet'
-          if (finished && onScaleInComplete) {
-            onScaleInComplete()
-          }
-        })
-        if (withFade) {
-          opacity.value = withSpringAsserted(1, spring)
-        }
-      })
-    } else {
-      scale.value = withSpringAsserted(fromScaleValue, spring, (finished) => {
-        'worklet'
-        if (finished) {
-          if (unmountOnHide) {
-            setShouldRender(false)
-          }
-          if (onScaleOutComplete) {
-            onScaleOutComplete()
-          }
-        }
-      })
-      if (withFade) {
-        opacity.value = withSpringAsserted(0, spring)
-      }
-    }
-  }, [visible, toScaleValue, fromScaleValue, spring, withFade, onScaleInComplete, onScaleOutComplete, unmountOnHide, scale, opacity])
-
-  if (!shouldRender && unmountOnHide) {
-    return null
-  }
-
-  return (
-    <AnimatedView ref={ref} style={[style, animatedStyle]} {...props}>
-      {children}
-    </AnimatedView>
-  )
-}

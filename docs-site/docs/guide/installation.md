@@ -33,24 +33,11 @@ yarn add @scaffald/ui react react-native
 If you're using Expo, you'll also need these additional dependencies:
 
 ```bash
-npx expo install react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg
+npx expo install react-native-gesture-handler react-native-safe-area-context react-native-svg
 ```
 
-### Configure babel.config.js
-
-Add the Reanimated plugin to your `babel.config.js`:
-
-```js
-module.exports = function (api) {
-  api.cache(true);
-  return {
-    presets: ['babel-preset-expo'],
-    plugins: [
-      'react-native-reanimated/plugin', // Must be last
-    ],
-  };
-};
-```
+Animations are built on React Native's bundled `Animated` API — no extra
+Reanimated install or babel plugin is required.
 
 ## Web Setup (React Native Web)
 
