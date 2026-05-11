@@ -170,6 +170,7 @@ export function Tabs({
               return cloneElement(item.fullItem, {
                 key: `content-${item.value || index}`,
                 children: item.content,
+                containerStyle: { alignSelf: 'stretch', flexGrow: 1, flexShrink: 1 },
               } as Partial<TabItemProps>)
             })}
           </View>
