@@ -55,6 +55,11 @@ export interface AddressAutocompleteProps {
   maxResults?: number
 }
 
+export interface AddressFormStateOption {
+  value: string
+  label: string
+}
+
 export interface AddressFormProps extends Omit<AddressAutocompleteProps, 'onChange' | 'onAddressSelect'> {
   mode?: 'autocomplete-only' | 'full' | 'hybrid'
   addressValue?: Partial<AddressResult>
@@ -66,6 +71,12 @@ export interface AddressFormProps extends Omit<AddressAutocompleteProps, 'onChan
   manualFieldsVariant?: 'always' | 'expand'
   expandLabel?: string
   collapseLabel?: string
+  /** When set, the Country field renders as a disabled input pre-filled with this value. */
+  lockedCountry?: string
+  /** When provided, the State field renders as a dropdown of these options instead of a free-text input. */
+  stateOptions?: AddressFormStateOption[]
+  /** Field-level error messages for the manual fields. */
+  fieldErrors?: { street?: string; city?: string; state?: string; zip?: string; country?: string }
 }
 
 export interface LocationListInputProps {
