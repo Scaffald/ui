@@ -3,10 +3,11 @@
  * Provider-agnostic: pass a GeocodingProvider to AddressAutocomplete.
  */
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Pressable, Text } from 'react-native'
 import { Stack } from '../Layout'
 import { Input } from '../Input'
+import { ResponsiveSelect } from '../ResponsiveSelect'
 import { AddressAutocomplete } from './AddressAutocomplete'
 import type { AddressFormProps, AddressResult } from './Address.types'
 
@@ -22,6 +23,9 @@ export function AddressForm({
   manualFieldsVariant = 'always',
   expandLabel = 'Edit address manually',
   collapseLabel = 'Hide',
+  lockedCountry,
+  stateOptions,
+  fieldErrors,
   ...autocompleteProps
 }: AddressFormProps) {
   const [manualExpanded, setManualExpanded] = useState(false)
@@ -36,12 +40,12 @@ export function AddressForm({
         administrativeAreaLevel1: address.administrativeAreaLevel1,
         stateAbbreviation: address.stateAbbreviation,
         postalCode: address.postalCode,
-        country: address.country,
+        country: lockedCountry ?? address.country,
         countryCode: address.countryCode,
         coordinates: address.coordinates,
       })
     },
-    [onAddressSelect, onAddressChange]
+    [onAddressSelect, onAddressChange, lockedCountry]
   )
 
   const hasManualFields = mode === 'full' || mode === 'hybrid'
@@ -49,6 +53,17 @@ export function AddressForm({
   const showManualFields =
     hasManualFields && (!useExpandVariant || manualExpanded)
   const addr = addressValue ?? {}
+
+  // When the country is locked but the form was initialised with a different
+  // (or empty) value, sync it once so downstream forms see the locked value.
+  useEffect(() => {
+    if (lockedCountry && addr.country !== lockedCountry) {
+      onAddressChange?.({ ...addr, country: lockedCountry })
+    }
+    // Only react to lockedCountry changing — onAddressChange is intentionally
+    // omitted to avoid loops when the parent re-creates the callback.
+    // biome-ignore lint/correctness/useExhaustiveDependencies: see comment
+  }, [lockedCountry])
 
   return (
     <Stack gap={16}>
@@ -98,6 +113,8 @@ export function AddressForm({
             value={addr.streetAddress ?? ''}
             onChangeText={(t) => onAddressChange?.({ ...addr, streetAddress: t })}
             placeholder="Street address"
+            error={!!fieldErrors?.street}
+            errorMessage={fieldErrors?.street}
           />
           <Stack gap={12} style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             <Input
@@ -106,27 +123,62 @@ export function AddressForm({
               onChangeText={(t) => onAddressChange?.({ ...addr, locality: t })}
               placeholder="City"
               style={{ flex: 1, minWidth: 120 }}
+              error={!!fieldErrors?.city}
+              errorMessage={fieldErrors?.city}
             />
-            <Input
-              label="State"
-              value={addr.stateAbbreviation ?? addr.administrativeAreaLevel1 ?? ''}
-              onChangeText={(t) => onAddressChange?.({ ...addr, stateAbbreviation: t, administrativeAreaLevel1: t })}
-              placeholder="State"
-              style={{ width: 80 }}
-            />
+            {stateOptions ? (
+              <Stack style={{ width: 120 }} gap={4}>
+                <Text style={{ fontSize: 13, color: '#374151' }}>State</Text>
+                <ResponsiveSelect
+                  value={addr.stateAbbreviation ?? addr.administrativeAreaLevel1 ?? ''}
+                  onValueChange={(v) =>
+                    onAddressChange?.({
+                      ...addr,
+                      stateAbbreviation: v,
+                      administrativeAreaLevel1: v,
+                    })
+                  }
+                  options={stateOptions}
+                  placeholder="State"
+                  sheetTitle="Select state"
+                  error={fieldErrors?.state}
+                />
+              </Stack>
+            ) : (
+              <Input
+                label="State"
+                value={addr.stateAbbreviation ?? addr.administrativeAreaLevel1 ?? ''}
+                onChangeText={(t) =>
+                  onAddressChange?.({ ...addr, stateAbbreviation: t, administrativeAreaLevel1: t })
+                }
+                placeholder="State"
+                style={{ width: 80 }}
+                error={!!fieldErrors?.state}
+                errorMessage={fieldErrors?.state}
+              />
+            )}
             <Input
               label="ZIP"
               value={addr.postalCode ?? ''}
               onChangeText={(t) => onAddressChange?.({ ...addr, postalCode: t })}
               placeholder="ZIP"
               style={{ width: 100 }}
+              keyboardType="number-pad"
+              maxLength={5}
+              error={!!fieldErrors?.zip}
+              errorMessage={fieldErrors?.zip}
             />
           </Stack>
           <Input
             label="Country"
-            value={addr.country ?? ''}
-            onChangeText={(t) => onAddressChange?.({ ...addr, country: t })}
+            value={lockedCountry ?? addr.country ?? ''}
+            onChangeText={
+              lockedCountry
+                ? undefined
+                : (t) => onAddressChange?.({ ...addr, country: t })
+            }
             placeholder="Country"
+            disabled={!!lockedCountry}
           />
         </Stack>
       )}
