@@ -1,74 +1,42 @@
 /**
  * useSidebarState hook
- * Manages sidebar collapsed state with localStorage persistence
+ * Manages sidebar collapsed state with persistence.
+ *
+ * Web: persists via `localStorage` (synchronous; initial render reflects
+ *   stored value).
+ * Native: persists via `AsyncStorage` (async; first render shows the
+ *   default, then hydrates).
+ *
+ * The Metro-resolved `.web.ts` / `.native.ts` variants own the storage
+ * implementation. This file only defines the shared shape.
  */
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 export interface UseSidebarStateOptions {
   /**
-   * Storage key for localStorage
+   * Storage key for persistence.
    */
   storageKey: string
 
   /**
-   * Default collapsed state
+   * Default collapsed state.
    * @default false
    */
   defaultCollapsed?: boolean
 
   /**
-   * Disable localStorage persistence
+   * Disable persistence — useful for tests and stories.
    * @default false
    */
   disablePersistence?: boolean
 }
 
-/**
- * Hook to manage sidebar collapsed state with optional localStorage persistence
- *
- * @example
- * ```tsx
- * const [collapsed, setCollapsed] = useSidebarState({
- *   storageKey: 'my-app-sidebar',
- *   defaultCollapsed: false
- * })
- * ```
- */
-export function useSidebarState({
-  storageKey,
-  defaultCollapsed = false,
-  disablePersistence = false,
-}: UseSidebarStateOptions): [boolean, (collapsed: boolean) => void] {
-  const [collapsed, setCollapsed] = useState<boolean>(() => {
-    if (disablePersistence || typeof window === 'undefined') {
-      return defaultCollapsed
-    }
+export type UseSidebarState = (
+  options: UseSidebarStateOptions
+) => [boolean, (collapsed: boolean) => void]
 
-    try {
-      const stored = localStorage.getItem(storageKey)
-      return stored !== null ? stored === 'true' : defaultCollapsed
-    } catch (error) {
-      if (__DEV__) {
-        console.warn('[useSidebarState] Failed to read from localStorage:', error)
-      }
-      return defaultCollapsed
-    }
-  })
-
-  useEffect(() => {
-    if (disablePersistence || typeof window === 'undefined') {
-      return
-    }
-
-    try {
-      localStorage.setItem(storageKey, String(collapsed))
-    } catch (error) {
-      if (__DEV__) {
-        console.warn('[useSidebarState] Failed to write to localStorage:', error)
-      }
-    }
-  }, [collapsed, storageKey, disablePersistence])
-
-  return [collapsed, setCollapsed]
+// Default (no persistence). The .web.ts / .native.ts variants override this.
+export const useSidebarState: UseSidebarState = ({ defaultCollapsed = false }) => {
+  return useState<boolean>(defaultCollapsed)
 }

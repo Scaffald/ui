@@ -66,5 +66,5 @@ export {
   type HoverProps,
 } from './web/useHoverState'
 
-// Native-specific hooks
-export { useAccessibilityInfo, type UseAccessibilityInfoReturn } from './native/useAccessibilityInfo'
+// Accessibility hook (Metro-resolved platform extension)
+export { useAccessibilityInfo, type UseAccessibilityInfoReturn } from './useAccessibilityInfo'
