@@ -23,6 +23,8 @@ export interface SocialLoginGroupProps {
   appleText?: string
   /** Show Apple button (default: true). Set false on Android where Apple Sign-In is not available. */
   showApple?: boolean
+  /** Disable both buttons (e.g. when terms/consent are not yet accepted) */
+  disabled?: boolean
 }
 
 /**
@@ -42,6 +44,7 @@ export function SocialLoginGroup({
   googleText,
   appleText,
   showApple = true,
+  disabled = false,
 }: SocialLoginGroupProps) {
   const { theme } = useThemeContext()
   const textTertiary = colors.text[theme].tertiary
@@ -54,6 +57,7 @@ export function SocialLoginGroup({
           brand="google"
           onPress={onGooglePress}
           text={googleText}
+          disabled={disabled}
           style={{ alignSelf: 'stretch', width: '100%' }}
         />
         {showApple && (
@@ -61,6 +65,7 @@ export function SocialLoginGroup({
             brand="apple"
             onPress={onApplePress}
             text={appleText}
+            disabled={disabled}
             style={{ alignSelf: 'stretch', width: '100%' }}
           />
         )}
