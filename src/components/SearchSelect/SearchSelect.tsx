@@ -341,7 +341,7 @@ function getStyles(
       color: colors.text[theme].secondary,
     },
     backdrop: {
-      ...StyleSheet.absoluteFillObject,
+      ...StyleSheet.absoluteFill,
       ...webStyle({ position: 'fixed' }),
       top: 0,
       left: 0,
