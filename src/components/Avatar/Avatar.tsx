@@ -92,9 +92,11 @@ export function Avatar({
     return undefined
   }
 
-  // Determine avatar type
-  const hasImage = src && !imageError
-  const hasInitials = initials && initials.length > 0
+  // Determine avatar type. Coerce to booleans: `src`/`initials` can be empty
+  // strings, and `"" && x` evaluates to `""`, which React renders as a stray
+  // text node inside the avatar <View> ("text node cannot be a child of View").
+  const hasImage = !!src && !imageError
+  const hasInitials = !!initials && initials.length > 0
   const hasIcon = !!icon
 
   // Get background color based on color prop
