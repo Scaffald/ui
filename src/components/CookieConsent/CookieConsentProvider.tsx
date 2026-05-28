@@ -30,6 +30,10 @@ interface CookieConsentContextValue {
   selections: CookieConsentSelections
   consentState: CookieConsentState | null
   shouldShowBanner: boolean
+  /** Measured pixel height of the rendered banner card, or 0 if not yet measured. */
+  bannerHeight: number
+  /** Called by the banner on layout so consumers can reserve space beneath it. */
+  reportBannerHeight: (height: number) => void
   isReady: boolean
   isPreferencesOpen: boolean
   openPreferences: () => void
@@ -158,6 +162,7 @@ export function CookieConsentProvider({
   const [consentState, setConsentState] = useState<CookieConsentState | null>(null)
   const [isReady, setIsReady] = useState(false)
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false)
+  const [bannerHeight, setBannerHeight] = useState(0)
   const storageRef = useRef<CookieConsentStorage | null>(null)
 
   if (!storageRef.current) {
@@ -272,6 +277,11 @@ export function CookieConsentProvider({
   }, [])
   const closePreferences = useCallback(() => setIsPreferencesOpen(false), [])
 
+  const reportBannerHeight = useCallback((height: number) => {
+    const rounded = Math.round(height)
+    setBannerHeight((prev) => (prev === rounded ? prev : rounded))
+  }, [])
+
   const shouldShowBanner = isReady && !consentState
 
   const value = useMemo<CookieConsentContextValue>(
@@ -280,6 +290,8 @@ export function CookieConsentProvider({
       selections,
       consentState,
       shouldShowBanner,
+      bannerHeight,
+      reportBannerHeight,
       isReady,
       isPreferencesOpen,
       openPreferences,
@@ -296,6 +308,8 @@ export function CookieConsentProvider({
       selections,
       consentState,
       shouldShowBanner,
+      bannerHeight,
+      reportBannerHeight,
       isReady,
       isPreferencesOpen,
       openPreferences,
