@@ -77,10 +77,9 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
                   >
                     Review our privacy policy
                   </Text>
-                  {' '}
+                  {' to learn more.'}
                 </>
               ) : null}
-              to learn more.
             </Paragraph>
           </Stack>
           <Row gap={spacing[8]} justify="space-between" align="center" style={{ flexWrap: 'wrap' }}>
