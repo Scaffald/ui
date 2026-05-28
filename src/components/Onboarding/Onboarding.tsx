@@ -13,7 +13,7 @@ import { OnboardingControls } from './OnboardingControls'
 
 const AUTO_SWIPE_THRESHOLD = 15_000
 
-export function Onboarding({ onOnboarded, autoSwipe, steps, staticMode = false, showControls = true, overlay = 'light', paginationStyle }: OnboardingProps) {
+export function Onboarding({ onOnboarded, autoSwipe, steps, staticMode = false, showControls = true, overlay = 'light', paginationStyle, extraBottomInset = 0 }: OnboardingProps) {
   const [stepIdx, setStepIdxState] = useState(0)
   const [key, setKey] = useState(0)
   const { height } = useWindowDimensions()
@@ -96,7 +96,7 @@ export function Onboarding({ onOnboarded, autoSwipe, steps, staticMode = false, 
         </Box>
       )}
 
-      <Stack flex={1}>
+      <Stack flex={1} style={extraBottomInset ? { paddingBottom: extraBottomInset } : undefined}>
         <Box flex={1} key={key}>
           <currentStep.Content />
         </Box>

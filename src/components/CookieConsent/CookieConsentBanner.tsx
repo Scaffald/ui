@@ -20,7 +20,8 @@ export interface CookieConsentBannerProps {
 }
 
 export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: CookieConsentBannerProps) {
-  const { shouldShowBanner, acceptAll, rejectAll, openPreferences, isReady } = useCookieConsent()
+  const { shouldShowBanner, acceptAll, rejectAll, openPreferences, isReady, reportBannerHeight } =
+    useCookieConsent()
   const [pendingAction, setPendingAction] = useState<'accept' | 'reject' | null>(null)
   const { theme } = useThemeContext()
 
@@ -50,6 +51,7 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
       }}
     >
       <View
+        onLayout={(e) => reportBannerHeight(e.nativeEvent.layout.height + spacing[16])}
         style={{
           width: '100%',
           maxWidth,
@@ -77,10 +79,9 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
                   >
                     Review our privacy policy
                   </Text>
-                  {' '}
+                  {' to learn more.'}
                 </>
               ) : null}
-              to learn more.
             </Paragraph>
           </Stack>
           <Row gap={spacing[8]} justify="space-between" align="center" style={{ flexWrap: 'wrap' }}>

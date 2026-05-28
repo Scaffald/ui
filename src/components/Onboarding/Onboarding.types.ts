@@ -22,6 +22,12 @@ export interface OnboardingProps {
   overlay?: 'light' | 'dark';
   /** Style applied to the pagination dots row. Use to add bottom margin etc. */
   paginationStyle?: ViewStyle;
+  /**
+   * Extra space reserved below the controls, added on top of the safe-area inset.
+   * Lifts the pagination/controls up so a floating bottom element (e.g. the cookie
+   * consent banner) can't overlap them. The background image stays full-bleed.
+   */
+  extraBottomInset?: number;
 }
 
 export interface OnboardingStepContentProps {
