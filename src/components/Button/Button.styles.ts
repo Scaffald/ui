@@ -32,8 +32,10 @@ const sizeConfig = {
     lineHeight: typography.caption.lineHeight,
   },
   md: {
-    height: 40,
-    minWidth: 40,
+    // 44px to meet the iOS/Android 44pt minimum touch target (SC-36) and the
+    // Figma "Medium: 152x44" spec. Was 40; height is fixed so content centers.
+    height: 44,
+    minWidth: 44,
     paddingHorizontal: spacing[20],
     paddingVertical: spacing[8],
     gap: spacing[8],
