@@ -423,8 +423,10 @@ const styles = StyleSheet.create({
   },
   countBadge: {
     position: 'absolute',
-    top: 0,
-    right: 0,
+    // Sit on the avatar's edge rather than inside it — at top/right 0 the
+    // badge covered the second initial (e.g. "MR" read as "M") (#384).
+    top: -4,
+    right: -4,
     justifyContent: 'center',
     alignItems: 'center',
   },
