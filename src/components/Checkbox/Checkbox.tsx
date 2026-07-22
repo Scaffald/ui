@@ -129,7 +129,9 @@ export function Checkbox({
         onPress={handlePress}
         disabled={disabled}
         accessibilityRole="checkbox"
-        accessibilityLabel={accessibilityLabel}
+        accessibilityLabel={
+          accessibilityLabel ?? (typeof label === 'string' ? label : undefined)
+        }
         accessibilityState={{ checked, disabled }}
         {...interactiveProps}
         style={({ pressed }) => [

@@ -71,12 +71,25 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
   const _loadingSize = iconSize
   const resolvedIconColor = iconColorOverride ?? styles.iconColor
 
+  // Derive an accessible name from string children so web/AT tooling always
+  // sees a label (explicit accessibilityLabel in pressableProps wins via
+  // the spread below). Icon-only buttons must pass accessibilityLabel.
+  const derivedLabel =
+    typeof children === 'string'
+      ? children
+      : Array.isArray(children)
+        ? children.filter((child): child is string => typeof child === 'string').join(' ').trim() ||
+          undefined
+        : undefined
+
   return (
     <Pressable
       ref={ref}
       disabled={isDisabled}
       onPress={onPress}
       accessibilityRole="button"
+      accessibilityLabel={derivedLabel}
+      accessibilityState={{ disabled: isDisabled, busy: loading }}
       {...interactiveProps}
       style={({ pressed }) => [
         styles.container,
