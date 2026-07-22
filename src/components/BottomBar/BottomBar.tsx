@@ -43,7 +43,7 @@ function BottomBarInner({
   const { theme } = useThemeContext()
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const insets = useSafeAreaInsets()
-  const { globalBarHidden } = useBottomBarContext()
+  const { globalBarHidden, navBarHeight } = useBottomBarContext()
 
   // Page bars auto-register to hide the global bar.
   // Always call the hook (rules of hooks) but pass enabled flag.
@@ -54,7 +54,16 @@ function BottomBarInner({
     return null
   }
 
-  const styles = getBottomBarStyles(resolvedTheme, level, insets.bottom)
+  // The mobile tab nav (MobileBottomNav) is not a BottomBar, so it never
+  // hides via globalBarHidden — a page toolbar would land directly on top of
+  // it (#378). Stack page bars above the nav pill instead of overlapping, so
+  // both stay usable.
+  const stackOffset = level === 'page' ? navBarHeight : 0
+  const styles = getBottomBarStyles(
+    resolvedTheme,
+    level,
+    insets.bottom + stackOffset,
+  )
 
   return (
     <View
