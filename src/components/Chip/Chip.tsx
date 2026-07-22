@@ -133,6 +133,10 @@ export function Chip({
       <AnimatedPressable
         onPress={handleClose}
         disabled={disabled}
+        accessibilityRole="button"
+        accessibilityLabel={
+          typeof children === 'string' ? `Remove ${children}` : 'Remove'
+        }
         style={[
           styles.closeButton,
           {
@@ -167,10 +171,16 @@ export function Chip({
     )
   }
 
+  // Expose a real role + name so chips are not anonymous generics for AT.
+  const derivedLabel = typeof children === 'string' ? children : undefined
+
   return (
     <AnimatedPressable
       onPress={handlePress}
       disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={derivedLabel}
+      accessibilityState={{ selected, disabled }}
       style={style ? [...chipStyles, style] : chipStyles}
       {...interactiveProps}
       {...pressableProps}
