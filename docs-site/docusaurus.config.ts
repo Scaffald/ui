@@ -20,11 +20,20 @@ const config: Config = {
   organizationName: 'Scaffald',
   projectName: 'ui',
 
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  // Docusaurus' own default, restored. At 'warn' the four broken links fixed
+  // alongside this change sat in the published docs indefinitely — and once the
+  // build started failing for unrelated reasons (#377) nobody saw the warning
+  // at all. The site is now link-clean, so 'throw' costs nothing and means the
+  // next stale link fails pre-push instead of shipping.
+  onBrokenLinks: 'throw',
 
   markdown: {
     parseFrontMatter: undefined,
+    hooks: {
+      // Moved out of the top level: the old siteConfig.onBrokenMarkdownLinks
+      // is deprecated and goes away in Docusaurus v4.
+      onBrokenMarkdownLinks: 'warn',
+    },
   },
 
   i18n: {

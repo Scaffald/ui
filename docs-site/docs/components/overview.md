@@ -45,7 +45,7 @@ Structure your UI with flexible layout components:
 Navigate your app with these components:
 
 - **[Tabs](./tabs)** - Tabbed navigation with multiple variants
-- **[Breadcrumbs](./breadcrumbs)** - Hierarchical navigation
+- **[Breadcrumb](./breadcrumb)** - Hierarchical navigation
 - **[Pagination](./pagination)** - Page navigation for lists
 - **[Menu](./menu)** - Contextual menu
 - **[Drawer](./drawer)** - Slide-out navigation panel

@@ -1,0 +1,83 @@
+---
+sidebar_position: 121
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# SegmentedControl
+
+iOS 26 style segmented control: a row of mutually exclusive options with a
+pill-shaped indicator marking the selection.
+
+Reach for it when there are a handful of options and the choice re-filters
+content already on screen — scope tabs, a view switcher. For navigation between
+screens use [Tabs](./tabs); for more than about five options, or options whose
+labels are long, use a [Dropdown](./dropdown) instead.
+
+## Import
+
+```tsx
+import { SegmentedControl } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+Selection is controlled: the component holds no internal state, so
+`selectedIndex` must be driven by the parent in response to `onSelectionChange`.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={24} style={{maxWidth: 480}}>
+    <SegmentedControl
+      segments={['All', 'Photos', 'Videos']}
+      selectedIndex={0}
+      onSelectionChange={() => {}}
+    />
+    <SegmentedControl
+      segments={['Day', 'Week', 'Month']}
+      selectedIndex={1}
+      onSelectionChange={() => {}}
+    />
+    <SegmentedControl
+      segments={['Active', 'Archived']}
+      selectedIndex={0}
+      onSelectionChange={() => {}}
+      disabled
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/SegmentedControl/SegmentedControl.types.ts) for the complete props API.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `segments` | `string[]` | — | Segment labels, in display order |
+| `selectedIndex` | `number` | — | Index of the selected segment |
+| `onSelectionChange` | `(index: number) => void` | — | Called with the index of the tapped segment |
+| `disabled` | `boolean` | `false` | Disables every segment |
+| `style` | `StyleProp<ViewStyle>` | — | Additional container styles |
+| `testID` | `string` | — | Test ID |
+
+Segments are labelled by plain strings — there is no per-segment value, icon or
+individually-disabled option. Callers that need to map to identifiers should
+keep their own array and index into it from `onSelectionChange`.
+
+## Accessibility
+
+- The container carries `accessibilityRole="tablist"`; each segment is a `tab`
+- Each segment exposes `accessibilityState={{ selected, disabled }}`, so screen
+  readers announce which option is active
+- Each segment's label is its accessible name
+- `disabled` both blocks `onSelectionChange` and is reflected in the
+  accessibility state, so assistive tech is not offered a dead control
+
+## Related Components
+
+- [SearchAccessory](./search-accessory) — Pairs this with a search bar for scope filtering
+- [Tabs](./tabs) — Navigation between distinct views
+- [Dropdown](./dropdown) — Better for longer option lists
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.
