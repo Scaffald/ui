@@ -15,7 +15,8 @@ import {
   fontWeight as fontWeightTokens,
 } from '../../tokens/typography'
 import { colors } from '../../tokens/colors'
-import { getFontFamily } from './Typography.styles'
+import { useThemeContext } from '../../theme'
+import { getFontFamily, resolveTypographyColor } from './Typography.styles'
 
 /**
  * Get typography values for label size
@@ -46,22 +47,6 @@ const getLabelStyle = (
 }
 
 /**
- * Resolve color prop to actual color value
- */
-const resolveColor = (color?: string, disabled?: boolean): string => {
-  if (disabled) return colors.text.light.disabled
-  if (!color || color === 'inherit') return colors.text.light.primary
-  if (color === 'primary') return colors.text.light.primary
-  if (color === 'secondary') return colors.text.light.secondary
-  if (color === 'tertiary') return colors.text.light.tertiary
-  if (color === 'disabled') return colors.text.light.disabled
-  if (color === 'error') return colors.error[500]
-  if (color === 'success') return colors.success[500]
-  if (color === 'warning') return colors.warning[500]
-  return color // Custom color string
-}
-
-/**
  * Label component
  *
  * @example
@@ -86,15 +71,16 @@ export function Label({
   children,
   ...textProps
 }: LabelProps) {
+  const { theme } = useThemeContext()
   const computedStyle = useMemo<TextStyle>(() => {
     const baseStyle = getLabelStyle(size, weight)
 
     return {
       ...baseStyle,
-      color: resolveColor(color, disabled),
+      color: resolveTypographyColor(disabled ? 'disabled' : color, theme),
       textAlign: align,
     }
-  }, [size, weight, color, disabled, align])
+  }, [size, weight, color, disabled, align, theme])
 
   // On web, we add nativeID to associate with form elements
   const webProps =

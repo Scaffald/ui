@@ -29,13 +29,22 @@ export function getInputStyles(
   const isHover = state === 'hover'
 
   // Base container styles
+  //
+  // `width: '100%'` is what makes an Input fill its column, which is the common
+  // case. It must NOT be paired with `minWidth: '100%'` / `flexShrink: 0`: those
+  // made the width a hard floor, so an Input sharing a Row with a sibling (a
+  // search field next to an Export button, say) claimed the whole row and pushed
+  // the sibling out of bounds — and no caller could opt out, because `flex: 1`
+  // from the outside cannot shrink a box below its own minWidth.
+  //
+  // Keeping width as the *preferred* size and leaving shrink enabled means the
+  // column case is unchanged while a Row can still divide the space.
   const baseContainer: ViewStyle = {
     width: '100%',
-    minWidth: '100%',
     maxWidth: '100%',
     flexDirection: 'column',
     gap: spacing[4],
-    flexShrink: 0,
+    flexShrink: 1,
   }
 
   // Base input container styles
