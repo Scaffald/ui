@@ -145,8 +145,19 @@ function _getWebSnapshot(): Snapshot {
   return _webSnapshot
 }
 
+/**
+ * Server snapshot. Must be a stable reference, not a fresh object.
+ *
+ * Returning `{ width: 1280, height: 900 }` from here allocated a new object on
+ * every call, so React saw the snapshot change on every read and warned "The
+ * result of getServerSnapshot should be cached to avoid an infinite loop" —
+ * repeatedly, because useResponsive backs Box/Stack/Grid and so runs many times
+ * per SSR page. Hoisting it makes the identity stable.
+ */
+const _SERVER_SNAPSHOT: Snapshot = { width: 1280, height: 900 }
+
 function _getServerSnapshot(): Snapshot {
-  return { width: 1280, height: 900 }
+  return _SERVER_SNAPSHOT
 }
 
 // Initialize web store immediately on module load
