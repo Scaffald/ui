@@ -13,24 +13,8 @@ import {
   letterSpacing,
   fontWeight as fontWeightTokens,
 } from '../../tokens/typography'
-import { colors } from '../../tokens/colors'
-import { getFontFamily } from './Typography.styles'
-
-/**
- * Resolve color prop to actual color value
- */
-const resolveColor = (color?: string): string => {
-  // Caption defaults to secondary color (more muted)
-  if (!color || color === 'inherit') return colors.text.light.secondary
-  if (color === 'primary') return colors.text.light.primary
-  if (color === 'secondary') return colors.text.light.secondary
-  if (color === 'tertiary') return colors.text.light.tertiary
-  if (color === 'disabled') return colors.text.light.disabled
-  if (color === 'error') return colors.error[500]
-  if (color === 'success') return colors.success[500]
-  if (color === 'warning') return colors.warning[500]
-  return color // Custom color string
-}
+import { useThemeContext } from '../../theme'
+import { getFontFamily, resolveTypographyColor } from './Typography.styles'
 
 /**
  * Caption component
@@ -54,6 +38,7 @@ export function Caption({
   children,
   ...textProps
 }: CaptionProps) {
+  const { theme } = useThemeContext()
   const computedStyle = useMemo<TextStyle>(() => {
     return {
       fontFamily: getFontFamily(weight),
@@ -61,10 +46,10 @@ export function Caption({
       fontWeight: fontWeightTokens[weight],
       lineHeight: lineHeight.xs, // 16px
       letterSpacing: letterSpacing.normal,
-      color: resolveColor(color),
+      color: resolveTypographyColor(color, theme, 'secondary'),
       textAlign: align,
     }
-  }, [weight, color, align])
+  }, [weight, color, align, theme])
 
   return (
     <Text style={[computedStyle, style]} selectable={selectable} {...textProps}>

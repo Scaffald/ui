@@ -14,8 +14,8 @@ import {
   letterSpacing,
   fontWeight as fontWeightTokens,
 } from '../../tokens/typography'
-import { colors } from '../../tokens/colors'
-import { getFontFamily } from './Typography.styles'
+import { useThemeContext } from '../../theme'
+import { getFontFamily, resolveTypographyColor } from './Typography.styles'
 
 /**
  * Get typography values for paragraph size
@@ -65,21 +65,6 @@ const getParagraphStyle = (
 }
 
 /**
- * Resolve color prop to actual color value
- */
-const resolveColor = (color?: string): string => {
-  if (!color || color === 'inherit') return colors.text.light.primary
-  if (color === 'primary') return colors.text.light.primary
-  if (color === 'secondary') return colors.text.light.secondary
-  if (color === 'tertiary') return colors.text.light.tertiary
-  if (color === 'disabled') return colors.text.light.disabled
-  if (color === 'error') return colors.error[500]
-  if (color === 'success') return colors.success[500]
-  if (color === 'warning') return colors.warning[500]
-  return color // Custom color string
-}
-
-/**
  * Paragraph component
  *
  * @example
@@ -103,15 +88,16 @@ export function Paragraph({
   children,
   ...textProps
 }: ParagraphProps) {
+  const { theme } = useThemeContext()
   const computedStyle = useMemo<TextStyle>(() => {
     const baseStyle = getParagraphStyle(size, weight, serif)
 
     return {
       ...baseStyle,
-      color: resolveColor(color),
+      color: resolveTypographyColor(color, theme),
       textAlign: align,
     }
-  }, [size, weight, serif, color, align])
+  }, [size, weight, serif, color, align, theme])
 
   return (
     <Text style={[computedStyle, style]} selectable={selectable} {...textProps}>
