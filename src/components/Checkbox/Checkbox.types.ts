@@ -45,6 +45,12 @@ export interface CheckboxProps {
   accessibilityLabel?: string
 
   /**
+   * Test identifier, forwarded to the interactive checkbox element
+   * (the one carrying accessibilityRole/checked state) for e2e selectors.
+   */
+  testID?: string
+
+  /**
    * Whether the checkbox has an error state
    */
   error?: boolean
