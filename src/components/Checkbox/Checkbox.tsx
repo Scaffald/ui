@@ -53,6 +53,7 @@ export function Checkbox({
   color = 'primary',
   disabled = false,
   accessibilityLabel,
+  testID,
   error = false,
   errorMessage,
   showError = true,
@@ -128,6 +129,7 @@ export function Checkbox({
       <Pressable
         onPress={handlePress}
         disabled={disabled}
+        testID={testID}
         accessibilityRole="checkbox"
         accessibilityLabel={
           accessibilityLabel ?? (typeof label === 'string' ? label : undefined)
