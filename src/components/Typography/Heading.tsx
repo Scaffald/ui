@@ -76,7 +76,8 @@ const getHeadingStyle = (
   const resolvedWeight = weight || defaultWeights[level]
 
   return {
-    fontFamily: getFontFamily(resolvedWeight, serif),
+    // `heading: true` — resolves to the display serif on web, Roboto on native.
+    fontFamily: getFontFamily(resolvedWeight, serif, true),
     fontSize: sizes[level],
     fontWeight: fontWeightTokens[resolvedWeight],
     lineHeight: lineHeights[level],
