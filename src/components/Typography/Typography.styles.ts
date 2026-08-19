@@ -69,9 +69,11 @@ export function getFontFamily(
     // is which. Roboto Serif stays the body serif.
     //
     // CSS uses fontWeight to select the variant, so one family name covers all
-    // weights. `Scaffald Display` is declared in apps/scaffald/global.css and
-    // falls back to Georgia wherever it has not been loaded.
-    if (heading) return 'Scaffald Display'
+    // weights. Emit a full stack rather than a bare name: the fallback has to
+    // live in the stack, not in a second @font-face under the same family —
+    // that would shadow the real font and never request it.
+    // Both families are declared in apps/scaffald/global.css.
+    if (heading) return "'Scaffald Display', 'Scaffald Display Fallback', Georgia, serif"
     return serif ? 'Roboto Serif' : 'Roboto'
   }
 
