@@ -826,6 +826,31 @@ export { StatusIndicator } from "./components/StatusIndicator";
 //   StatusIndicatorType,
 // } from "./components/StatusIndicator";
 
+// --- Screen primitives (SCF prototype parity, phase 2) --------------------
+// One header, one list toolbar, one metric block, and stage-grouped rows.
+// See docs/plans/redesign/2026-08-19-prototype-parity-plan.md in the monorepo.
+export { ScreenHeader } from "./components/ScreenHeader";
+export type {
+  ScreenHeaderPager,
+  ScreenHeaderProps,
+} from "./components/ScreenHeader";
+
+export { ListToolbar } from "./components/ListToolbar";
+export type {
+  ListToolbarFilterChip,
+  ListToolbarProps,
+} from "./components/ListToolbar";
+
+export { MetricBlock, MetricRow } from "./components/Metric";
+export type {
+  MetricBlockProps,
+  MetricRowProps,
+  MetricTone,
+} from "./components/Metric";
+
+export { Lane, LaneGroup } from "./components/Lane";
+export type { LaneGroupProps, LaneProps } from "./components/Lane";
+
 export { Pagination } from "./components/Pagination";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
