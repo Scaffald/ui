@@ -1,23 +1,37 @@
 /**
- * Typography tokens aligned with Apple iOS/iPadOS 26 HIG type scale
+ * Typography tokens — the SCF prototype's six-step interface scale.
  *
- * Font family: Roboto (cross-platform)
- * Type scale based on Apple's SF Pro "Large (Default)" Dynamic Type size
+ * The old scale was Apple iOS/iPadOS 26 HIG Dynamic Type: thirteen names over
+ * thirteen distinct sizes. In practice that licensed thirteen more, and the app
+ * accumulated 699 literal `fontSize:` sites across 15 values, with 12 and 13 px
+ * used interchangeably for the same job. The prototype's design audit named
+ * this ("no type scale") and prescribed the fix: six steps, every existing size
+ * mapped to its nearest one.
  *
- * Mapping:
- *   h1 = Large Title (34), h2 = Title 1 (28), h3 = Title 2 (22),
- *   h4 = Title 3 (20), h5 = Headline (17), h6 = Subheadline (15)
- *   paragraphL = Body (17), paragraphM = Callout (16),
- *   paragraphS = Footnote (13), caption = Caption 1 (12)
+ *   INTERFACE  11 · 12.5 · 14 · 17 · 22 · 30
+ *   DISPLAY    42                              (page titles only)
+ *
+ * Every token name survives, so nothing breaks at once — but several now share
+ * a step, which is the point. `xs`/`sm` are both 12.5; `h5` sits at body size
+ * and is differentiated by weight, exactly as Apple's Headline was; `h6` is
+ * smaller than body because its job is the uppercase letterspaced kicker.
+ *
+ * 12.5 is deliberate, not a stray half-step: it is a step of the scale rather
+ * than an accident between two. React Native accepts fractional sizes; native
+ * rounds to the nearest physical pixel at render, web does not.
  *
  * Weights: Regular (400), Medium (500), Semi Bold (600), Bold (700)
  */
 
 /**
  * Font family definitions
+ *
+ * `heading` is a separate face from `body` so the two can diverge per platform.
+ * See Typography.styles.ts — web headings resolve to the display serif; native
+ * headings stay on Roboto until the serif is proven legible on a device.
  */
 export const fontFamily = {
-  heading: 'Roboto',
+  heading: 'Scaffald Display',
   body: 'Roboto',
   serif: 'Roboto Serif',
   mono: 'Roboto Mono',
@@ -25,26 +39,39 @@ export const fontFamily = {
 } as const
 
 /**
- * Font size scale
- * Based on Apple iOS/iPadOS 26 HIG "Large (Default)" Dynamic Type
+ * The scale itself. Prefer these when adding new type; the named tokens below
+ * are aliases onto these six steps plus the display size.
+ */
+export const fontScale = {
+  step1: 11,
+  step2: 12.5,
+  step3: 14,
+  step4: 17,
+  step5: 22,
+  step6: 30,
+  display: 42,
+} as const
+
+/**
+ * Font size scale — names preserved, values snapped to `fontScale`.
  */
 export const fontSize = {
-  // Text sizes (Apple equivalents)
-  xxs: 11, // Caption 2
-  xs: 12, // Caption 1
-  sm: 13, // Footnote
-  md: 16, // Callout (body base)
-  lg: 17, // Body
-  xl: 20, // Title 3
-  '2xl': 22, // Title 2
+  // Text sizes
+  xxs: fontScale.step1, // 11
+  xs: fontScale.step2, // 12.5 (was 12)
+  sm: fontScale.step2, // 12.5 (was 13 — the 12/13 split was never meaningful)
+  md: fontScale.step3, // 14  (was 16) body base
+  lg: fontScale.step4, // 17
+  xl: fontScale.step5, // 22  (was 20)
+  '2xl': fontScale.step5, // 22
 
-  // Heading sizes (Apple equivalents)
-  h6: 15, // Subheadline
-  h5: 17, // Headline
-  h4: 20, // Title 3
-  h3: 22, // Title 2
-  h2: 28, // Title 1
-  h1: 34, // Large Title
+  // Heading sizes
+  h6: fontScale.step1, // 11  (was 15) uppercase kicker — below body on purpose
+  h5: fontScale.step3, // 14  (was 17) body size, carried by weight
+  h4: fontScale.step4, // 17  (was 20)
+  h3: fontScale.step5, // 22
+  h2: fontScale.step6, // 30  (was 28)
+  h1: fontScale.display, // 42  (was 34) — page titles get real display size
 } as const
 
 /**
@@ -59,24 +86,27 @@ export const fontWeight = {
 
 /**
  * Line height scale
- * Based on Apple iOS/iPadOS 26 HIG
+ *
+ * Two ratios, chosen by role rather than by size — the prototype sets body at
+ * 1.55 for a comfortable measure and headings at ~1.15, so the same 14 px is
+ * leaded differently as `md` body text than as an `h5` heading.
  */
 export const lineHeight = {
-  // Text line heights (Apple equivalents)
-  xxs: 13, // Caption 2
-  xs: 16, // Caption 1
-  sm: 18, // Footnote
-  md: 21, // Callout
-  lg: 22, // Body
-  xl: 25, // Title 3
+  // Text line heights — ~1.55
+  xxs: 17, // 11
+  xs: 19, // 12.5
+  sm: 19, // 12.5
+  md: 22, // 14
+  lg: 26, // 17
+  xl: 34, // 22
 
-  // Heading line heights (Apple equivalents)
-  h6: 20, // Subheadline
-  h5: 22, // Headline
-  h4: 25, // Title 3
-  h3: 28, // Title 2
-  h2: 34, // Title 1
-  h1: 41, // Large Title
+  // Heading line heights — ~1.15
+  h6: 16, // 11
+  h5: 18, // 14
+  h4: 20, // 17
+  h3: 26, // 22
+  h2: 34, // 30
+  h1: 47, // 42
 } as const
 
 /**

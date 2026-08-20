@@ -1,26 +1,35 @@
 /**
- * Border tokens mapped from Figma Forsured Design System
+ * Border tokens — the SCF prototype's three-step interface radius scale.
  *
- * Border radius values: s(5), m(6), l(8), xl(10), xxl(12)
- * All values are in pixels
+ *   INTERFACE  2 (sm) · 4 (md) · 7 (lg)
+ *
+ * The prototype keeps corners nearly square and separates with hairline rules
+ * and whitespace instead. Our app had drifted the other way: ~350 literal
+ * `borderRadius:` sites across a dozen values, 8/12/16 most common, so
+ * neighbouring cards rounded differently.
+ *
+ * The iOS-26 radii below are NOT part of that scale and are not drift. They
+ * belong to native sheets, alerts and context menus, where the platform sets
+ * the shape. Leave them alone; never reach for them to round a card.
+ *
+ * All values are in pixels.
  */
 
 /**
  * Border radius scale
- * Reduced to ~4-5px range for primary sizes (s/m)
  */
 export const borderRadius = {
   none: 0, // radius-none
   xxxs: 2, // radius-xxxs
-  xxs: 3, // radius-xxs
+  xxs: 2, // radius-xxs  (was 3)
   xs: 4, // radius-xs
-  s: 5, // radius-s
-  m: 6, // radius-m
-  l: 8, // radius-l
-  xl: 10, // radius-xl
-  xxl: 12, // radius-xxl
-  xxxl: 16, // radius-xxxl
-  xxxxl: 24, // radius-xxxxl
+  s: 4, // radius-s     (was 5)
+  m: 4, // radius-m     (was 6)
+  l: 7, // radius-l     (was 8)
+  xl: 7, // radius-xl    (was 10)
+  xxl: 7, // radius-xxl   (was 12)
+  xxxl: 7, // radius-xxxl  (was 16)
+  xxxxl: 7, // radius-xxxxl (was 24)
   max: 999, // radius-max (fully rounded/pill shape)
 
   // iOS 26 specific radii
@@ -43,15 +52,15 @@ export const borderRadius = {
 export const radius = {
   none: borderRadius.none, // 0
   xxxs: borderRadius.xxxs, // 2
-  xxs: borderRadius.xxs, // 3
+  xxs: borderRadius.xxs, // 2
   xs: borderRadius.xs, // 4
-  sm: borderRadius.s, // 5
-  md: borderRadius.m, // 6
-  lg: borderRadius.l, // 8
-  xl: borderRadius.xl, // 10
-  '2xl': borderRadius.xxl, // 12
-  '3xl': borderRadius.xxxl, // 16
-  '4xl': borderRadius.xxxxl, // 24
+  sm: borderRadius.s, // 4  — interface step 1 is `xxxs` (2); sm/md are step 2
+  md: borderRadius.m, // 4
+  lg: borderRadius.l, // 7
+  xl: borderRadius.xl, // 7
+  '2xl': borderRadius.xxl, // 7
+  '3xl': borderRadius.xxxl, // 7
+  '4xl': borderRadius.xxxxl, // 7
   full: borderRadius.max, // 999 (pill shape)
 
   // iOS 26 aliases

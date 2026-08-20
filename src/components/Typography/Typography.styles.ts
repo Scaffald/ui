@@ -57,12 +57,35 @@ export function resolveTypographyColor(
 export function getFontFamily(
   weight: 'regular' | 'medium' | 'semibold' | 'bold',
   serif?: boolean,
+  /**
+   * Headings resolve to the display serif on web. Native stays on Roboto until
+   * the serif is proven legible on a real device — see `resolveDisplayFace`.
+   */
+  heading?: boolean,
 ): string {
+  if (Platform.OS === 'web') {
+    // A heading that asks for serif gets the DISPLAY serif, not Roboto Serif —
+    // otherwise the app carries two competing serifs with no rule about which
+    // is which. Roboto Serif stays the body serif.
+    //
+    // CSS uses fontWeight to select the variant, so one family name covers all
+    // weights. Emit a full stack rather than a bare name: the fallback has to
+    // live in the stack, not in a second @font-face under the same family —
+    // that would shadow the real font and never request it.
+    // Both families are declared in apps/scaffald/global.css.
+    if (heading) return "'Scaffald Display', 'Scaffald Display Fallback', Georgia, serif"
+    return serif ? 'Roboto Serif' : 'Roboto'
+  }
+
   if (serif) return 'Roboto Serif'
 
-  if (Platform.OS === 'web') return 'Roboto' // CSS uses fontWeight to select variant
-
-  // Native: use weight-specific registered font family
+  // Native: use weight-specific registered font family.
+  //
+  // Headings deliberately do NOT take the display serif here. Cormorant
+  // Garamond is a display face; at 11-14px on a phone in daylight it is worse
+  // than Roboto, and the jobsite is the native app's whole context. Revisit
+  // once we have looked at it on a device outdoors — the change is this branch
+  // plus a font registration in apps/scaffald/utils/useAppFonts.ts.
   if (weight === 'bold') return 'Roboto-Bold'
   if (weight === 'medium' || weight === 'semibold') return 'Roboto-Medium'
   return 'Roboto'

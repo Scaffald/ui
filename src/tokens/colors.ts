@@ -57,8 +57,12 @@ export const colors = {
     300: '#3fb5c7',
     400: '#1e96a8',
     500: '#1d7282', // Default primary - rich deep logo teal
-    600: '#125b69',
-    700: '#034550', // Logo dark forest teal
+    // 600/700 retuned to carry the same visual weight the SCF prototype's amber
+    // accent carries on its warm ground. Measured against bg `gray[50]`:
+    // the prototype's emphasis step is 6.28:1, ours was 7.26:1 (too heavy) —
+    // 600 now lands at 6.34:1, 700 at 8.00:1.
+    600: '#176476', // was #125b69
+    700: '#0f5464', // was #034550 (10.04:1 — near-black, lost all hue)
     800: '#022d38',
     900: '#011d24',
   },
@@ -118,17 +122,26 @@ export const colors = {
     900: '#0f3018',
   },
 
+  // The single amber. Serves two named jobs and no third value:
+  //   `warning`   — caution / something is off
+  //   `attention` — act on this: overdue, over-SLA, stale in stage (see the
+  //                 semantic roles below). The SCF prototype uses this hue as
+  //                 its accent; we reserve it for priority so teal stays the
+  //                 one primary, which is what its design audit asked for.
+  // Ramp is the prototype's OKLCH accent scale, so a step of amber matches the
+  // same step of any other role in visual value. 500 was `#9a6614` and 600 was
+  // an exact duplicate of it — a dead step in the ramp.
   warning: {
-    50: '#fdf5e6',
-    100: '#f9e6c0',
-    200: '#f2cc84',
-    300: '#e8ae4a',
-    400: '#d4942a',
-    500: '#9a6614',
-    600: '#9a6614',
-    700: '#7a4f0e',
-    800: '#5c3a08',
-    900: '#402807',
+    50: '#fffaf2',
+    100: '#fff3e4',
+    200: '#ffe3bf',
+    300: '#facb8d',
+    400: '#e1ad66',
+    500: '#c28d41',
+    600: '#a06f24',
+    700: '#7d5411', // 6.28:1 on gray[50] — the prototype's emphasis step exactly
+    800: '#5a3b0a',
+    900: '#3a270d',
   },
 
   error: {
@@ -523,6 +536,10 @@ export const colors = {
       tertiary: '#6e6760', // gray[500] warm - Reserved for secondary text
       disabled: '#cdc8c0', // gray[300] warm - Context for operational disabilities
       quaternary: '#ffffff', // Base/0 White - Contrast for optimal readability (inverse text)
+      /** Emphasis text — links, active nav, the figure in a metric block */
+      emphasis: '#176476', // primary[600] teal — 6.34:1 on gray[50]
+      /** "Act on this": overdue, over-SLA, stale in stage. Never for errors. */
+      attention: '#7d5411', // warning[700] amber — 6.28:1 on gray[50]
       /** Vibrant text for glass surfaces — full opacity, high contrast */
       vibrantPrimary: '#000000',
       /** Vibrant text for glass surfaces — secondary emphasis */
@@ -538,6 +555,10 @@ export const colors = {
       tertiary: '#9e9790', // gray[400] warm - Reserved for secondary text
       disabled: '#504940', // gray[600] warm - Context for operational disabilities
       quaternary: '#16110d', // gray[900] warm - Contrast for optimal readability (inverse text)
+      /** Emphasis text — links, active nav, the figure in a metric block */
+      emphasis: '#3fb5c7', // primary[300] teal — 7.72:1 on gray[900]
+      /** "Act on this": overdue, over-SLA, stale in stage. Never for errors. */
+      attention: '#e1ad66', // warning[400] amber — 9.26:1 on gray[900]
       /** Vibrant text for glass surfaces — full opacity, high contrast */
       vibrantPrimary: '#ffffff',
       /** Vibrant text for glass surfaces — secondary emphasis */
@@ -553,6 +574,8 @@ export const colors = {
     tertiary: '#6e6760', // Alias for text.light.tertiary
     disabled: '#9e9790', // Alias for text.light.disabled (note: uses gray[400] warm for backward compat)
     inverse: '#ffffff', // Alias for text.light.quaternary
+    emphasis: '#176476', // Alias for text.light.emphasis
+    attention: '#7d5411', // Alias for text.light.attention
   },
 
   // Background Color Tokens
@@ -565,6 +588,8 @@ export const colors = {
       emphasis: '#e3dfd9', // gray[200] warm - Used for background elements requiring more visual emphasis
       active: '#cdc8c0', // gray[300] warm - Used for background elements currently active or hovered over
       selected: '#e8f6f9', // primary[50] teal - Used for background elements currently selected
+      /** Attention tint — the wash behind an over-SLA row or a transparency banner */
+      attention: '#fff3e4', // warning[100] amber
       /** Glass card background — semi-transparent white for backdrop-filter blur effect (web) */
       glass: 'rgba(255, 255, 255, 0.7)',
       /** Glass card fallback — higher opacity for native platforms without backdrop-filter */
@@ -589,6 +614,8 @@ export const colors = {
       emphasis: '#3c352c', // gray[700] warm - Used for background elements requiring more visual emphasis
       active: '#504940', // gray[600] warm - Used for background elements currently active or hovered over
       selected: '#0a3540', // dark teal tint - Used for background elements currently selected
+      /** Attention tint — the wash behind an over-SLA row or a transparency banner */
+      attention: '#3a270d', // warning[900] amber
       /** Glass card background — semi-transparent dark for backdrop-filter blur effect (web) */
       glass: 'rgba(30, 25, 20, 0.7)', // gray[800] warm @ 70%
       /** Glass card fallback — higher opacity for native platforms without backdrop-filter */
@@ -627,9 +654,11 @@ export const colors = {
       disabled: '#e3dfd9', // gray[200] warm - Used for borders currently disabled
       focus: '#1d7282', // primary[500] teal - Used for borders currently focused (input fields, buttons)
       error: '#b84f3b', // error[500] terracotta - Used for borders indicating an error state
-      warning: '#9a6614', // warning[500] ochre - Used for borders indicating a warning state
+      warning: '#a06f24', // warning[600] amber - Used for borders indicating a warning state
       success: '#3a7d4c', // success[500] moss - Used for borders indicating a success state
       info: '#2e72a0', // info[500] slate - Used for borders indicating an informational state
+      /** Attention outline — the amber rule around an over-SLA row or a chip */
+      attention: '#a06f24', // warning[600] amber
       /** Ghost border — barely visible outline for glass cards and subtle separation */
       ghost: 'rgba(176, 179, 173, 0.2)', // comp ghost border (outline-variant @ 20%)
       /** Liquid Glass specular highlight border (outer) */
@@ -647,9 +676,11 @@ export const colors = {
       disabled: '#3c352c', // gray[700] warm - Used for borders currently disabled
       focus: '#1d7282', // primary[500] teal - Used for borders currently focused
       error: '#b84f3b', // error[500] terracotta - Used for borders indicating an error state
-      warning: '#9a6614', // warning[500] ochre - Used for borders indicating a warning state
+      warning: '#c28d41', // warning[500] amber - Used for borders indicating a warning state
       success: '#3a7d4c', // success[500] moss - Used for borders indicating a success state
       info: '#2e72a0', // info[500] slate - Used for borders indicating an informational state
+      /** Attention outline — the amber rule around an over-SLA row or a chip */
+      attention: '#c28d41', // warning[500] amber
       /** Ghost border — barely visible outline for glass cards and subtle separation */
       ghost: 'rgba(110, 103, 96, 0.2)', // gray[500] warm @ 20%
       /** Liquid Glass specular highlight border (outer) */
@@ -660,8 +691,9 @@ export const colors = {
     // Backward compatibility aliases (reference light mode)
     // Note: 'light' alias removed - use border.light.subtle instead (conflicts with border.light object)
     default: '#e3dfd9', // Alias for border.light.default
-    focus: '#125b69', // Alias for border.light.focus (primary[600] teal for backward compat)
+    focus: '#176476', // Alias for border.light.focus (primary[600] teal — retuned)
     error: '#963c2a', // Alias for border.light.error (error[600] terracotta for backward compat)
+    attention: '#a06f24', // Alias for border.light.attention
   },
 
   // Foreground Color Tokens
@@ -672,11 +704,13 @@ export const colors = {
       subtle: '#3c352c', // gray[700] warm - Used for subtle foreground elements
       muted: '#6e6760', // gray[500] warm - Used for muted foreground elements
       emphasis: '#9e9790', // gray[400] warm - Used for foreground elements requiring more visual emphasis
-      active: '#1d7282', // primary[500] teal - Used for foreground elements currently active or hovered over
-      selected: '#1d7282', // primary[500] teal - Used for foreground elements currently selected
+      active: '#176476', // primary[600] teal - Used for foreground elements currently active or hovered over
+      selected: '#176476', // primary[600] teal - Used for foreground elements currently selected
       disabled: '#cdc8c0', // gray[300] warm - Used for foreground elements currently disabled
       error: '#b84f3b', // error[500] terracotta - Used for foreground elements indicating an error state
-      warning: '#9a6614', // warning[500] ochre - Used for foreground elements indicating a warning state
+      warning: '#a06f24', // warning[600] amber - Used for foreground elements indicating a warning state
+      /** "Act on this": overdue, over-SLA, stale in stage. Never for errors. */
+      attention: '#7d5411', // warning[700] amber
       success: '#3a7d4c', // success[500] moss - Used for foreground elements indicating a success state
       info: '#2e72a0', // info[500] slate - Used for foreground elements indicating an informational state
     },
@@ -685,11 +719,16 @@ export const colors = {
       subtle: '#e3dfd9', // gray[200] warm - Used for subtle foreground elements
       muted: '#9e9790', // gray[400] warm - Used for muted foreground elements
       emphasis: '#6e6760', // gray[500] warm - Used for foreground elements requiring more visual emphasis
-      active: '#1d7282', // primary[500] teal - Used for foreground elements currently active
-      selected: '#1d7282', // primary[500] teal - Used for foreground elements currently selected
+      // Was primary[500] `#1d7282` on both — only 3.38:1 against bg.dark.default,
+      // so active/selected state failed AA in dark mode. The teal ramp has to
+      // invert for dark: light steps carry, dark steps disappear into the ground.
+      active: '#3fb5c7', // primary[300] teal — 7.72:1 on gray[900]
+      selected: '#3fb5c7', // primary[300] teal — 7.72:1 on gray[900]
       disabled: '#504940', // gray[600] warm - Used for foreground elements currently disabled
       error: '#b84f3b', // error[500] terracotta - Used for foreground elements indicating an error state
-      warning: '#9a6614', // warning[500] ochre - Used for foreground elements indicating a warning state
+      warning: '#c28d41', // warning[500] amber - Used for foreground elements indicating a warning state
+      /** "Act on this": overdue, over-SLA, stale in stage. Never for errors. */
+      attention: '#e1ad66', // warning[400] amber — 9.26:1 on gray[900]
       success: '#3a7d4c', // success[500] moss - Used for foreground elements indicating a success state
       info: '#2e72a0', // info[500] slate - Used for foreground elements indicating an informational state
     },
