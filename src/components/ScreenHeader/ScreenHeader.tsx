@@ -166,6 +166,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[8],
+    // The title wraps and truncates; controls do not. Without this a
+    // segmented control gets squeezed until its last segment reads "Metr…".
+    flexShrink: 0,
   },
   tipRow: {
     flexDirection: 'row',

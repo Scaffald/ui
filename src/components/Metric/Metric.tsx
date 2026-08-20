@@ -22,6 +22,7 @@
 import { Children, isValidElement } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { useThemeContext } from '../../theme'
+import { useResponsive } from '../../hooks/useResponsive'
 import { colors } from '../../tokens/colors'
 import { fontSize, fontWeight, lineHeight } from '../../tokens/typography'
 import { spacing } from '../../tokens/spacing'
@@ -98,8 +99,17 @@ export function MetricRow({
   testID,
 }: MetricRowProps) {
   const { theme } = useThemeContext()
+  const { width } = useResponsive()
   const hairline = colors.border[theme].default
   const items = Children.toArray(children).filter(isValidElement)
+
+  // Vertical rules only survive while the row is genuinely one row. Once the
+  // cells wrap, a left border on the first cell of the second line reads as a
+  // stray divider hanging off the edge — the exact orphan the prototype's
+  // audit flagged on the admin stat row. Below the wrap threshold the cells
+  // stack and separate horizontally instead, which is what the prototype's
+  // own mobile layout does.
+  const stacked = width > 0 && width < 640
 
   return (
     <View
@@ -121,8 +131,11 @@ export function MetricRow({
           key={i}
           style={[
             styles.cell,
-            { minWidth: minColumnWidth },
-            i > 0 && { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: hairline },
+            stacked ? styles.cellStacked : { minWidth: minColumnWidth },
+            i > 0 &&
+              (stacked
+                ? { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: hairline }
+                : { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: hairline }),
           ]}
         >
           {child}
@@ -147,5 +160,10 @@ const styles = StyleSheet.create({
     flexBasis: 0,
     paddingVertical: spacing[16],
     paddingHorizontal: spacing[20],
+  },
+  cellStacked: {
+    flexBasis: '100%',
+    paddingHorizontal: 0,
+    paddingVertical: spacing[12],
   },
 })
