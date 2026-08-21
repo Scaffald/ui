@@ -58,7 +58,11 @@ export function LaneGroup({
   const isEmpty = count === 0
 
   return (
-    <View style={[styles.group, style]} testID={testID}>
+    // An empty stage is a single quiet line, not a full-height section. Seven
+    // stages at the populated spacing turned an empty pipeline into ~2,200px
+    // of scroll on a phone before the user reached anything at all — and an
+    // empty board is exactly when they most need to see the whole shape.
+    <View style={[styles.group, isEmpty && styles.groupEmpty, style]} testID={testID}>
       <View style={styles.groupHeader}>
         <View style={styles.groupHeaderLeft}>
           <View style={[styles.dot, { backgroundColor: dot }]} />
@@ -236,6 +240,10 @@ const styles = StyleSheet.create({
     gap: spacing[4],
     marginBottom: spacing[24],
   },
+  groupEmpty: {
+    gap: 0,
+    marginBottom: spacing[8],
+  },
   groupHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -255,8 +263,10 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   empty: {
-    paddingVertical: spacing[24],
-    paddingHorizontal: spacing[16],
+    // Indented to sit under the stage title, not under its dot.
+    paddingVertical: spacing[4],
+    paddingLeft: spacing[16],
+    paddingBottom: spacing[12],
   },
   row: {
     flexDirection: 'row',
