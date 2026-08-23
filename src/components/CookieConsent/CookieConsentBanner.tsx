@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { View, Text, Platform } from 'react-native'
 import { Stack } from '../Layout'
 import { Row } from '../Layout'
@@ -6,6 +6,7 @@ import { Button } from '../Button'
 import { Heading } from '../Typography'
 import { Paragraph } from '../Typography'
 import { useCookieConsent } from './CookieConsentProvider'
+import { useBottomBarContext } from '../BottomBar/BottomBarProvider'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
@@ -24,6 +25,23 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
     useCookieConsent()
   const [pendingAction, setPendingAction] = useState<'accept' | 'reject' | null>(null)
   const { theme } = useThemeContext()
+  // The phone tab bar is absolutely positioned at the bottom too, and this
+  // banner's zIndex 1000 puts it on top — so on mobile the consent card sat
+  // squarely over the primary navigation until somebody dismissed it. The bar
+  // publishes its own height here (0 on desktop, and 0 when no provider is
+  // mounted, so this is a no-op everywhere else).
+  const { navBarHeight } = useBottomBarContext()
+  const [measuredHeight, setMeasuredHeight] = useState(0)
+
+  // What callers offset their content by, so it has to be the space the banner
+  // actually occupies measured from the bottom of the screen — which now
+  // includes the tab bar it sits above. Reported from an effect rather than
+  // straight out of onLayout: onLayout only fires when the card itself
+  // re-lays-out, so a nav bar that appears or changes height afterwards would
+  // leave the reported figure stale.
+  useEffect(() => {
+    reportBannerHeight(measuredHeight + spacing[16] + navBarHeight)
+  }, [measuredHeight, navBarHeight, reportBannerHeight])
 
   const isVisible = isReady && shouldShowBanner
 
@@ -41,7 +59,7 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
       pointerEvents={isVisible ? 'box-none' : 'none'}
       style={{
         position: 'absolute',
-        bottom: spacing[16],
+        bottom: spacing[16] + navBarHeight,
         left: 0,
         right: 0,
         zIndex: 1000,
@@ -51,7 +69,7 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
       }}
     >
       <View
-        onLayout={(e) => reportBannerHeight(e.nativeEvent.layout.height + spacing[16])}
+        onLayout={(e) => setMeasuredHeight(e.nativeEvent.layout.height)}
         style={{
           width: '100%',
           maxWidth,
