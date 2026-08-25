@@ -84,16 +84,15 @@ export function ListToolbar({
       accessibilityRole="button"
       accessibilityState={{ expanded: open }}
       accessibilityLabel={
-        activeFilterCount > 0
-          ? `Filters and sort, ${activeFilterCount} active`
-          : 'Filters and sort'
+        activeFilterCount > 0 ? `Filters and sort, ${activeFilterCount} active` : 'Filters and sort'
       }
       style={[
         styles.filterTrigger,
         {
-          borderColor: open || activeFilterCount > 0
-            ? colors.border[theme].active
-            : colors.border[theme].default,
+          borderColor:
+            open || activeFilterCount > 0
+              ? colors.border[theme].active
+              : colors.border[theme].default,
           backgroundColor: colors.bg[theme].default,
         },
       ]}
@@ -207,7 +206,12 @@ export function ListToolbar({
                   onPress={chip.onClear}
                   accessibilityRole="button"
                   accessibilityLabel={`Remove ${chip.label} filter`}
-                  hitSlop={8}
+                  // 12px glyph + 16 each side = a 44px target. Removing the
+                  // filter is the whole point of a removable chip, and at the
+                  // previous hitSlop of 8 that target was 28px — under the
+                  // comfortable minimum, on a control whose entire job is to
+                  // be tapped. The glyph stays small; only the target grows.
+                  hitSlop={16}
                 >
                   <X size={12} color={colors.text[theme].tertiary} />
                 </Pressable>
