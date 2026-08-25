@@ -25,7 +25,7 @@
  * ```
  */
 
-import { Fragment } from 'react'
+import { Fragment, isValidElement } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { useThemeContext } from '../../theme'
 import { useResponsive } from '../../hooks/useResponsive'
@@ -33,7 +33,17 @@ import { colors } from '../../tokens/colors'
 import { fontSize, fontWeight, lineHeight } from '../../tokens/typography'
 import { spacing } from '../../tokens/spacing'
 import { Text } from '../Typography/Text'
-import type { LaneGroupProps, LaneProps } from './Lane.types'
+import type { LaneColumn, LaneGroupProps, LaneProps } from './Lane.types'
+
+/** Distinguishes a labelled cell from a bare ReactNode. */
+function isLaneColumn(col: unknown): col is LaneColumn {
+  return (
+    typeof col === 'object' &&
+    col !== null &&
+    !isValidElement(col) &&
+    typeof (col as LaneColumn).label === 'string'
+  )
+}
 
 export function LaneGroup({
   title,
@@ -120,6 +130,14 @@ export function Lane({
   const { width } = useResponsive()
   const stacked = width > 0 && width < stackBelow
 
+  // Empty labelled cells are dropped when stacked, and kept when wide: a table
+  // column has to hold its place across every row or the grid stops lining up,
+  // but a stacked list has no grid to preserve and a line reading "Union  —"
+  // costs a phone screen the same as a line that says something.
+  const visibleColumns = (columns ?? []).filter(
+    (col) => !(stacked && isLaneColumn(col) && col.empty)
+  )
+
   const body = (
     <View
       style={[
@@ -134,7 +152,7 @@ export function Lane({
     >
       <View style={[styles.identity, stacked && styles.identityStacked]}>
         {age ? (
-          <View style={styles.age}>
+          <View style={[styles.age, stacked && styles.ageStacked]}>
             <Text
               style={{
                 fontSize: fontSize.lg,
@@ -186,13 +204,58 @@ export function Lane({
         </View>
       </View>
 
-      {columns && columns.length > 0 ? (
+      {visibleColumns.length > 0 ? (
         <View style={[styles.columns, stacked && styles.columnsStacked]}>
-          {columns.map((col, i) => (
+          {visibleColumns.map((col, i) => (
             // Columns are a fixed, ordered set defined by the calling screen —
             // never reordered, so the index is a stable identity here.
             <Fragment key={i}>
-              <View style={[styles.column, stacked && styles.columnStacked]}>{col}</View>
+              <View
+                style={[
+                  styles.column,
+                  isLaneColumn(col) && styles.columnLabelled,
+                  stacked && styles.columnStacked,
+                  stacked && isLaneColumn(col) && styles.columnStackedLabelled,
+                ]}
+              >
+                {isLaneColumn(col) ? (
+                  <>
+                    {/* The label shows at every width, because a Lane row has
+                        no column headings to imply it. Wide, the cells read
+                        "Score 0  Source Scaffald"; a bare "0  Scaffald  —
+                        Unassigned" is a row of values with nothing saying what
+                        any of them are — the original caller worked around
+                        exactly this by writing "score" into the cell itself.
+                        Only the arrangement changes: inline when wide, label
+                        left and value right when stacked.
+
+                        An `empty` cell is the exception. Stacked it is gone
+                        already; wide it stays as a spacer holding the grid,
+                        and labelling a spacer prints a heading with nothing
+                        after it — "Outcome" followed by blank, which is worse
+                        than the bare placeholder it replaced. */}
+                    {col.empty ? null : (
+                      <Text
+                        style={{
+                          fontSize: fontSize.sm,
+                          color: colors.text[theme].tertiary,
+                        }}
+                      >
+                        {col.label}
+                      </Text>
+                    )}
+                    {typeof col.value === 'string' ? (
+                      <Text style={{ fontSize: fontSize.md, color: colors.text[theme].secondary }}>
+                        {col.value}
+                      </Text>
+                    ) : (
+                      col.value
+                    )}
+                  </>
+                ) : (
+                  col
+                )}
+              </View>
             </Fragment>
           ))}
         </View>
@@ -290,6 +353,20 @@ const styles = StyleSheet.create({
   },
   identityStacked: {
     justifyContent: 'space-between',
+    // Name first, age to its right.
+    //
+    // The wide row leads with age on purpose — it is the "act on this" number
+    // and it wants the left edge. Stacked, that same order put a bare "17d /
+    // IN STAGE" block on the left and pushed the candidate's name to the right
+    // edge, ragged and second. On a phone the row IS the candidate, so the
+    // name takes the left and the age keeps its prominence on the right.
+    flexDirection: 'row-reverse',
+    alignItems: 'flex-start',
+  },
+  ageStacked: {
+    alignItems: 'flex-end',
+    minWidth: 0,
+    flexShrink: 0,
   },
   age: {
     alignItems: 'flex-start',
@@ -316,6 +393,19 @@ const styles = StyleSheet.create({
   },
   columnStacked: {
     width: '100%',
+  },
+  /** Wide: "Score 0" reads as one phrase. */
+  columnLabelled: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: spacing[4],
+  },
+  /** Stacked: label left, value right, so the values form a readable edge. */
+  columnStackedLabelled: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: spacing[8],
   },
   note: {
     flexShrink: 1,

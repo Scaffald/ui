@@ -849,7 +849,7 @@ export type {
 } from "./components/Metric";
 
 export { Lane, LaneGroup } from "./components/Lane";
-export type { LaneGroupProps, LaneProps } from "./components/Lane";
+export type { LaneColumn, LaneGroupProps, LaneProps } from "./components/Lane";
 
 export { Pagination } from "./components/Pagination";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
