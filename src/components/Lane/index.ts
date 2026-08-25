@@ -1,2 +1,2 @@
 export { Lane, LaneGroup } from './Lane'
-export type { LaneProps, LaneGroupProps } from './Lane.types'
+export type { LaneColumn, LaneProps, LaneGroupProps } from './Lane.types'

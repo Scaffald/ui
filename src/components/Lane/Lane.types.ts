@@ -30,6 +30,21 @@ export interface LaneGroupProps {
   testID?: string
 }
 
+/**
+ * A labelled cell. The label is what a wide row gets from its column heading
+ * and a stacked row has nowhere else to get.
+ */
+export interface LaneColumn {
+  label: string
+  value: ReactNode
+  /**
+   * Treat this cell as empty, so the stacked form omits it. Callers that render
+   * their own placeholder ("—") should pass `empty` rather than relying on the
+   * component to guess what counts as nothing.
+   */
+  empty?: boolean
+}
+
 export interface LaneProps {
   /**
    * The staleness figure — days in THIS stage, not days since applied. It leads
@@ -43,10 +58,20 @@ export interface LaneProps {
   /** Secondary line under the title. */
   subtitle?: ReactNode
   /**
-   * Middle columns. Each is a self-contained cell; they collapse to a stacked
-   * key–value list below `stackBelow`.
+   * Middle columns. On a wide row they sit side by side; below `stackBelow`
+   * they collapse into a vertical list.
+   *
+   * Prefer the labelled form. A bare ReactNode works and is kept for callers
+   * that bake their own label into the cell ("score 88"), but position is what
+   * gives an unlabelled cell its meaning, and stacking destroys position: a
+   * pipeline row that read `88 | Scaffald | — | Unassigned` across the page
+   * became four orphaned values down a phone, one of which was a lone em dash.
+   *
+   * Labelled columns render as "label  value" when stacked, and a labelled
+   * column with an empty value is dropped from the stack entirely rather than
+   * spending a line to say nothing.
    */
-  columns?: ReactNode[]
+  columns?: Array<ReactNode | LaneColumn>
   /** Right-aligned controls — a Move menu, an overflow button. */
   actions?: ReactNode
   /** Why this row is where it is: "Denver County backlog — chase runner". */
