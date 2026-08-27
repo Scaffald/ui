@@ -9,13 +9,7 @@ import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
 import { boxShadows } from '../../tokens/shadows'
-import type {
-  TabType,
-  TabColor,
-  TabSize,
-  TabOrientation,
-  TabStyleConfig,
-} from './Tabs.types'
+import type { TabType, TabColor, TabSize, TabOrientation, TabStyleConfig } from './Tabs.types'
 
 /**
  * Tab size configurations from Figma
@@ -81,13 +75,21 @@ export function getTabsStyles(
 export function getTabListStyles(
   orientation: TabOrientation,
   _theme: ResolvedThemeMode = 'light',
-  options?: { gap?: number }
+  options?: { gap?: number; wrap?: boolean }
 ): ViewStyle {
   const gap = options?.gap ?? (orientation === 'horizontal' ? spacing[8] : 0)
   return {
     flexDirection: orientation === 'horizontal' ? 'row' : 'column',
     alignItems: orientation === 'horizontal' ? 'flex-start' : 'stretch',
     width: '100%',
+    // Wrapping beats clipping. A row of five tabs on a 390px screen ran its
+    // last one half off the right edge with nothing saying the strip
+    // continued — so "Audit Log" read as the end of the list rather than a
+    // tab you could reach. Two lines of tabs shows all five.
+    //
+    // Same call as the filter chip strip: an item scrolled out of frame is an
+    // item the user does not know exists, and a tab is a navigation target.
+    ...(options?.wrap && orientation === 'horizontal' && { flexWrap: 'wrap' as const }),
     ...(gap > 0 && { gap }),
   }
 }
@@ -133,15 +135,15 @@ export function getTabTriggerStyles(
                 flexShrink: 1,
               }
             : triggerSizing === 'fixed'
-            ? {
-                // Fixed width based on size (horizontal only)
-                width: sizeStyles.width || 150, // Use vertical width as base or fallback
-                minWidth: sizeStyles.width || 150,
-              }
-            : {
-                // Auto - width based on content, but with min constraint
-                minWidth: iconOnly ? sizeStyles.height : undefined,
-              }),
+              ? {
+                  // Fixed width based on size (horizontal only)
+                  width: sizeStyles.width || 150, // Use vertical width as base or fallback
+                  minWidth: sizeStyles.width || 150,
+                }
+              : {
+                  // Auto - width based on content, but with min constraint
+                  minWidth: iconOnly ? sizeStyles.height : undefined,
+                }),
         }
       : {
           width: sizeStyles.width,
@@ -339,4 +341,3 @@ export function getTabContentStyles(
     customContent,
   }
 }
-

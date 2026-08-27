@@ -36,6 +36,7 @@
 
 import { Children, isValidElement, cloneElement } from 'react'
 import { View, ScrollView } from 'react-native'
+import { useResponsive } from '../../hooks/useResponsive'
 import type { TabsProps, TabItemProps } from './Tabs.types'
 import { getTabsStyles, getTabListStyles } from './Tabs.styles'
 import { useThemeContext } from '../../theme'
@@ -59,6 +60,7 @@ export function Tabs({
   contentVariant = 'default',
   triggerSizing = 'auto',
   scrollable = false,
+  wrapBelow = 768,
   children,
   containerStyle,
 }: TabsProps) {
@@ -79,6 +81,11 @@ export function Tabs({
   })
 
   const styles = getTabsStyles(orientation, fullWidth, theme)
+
+  // Below `wrapBelow` a horizontal strip wraps rather than running off the
+  // right edge. `scrollable` callers keep their scroller — they asked for one.
+  const { width: viewportWidth } = useResponsive()
+  const shouldWrap = !scrollable && wrapBelow > 0 && viewportWidth > 0 && viewportWidth < wrapBelow
 
   // For horizontal layout, separate triggers from content
   // This ensures tab trigger width is independent of content width
@@ -154,7 +161,7 @@ export function Tabs({
               })}
             </ScrollView>
           ) : (
-            <View style={getTabListStyles(orientation, theme)}>
+            <View style={getTabListStyles(orientation, theme, { wrap: shouldWrap })}>
               {tabItems.map((item, index) => {
                 return cloneElement(item.fullItem, {
                   key: item.value || `trigger-${index}`,

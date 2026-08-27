@@ -35,6 +35,7 @@ import { BreadcrumbItem } from './BreadcrumbItem'
 import { BreadcrumbSeparator } from './BreadcrumbSeparator'
 import { HomeIcon } from './BreadcrumbIcons'
 import { useThemeContext } from '../../theme'
+import { useResponsive } from '../../hooks/useResponsive'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 
@@ -55,8 +56,10 @@ export function Breadcrumb({
   separatorStyle,
   ariaLabel = 'Breadcrumb',
   maxItems,
+  collapseBelow = 768,
 }: BreadcrumbProps) {
   const { theme } = useThemeContext()
+  const { width: viewportWidth } = useResponsive()
   const isLight = theme === 'light'
 
   // Handle item press
@@ -87,14 +90,24 @@ export function Breadcrumb({
     return isLight ? colors.icon.light.default : colors.icon.dark.default
   }
 
-  // Determine which items to show (for maxItems truncation - future feature)
-  const visibleItems = maxItems && items.length > maxItems
-    ? [
-        items[0], // First item
-        { id: 'ellipsis', label: '...', disabled: true }, // Ellipsis
-        ...items.slice(-(maxItems - 2)), // Last items
-      ]
-    : items
+  // How many crumbs fit.
+  //
+  // A four-level trail ran off a 390px screen and was cut mid-word — the LAST
+  // crumb, which is the one worth reading, because it names where you are. So
+  // below `collapseBelow` the trail falls back to "Home > … > Current" unless
+  // the caller has already chosen its own `maxItems`.
+  const effectiveMaxItems =
+    maxItems ??
+    (collapseBelow > 0 && viewportWidth > 0 && viewportWidth < collapseBelow ? 3 : undefined)
+
+  const visibleItems =
+    effectiveMaxItems && items.length > effectiveMaxItems
+      ? [
+          items[0], // First item
+          { id: 'ellipsis', label: '...', disabled: true }, // Ellipsis
+          ...items.slice(-(effectiveMaxItems - 2)), // Last items
+        ]
+      : items
 
   return (
     <View
@@ -130,9 +143,10 @@ export function Breadcrumb({
         const itemState = isActive ? 'active' : 'default'
 
         // Get icon for first item
-        const itemIcon = index === 0 && showHomeIcon
-          ? homeIcon || <HomeIcon size={24} color={getHomeIconColor()} />
-          : item.icon
+        const itemIcon =
+          index === 0 && showHomeIcon
+            ? homeIcon || <HomeIcon size={24} color={getHomeIconColor()} />
+            : item.icon
 
         return (
           <View key={item.id || index} style={styles.itemWrapper}>
