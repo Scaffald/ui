@@ -38,8 +38,9 @@ export function useFilePicker(props: UseFilePickerImageProps): UseFilePickerImag
         ...opts,
         ref: (el: HTMLInputElement | null) => {
           inputRef.current = el
-          if (typeof (opts?.ref as (el: HTMLInputElement | null) => void) === 'function') {
-            ;(opts?.ref as (el: HTMLInputElement | null) => void)(el)
+          const forwardedRef = opts?.ref
+          if (typeof forwardedRef === 'function') {
+            ;(forwardedRef as (el: HTMLInputElement | null) => void)(el)
           }
         },
         type: 'file',
