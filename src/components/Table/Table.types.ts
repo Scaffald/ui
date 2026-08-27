@@ -366,4 +366,20 @@ export interface TableProps {
    * Get unique row ID (default: row.id ?? String(index))
    */
   getRowId?: (row: TableRowData, index: number) => string
+
+  /**
+   * Viewport width below which each row renders as a labelled key–value card
+   * instead of a slice of a sideways-scrolling grid.
+   *
+   * A table narrower than its columns scrolls horizontally, which hides the
+   * columns that do not fit behind a gesture nothing advertises. Measured on
+   * the screening queue at 390px: 1,050px of columns in a 342px viewport, so
+   * 708px of every row sat off-frame.
+   *
+   * Matches `Lane`'s default so the two agree on what counts as narrow. Set 0
+   * to keep the grid at every width.
+   *
+   * @default 768
+   */
+  stackBelow?: number
 }
