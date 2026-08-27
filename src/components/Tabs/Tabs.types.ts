@@ -130,6 +130,21 @@ export interface TabsProps {
   scrollable?: boolean
 
   /**
+   * Viewport width below which a horizontal tab strip wraps onto more than one
+   * line instead of running off the right edge.
+   *
+   * Five tabs on a 390px screen put the last one half off-frame with nothing
+   * saying the strip continued — so it read as the end of the list rather than
+   * a tab you could reach. Wrapping shows all of them.
+   *
+   * Ignored when `scrollable` is set: that caller asked for a scroller.
+   * Set 0 to keep a single line at every width.
+   *
+   * @default 768
+   */
+  wrapBelow?: number
+
+  /**
    * Children tab items
    */
   children: ReactNode

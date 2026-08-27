@@ -69,6 +69,20 @@ export interface BreadcrumbProps {
   // Advanced (future)
   /** Max visible items with collapse (e.g., "Home > ... > Current") */
   maxItems?: number
+
+  /**
+   * Viewport width below which the trail collapses to "Home > ... > Current"
+   * on its own.
+   *
+   * A four-level trail did not fit a 390px screen. The crumb that fell off the
+   * edge was the LAST one — the one worth reading, because it names where you
+   * are. Collapsing keeps it.
+   *
+   * An explicit `maxItems` always wins. Set 0 to never collapse.
+   *
+   * @default 768
+   */
+  collapseBelow?: number
 }
 
 /**

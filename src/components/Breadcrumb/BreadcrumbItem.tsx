@@ -82,8 +82,15 @@ export function BreadcrumbItem({
 
       {/* Label */}
       <Text
+        // A long final crumb — "Review Background Checks" — is wider than a
+        // 390px screen on its own, so the trail's `flexWrap` had nothing to
+        // wrap and the text was cut mid-word at the viewport edge. Truncating
+        // keeps the crumb inside the screen and says it was shortened.
+        numberOfLines={1}
+        ellipsizeMode="tail"
         style={[
           styles.label,
+          { flexShrink: 1 },
           {
             color: getTextColor(),
             fontWeight: getFontWeight(),
@@ -119,10 +126,7 @@ export function BreadcrumbItem({
     <Pressable
       onPress={handlePress}
       disabled={disabled || !interactive || isActive}
-      style={({ pressed }) => [
-        styles.wrapper,
-        pressed && shouldBeInteractive && { opacity: 0.8 },
-      ]}
+      style={({ pressed }) => [styles.wrapper, pressed && shouldBeInteractive && { opacity: 0.8 }]}
       {...(Platform.OS === 'web' && {
         onMouseEnter: () => setIsHovered(true),
         onMouseLeave: () => setIsHovered(false),
@@ -147,12 +151,20 @@ export function BreadcrumbItem({
 
 const styles = StyleSheet.create({
   wrapper: {
-    // Wrapper for Pressable/View
+    // Shrinkable for the same reason as `container` below: this is the direct
+    // child of the trail row, so it is the one the row asks to give way first.
+    flexShrink: 1,
+    minWidth: 0,
   },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[6], // 6px between icon and text
+    // The label truncates rather than overflowing, which needs the row to be
+    // shrinkable and its minimum lifted — flexShrink on the Text alone does
+    // nothing while its parent's intrinsic width is the floor.
+    flexShrink: 1,
+    minWidth: 0,
   },
   iconContainer: {
     alignItems: 'center',
