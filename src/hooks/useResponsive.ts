@@ -115,7 +115,9 @@ function _updateWebStore() {
   const { width, height } = _readWebDimensions()
   if (width !== _webSnapshot.width || height !== _webSnapshot.height) {
     _webSnapshot = { width, height }
-    _webListeners.forEach((fn) => { fn() })
+    _webListeners.forEach((fn) => {
+      fn()
+    })
   }
 }
 
@@ -184,7 +186,9 @@ function _subscribeNative(listener: () => void): () => void {
     _nativeSubscription = Dimensions.addEventListener('change', ({ window: w }) => {
       if (w.width !== _nativeSnapshot.width || w.height !== _nativeSnapshot.height) {
         _nativeSnapshot = { width: w.width, height: w.height }
-        _nativeListeners.forEach((fn) => { fn() })
+        _nativeListeners.forEach((fn) => {
+          fn()
+        })
       }
     })
   }
@@ -246,6 +250,46 @@ export function useResponsive(): UseResponsiveReturn {
   const below = useCallback((bp: Breakpoint): boolean => width < breakpoints[bp], [width])
 
   return { width, height, breakpoint, isMobile, isTablet, isDesktop, select, atLeast, below }
+}
+
+/**
+ * Drop-in replacement for react-native's `useWindowDimensions`, backed by the
+ * same store as `useResponsive` — and therefore hydration-safe.
+ *
+ * ─── Why this exists ───────────────────────────────────────────────────────
+ *
+ * The previous implementation was a bare `export { useWindowDimensions } from
+ * 'react-native'`. React Native Web reads `Dimensions` directly, with no
+ * `getServerSnapshot`, so an SSR page renders at the server's idea of the
+ * viewport and the client's hydration pass renders at the real one. Any style
+ * derived from the width then differs, React throws the whole tree away, and
+ * the page is re-rendered on the client — the entire cost of SSR paid and then
+ * discarded (#625).
+ *
+ * That is what was happening in the app shell: `DrawerContent` computed
+ * `isSmall = width < 1024` from this hook, and React reported the mismatch on
+ * the `flex: 1, width: '100%'` div it wraps. It only showed on authenticated
+ * pages because the drawer is the thing auth gates — the cause was never auth
+ * itself, which is what #625 originally blamed.
+ *
+ * `useSyncExternalStore` uses `getServerSnapshot` for BOTH the server render
+ * and the client's hydration render, then switches to the live snapshot. So
+ * the first paint agrees by construction, and the real viewport arrives as an
+ * ordinary state update instead of a hydration failure.
+ *
+ * `scale` and `fontScale` still come from `Dimensions`: they do not vary
+ * between server and client in a way that moves layout, and nothing in this
+ * codebase branches on them.
+ */
+export function useWindowDimensions(): {
+  width: number
+  height: number
+  scale: number
+  fontScale: number
+} {
+  const { width, height } = useSyncExternalStore(_subscribe, _getSnapshot, _getServerSnapshot)
+  const { scale, fontScale } = Dimensions.get('window')
+  return { width, height, scale, fontScale }
 }
 
 export type { Breakpoint }
