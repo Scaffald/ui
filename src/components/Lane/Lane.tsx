@@ -25,7 +25,7 @@
  * ```
  */
 
-import { Fragment, isValidElement } from 'react'
+import { Fragment } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { useThemeContext } from '../../theme'
 import { useResponsive } from '../../hooks/useResponsive'
@@ -33,17 +33,7 @@ import { colors } from '../../tokens/colors'
 import { fontSize, fontWeight, lineHeight } from '../../tokens/typography'
 import { spacing } from '../../tokens/spacing'
 import { Text } from '../Typography/Text'
-import type { LaneColumn, LaneGroupProps, LaneProps } from './Lane.types'
-
-/** Distinguishes a labelled cell from a bare ReactNode. */
-function isLaneColumn(col: unknown): col is LaneColumn {
-  return (
-    typeof col === 'object' &&
-    col !== null &&
-    !isValidElement(col) &&
-    typeof (col as LaneColumn).label === 'string'
-  )
-}
+import type { LaneGroupProps, LaneProps } from './Lane.types'
 
 export function LaneGroup({
   title,
@@ -130,13 +120,7 @@ export function Lane({
   const { width } = useResponsive()
   const stacked = width > 0 && width < stackBelow
 
-  // Empty labelled cells are dropped when stacked, and kept when wide: a table
-  // column has to hold its place across every row or the grid stops lining up,
-  // but a stacked list has no grid to preserve and a line reading "Union  —"
-  // costs a phone screen the same as a line that says something.
-  const visibleColumns = (columns ?? []).filter(
-    (col) => !(stacked && isLaneColumn(col) && col.empty)
-  )
+  const visibleColumns = columns ?? []
 
   const body = (
     <View
@@ -210,52 +194,7 @@ export function Lane({
             // Columns are a fixed, ordered set defined by the calling screen —
             // never reordered, so the index is a stable identity here.
             <Fragment key={i}>
-              <View
-                style={[
-                  styles.column,
-                  isLaneColumn(col) && styles.columnLabelled,
-                  stacked && styles.columnStacked,
-                  stacked && isLaneColumn(col) && styles.columnStackedLabelled,
-                ]}
-              >
-                {isLaneColumn(col) ? (
-                  <>
-                    {/* The label shows at every width, because a Lane row has
-                        no column headings to imply it. Wide, the cells read
-                        "Score 0  Source Scaffald"; a bare "0  Scaffald  —
-                        Unassigned" is a row of values with nothing saying what
-                        any of them are — the original caller worked around
-                        exactly this by writing "score" into the cell itself.
-                        Only the arrangement changes: inline when wide, label
-                        left and value right when stacked.
-
-                        An `empty` cell is the exception. Stacked it is gone
-                        already; wide it stays as a spacer holding the grid,
-                        and labelling a spacer prints a heading with nothing
-                        after it — "Outcome" followed by blank, which is worse
-                        than the bare placeholder it replaced. */}
-                    {col.empty ? null : (
-                      <Text
-                        style={{
-                          fontSize: fontSize.sm,
-                          color: colors.text[theme].tertiary,
-                        }}
-                      >
-                        {col.label}
-                      </Text>
-                    )}
-                    {typeof col.value === 'string' ? (
-                      <Text style={{ fontSize: fontSize.md, color: colors.text[theme].secondary }}>
-                        {col.value}
-                      </Text>
-                    ) : (
-                      col.value
-                    )}
-                  </>
-                ) : (
-                  col
-                )}
-              </View>
+              <View style={[styles.column, stacked && styles.columnStacked]}>{col}</View>
             </Fragment>
           ))}
         </View>
