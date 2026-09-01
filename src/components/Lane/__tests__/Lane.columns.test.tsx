@@ -3,86 +3,75 @@ import { describe, expect, it, vi } from 'vitest'
 import { Lane } from '../Lane'
 
 /**
- * Stacked rows and labelled columns.
+ * Lane's column contract.
  *
- * A wide Lane row gets its meaning from position: `88 | Scaffald | — |
- * Unassigned` reads because each cell sits under a heading. Stacking destroys
- * position, and the phone form became four orphaned values down the page, one
- * of which was a lone em dash. These pin the two rules that fix it — the label
- * appears only when stacked, and an empty cell is dropped only when stacked.
+ * `columns` is `ReactNode[]` — self-contained cells the caller composes. It was
+ * briefly a union of `ReactNode | { label, value }` that Lane discriminated at
+ * render time, so it could add the label itself. That is gone, and these tests
+ * exist partly to keep it gone:
+ *
+ * The guard evaluated differently under the app and under vitest. The rendered
+ * app was correct at both widths; every row-rendering test in
+ * ApplicationsLanes.test.tsx crashed with "Objects are not valid as a React
+ * child (found: object with keys {label, value})" — the descriptor was reaching
+ * React because the guard returned false there. Three explanations were checked
+ * and eliminated (a stale build, a stale Vite cache, `isValidElement` being the
+ * fragile clause) before the honest conclusion: a render path is the wrong
+ * place to be guessing what a value is, whatever the specific cause.
+ *
+ * So Lane renders whatever node it is handed, and the caller composes the
+ * label. Nothing to discriminate, nothing to get wrong.
  */
 
-// useResponsive drives the stacking decision; drive it directly rather than
-// trying to fake a viewport.
 const mockWidth = vi.hoisted(() => ({ value: 1440 }))
 vi.mock('../../../hooks/useResponsive', () => ({
   useResponsive: () => ({ width: mockWidth.value }),
 }))
 
-const renderAt = (width: number, props = {}) => {
+const renderAt = (width: number, columns: React.ReactNode[]) => {
   mockWidth.value = width
-  return render(
-    <Lane
-      title="Alice Chen"
-      subtitle="Site Electrical Lead"
-      age="8d"
-      columns={[
-        { label: 'Score', value: '88' },
-        { label: 'Source', value: 'Scaffald' },
-        { label: 'Union', value: '—', empty: true },
-      ]}
-      {...props}
-    />
-  )
+  return render(<Lane title="Alice Chen" subtitle="Site Electrical Lead" age="8d" columns={columns} />)
 }
 
-describe('labelled columns', () => {
-  it('labels the cells on a wide row too — the row has no column headings', () => {
-    // A Lane row carries no header, so position implies nothing and a bare
-    // "0  Scaffald  —  Unassigned" says what none of its values are. The first
-    // caller worked around this by writing "score" into the cell itself.
-    renderAt(1440)
-    expect(screen.getByText('Source')).toBeTruthy()
-    expect(screen.getByText('Scaffald')).toBeTruthy()
-    expect(screen.getByText('Score')).toBeTruthy()
+describe('Lane columns', () => {
+  it('renders each cell exactly as given, wide', () => {
+    renderAt(1440, [<span key="a">Score 88</span>, <span key="b">Source Scaffald</span>])
+    expect(screen.getByText('Score 88')).toBeTruthy()
+    expect(screen.getByText('Source Scaffald')).toBeTruthy()
   })
 
-  it('keeps the labels once stacked, so no value is orphaned', () => {
-    renderAt(390)
-    expect(screen.getByText('Source')).toBeTruthy()
-    expect(screen.getByText('Scaffald')).toBeTruthy()
+  it('renders each cell exactly as given, stacked', () => {
+    renderAt(390, [<span key="a">Score 88</span>, <span key="b">Source Scaffald</span>])
+    expect(screen.getByText('Score 88')).toBeTruthy()
+    expect(screen.getByText('Source Scaffald')).toBeTruthy()
   })
 
-  it('keeps an empty cell on a wide row so the grid still lines up', () => {
-    renderAt(1440)
-    expect(screen.getByText('—')).toBeTruthy()
+  it('accepts a plain string cell', () => {
+    renderAt(1440, ['Unassigned'])
+    expect(screen.getByText('Unassigned')).toBeTruthy()
   })
 
-  it('does not label an empty cell — a heading with nothing after it is noise', () => {
-    // Wide, an empty cell survives as a spacer holding the grid. Labelling the
-    // spacer printed "Outcome" followed by blank.
-    renderAt(1440)
-    expect(screen.queryByText('Union')).toBeNull()
+  it('drops nothing and adds nothing — a null cell simply renders nothing', () => {
+    // The caller decides what to omit; Lane does not second-guess it.
+    renderAt(390, [<span key="a">Score 88</span>, null])
+    expect(screen.getByText('Score 88')).toBeTruthy()
   })
 
-  it('drops an empty cell when stacked rather than spending a line on a dash', () => {
-    renderAt(390)
-    expect(screen.queryByText('—')).toBeNull()
-    expect(screen.queryByText('Union')).toBeNull()
+  it('renders the identity at both widths', () => {
+    for (const w of [1440, 390]) {
+      const { unmount } = renderAt(w, [])
+      expect(screen.getByText('Alice Chen')).toBeTruthy()
+      expect(screen.getByText('Site Electrical Lead')).toBeTruthy()
+      expect(screen.getByText('8d')).toBeTruthy()
+      unmount()
+    }
   })
 
-  it('still renders a bare ReactNode column, label and all', () => {
-    // The unlabelled form is kept for callers that bake the label into the
-    // cell. It must not gain a phantom label or be dropped.
-    mockWidth.value = 390
-    render(<Lane title="Alice Chen" columns={[<span key="s">score 88</span>]} />)
-    expect(screen.getByText('score 88')).toBeTruthy()
-  })
-
-  it('renders the identity either way', () => {
-    renderAt(390)
-    expect(screen.getByText('Alice Chen')).toBeTruthy()
-    expect(screen.getByText('Site Electrical Lead')).toBeTruthy()
-    expect(screen.getByText('8d')).toBeTruthy()
+  it('never renders a raw object as a child', () => {
+    // The regression this file is named for. A caller that hands Lane a
+    // descriptor by mistake should not take the whole tree down.
+    expect(() =>
+      renderAt(390, [{ label: 'Score', value: '88' } as unknown as React.ReactNode])
+    ).toThrow(/Objects are not valid as a React child/)
   })
 })
