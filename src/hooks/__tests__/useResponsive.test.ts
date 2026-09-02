@@ -1,5 +1,25 @@
 /**
  * useResponsive hook tests
+ *
+ * These tests were written against an older per-instance implementation that
+ * read `window.innerWidth` on every render, so they replaced `global.window`
+ * with a plain object and assigned `innerWidth` before rendering.
+ *
+ * `useResponsive` no longer works that way. It is backed by a module-level
+ * singleton store (one shared resize listener for every Box/Stack/Grid in the
+ * tree -- see the hook for why), which reads the viewport once at import and
+ * thereafter only when a `resize` event fires. It also reads
+ * `document.documentElement.clientWidth` rather than `innerWidth`, so that it
+ * excludes the scrollbar and agrees with CSS media queries.
+ *
+ * Against that implementation the old mock could never work: the replacement
+ * window had no `document`, and the store had no reason to re-read anyway
+ * because the mocked `addEventListener` never fired anything. Every assertion
+ * about a specific width was really asserting against the width jsdom had at
+ * import time, which is 0. Nobody noticed because the package's vitest config
+ * pointed at a directory that does not exist, so none of these ran (#469).
+ *
+ * So: drive the real jsdom viewport and dispatch the real event.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
@@ -7,112 +27,94 @@ import { renderHook, act } from '@testing-library/react-native'
 import { useResponsive } from '../useResponsive'
 import { breakpoints } from '../../tokens/breakpoints'
 
-// Mock useWindowDimensions
-const mockDimensions = { width: 1024, height: 768 }
-
 vi.mock('react-native', async () => {
   const actual = await vi.importActual('react-native')
   return {
-    ...actual,
-    useWindowDimensions: () => mockDimensions,
-    Platform: {
-      OS: 'web',
-    },
+    ...(actual as object),
+    Platform: { OS: 'web' },
   }
 })
 
+/**
+ * Move the viewport and notify the store. Must be called *after* the hook has
+ * mounted: the store attaches its listener on the first subscriber, so a
+ * resize dispatched before then is not observed by anything.
+ */
+function setViewport(width: number, height = 768): void {
+  Object.defineProperty(document.documentElement, 'clientWidth', {
+    value: width,
+    configurable: true,
+  })
+  Object.defineProperty(window, 'innerHeight', { value: height, configurable: true })
+  window.dispatchEvent(new Event('resize'))
+}
+
+/** Mount the hook, then settle it at `width`. */
+function renderAt(width: number) {
+  const rendered = renderHook(() => useResponsive())
+  act(() => {
+    setViewport(width)
+  })
+  return rendered
+}
+
 describe('useResponsive', () => {
-  let originalWindow: typeof window | undefined
-  let mockAddEventListener: ReturnType<typeof vi.fn>
-  let mockRemoveEventListener: ReturnType<typeof vi.fn>
-
   beforeEach(() => {
-    originalWindow = global.window
-    mockAddEventListener = vi.fn()
-    mockRemoveEventListener = vi.fn()
-
-    // Mock window for web platform
-    Object.defineProperty(global, 'window', {
-      value: {
-        innerWidth: 1024,
-        innerHeight: 768,
-        addEventListener: mockAddEventListener,
-        removeEventListener: mockRemoveEventListener,
-      },
-      writable: true,
-    })
+    setViewport(1024)
   })
 
   afterEach(() => {
-    if (originalWindow !== undefined) {
-      Object.defineProperty(global, 'window', {
-        value: originalWindow,
-        writable: true,
-      })
-    }
     vi.clearAllMocks()
   })
 
   describe('Basic Properties', () => {
     it('should return width and height', () => {
-      const { result } = renderHook(() => useResponsive())
+      const { result } = renderAt(1024)
 
-      expect(result.current.width).toBeDefined()
-      expect(result.current.height).toBeDefined()
+      expect(result.current.width).toBe(1024)
+      expect(result.current.height).toBe(768)
     })
 
     it('should return breakpoint name', () => {
-      const { result } = renderHook(() => useResponsive())
+      const { result } = renderAt(1024)
 
-      expect(result.current.breakpoint).toBeDefined()
       expect(['base', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl']).toContain(result.current.breakpoint)
     })
 
     it('should return boolean device type flags', () => {
-      const { result } = renderHook(() => useResponsive())
+      const { result } = renderAt(1024)
 
       expect(typeof result.current.isMobile).toBe('boolean')
       expect(typeof result.current.isTablet).toBe('boolean')
       expect(typeof result.current.isDesktop).toBe('boolean')
     })
+
+    it('should track the viewport as it changes', () => {
+      const { result } = renderAt(400)
+      expect(result.current.width).toBe(400)
+
+      act(() => {
+        setViewport(breakpoints.lg)
+      })
+      expect(result.current.width).toBe(breakpoints.lg)
+    })
   })
 
   describe('select function', () => {
     it('should return base value when no breakpoint matches', () => {
-      // Set window to very small
-      Object.defineProperty(global.window, 'innerWidth', { value: 300, writable: true })
+      const { result } = renderAt(300)
 
-      const { result } = renderHook(() => useResponsive())
-
-      const value = result.current.select({
-        base: 'base-value',
-        md: 'md-value',
-      })
-
-      // Should return base or the lowest matching value
-      expect(['base-value']).toContain(value)
+      expect(result.current.select({ base: 'base-value', md: 'md-value' })).toBe('base-value')
     })
 
     it('should return correct breakpoint value', () => {
-      Object.defineProperty(global.window, 'innerWidth', { value: breakpoints.md + 100, writable: true })
+      const { result } = renderAt(breakpoints.md + 100)
 
-      const { result } = renderHook(() => useResponsive())
-
-      const value = result.current.select({
-        base: 8,
-        sm: 16,
-        md: 24,
-        lg: 32,
-      })
-
-      // Should return md value since width is at md breakpoint
-      expect(typeof value).toBe('number')
+      expect(result.current.select({ base: 8, sm: 16, md: 24, lg: 32 })).toBe(24)
     })
 
     it('should inherit from lower breakpoints when not specified', () => {
-      Object.defineProperty(global.window, 'innerWidth', { value: breakpoints.lg, writable: true })
-
-      const { result } = renderHook(() => useResponsive())
+      const { result } = renderAt(breakpoints.lg)
 
       const value = result.current.select({
         base: 'base',
@@ -127,18 +129,14 @@ describe('useResponsive', () => {
 
   describe('atLeast function', () => {
     it('should return true when width >= breakpoint', () => {
-      Object.defineProperty(global.window, 'innerWidth', { value: breakpoints.md, writable: true })
-
-      const { result } = renderHook(() => useResponsive())
+      const { result } = renderAt(breakpoints.md)
 
       expect(result.current.atLeast('sm')).toBe(true)
       expect(result.current.atLeast('md')).toBe(true)
     })
 
     it('should return false when width < breakpoint', () => {
-      Object.defineProperty(global.window, 'innerWidth', { value: breakpoints.sm - 1, writable: true })
-
-      const { result } = renderHook(() => useResponsive())
+      const { result } = renderAt(breakpoints.sm - 1)
 
       expect(result.current.atLeast('md')).toBe(false)
     })
@@ -146,17 +144,13 @@ describe('useResponsive', () => {
 
   describe('below function', () => {
     it('should return true when width < breakpoint', () => {
-      Object.defineProperty(global.window, 'innerWidth', { value: breakpoints.sm - 1, writable: true })
-
-      const { result } = renderHook(() => useResponsive())
+      const { result } = renderAt(breakpoints.sm - 1)
 
       expect(result.current.below('sm')).toBe(true)
     })
 
     it('should return false when width >= breakpoint', () => {
-      Object.defineProperty(global.window, 'innerWidth', { value: breakpoints.md, writable: true })
-
-      const { result } = renderHook(() => useResponsive())
+      const { result } = renderAt(breakpoints.md)
 
       expect(result.current.below('sm')).toBe(false)
     })
@@ -164,9 +158,7 @@ describe('useResponsive', () => {
 
   describe('Device Type Detection', () => {
     it('should detect mobile correctly', () => {
-      Object.defineProperty(global.window, 'innerWidth', { value: breakpoints.sm - 1, writable: true })
-
-      const { result } = renderHook(() => useResponsive())
+      const { result } = renderAt(breakpoints.sm - 1)
 
       expect(result.current.isMobile).toBe(true)
       expect(result.current.isTablet).toBe(false)
@@ -174,40 +166,40 @@ describe('useResponsive', () => {
     })
 
     it('should detect tablet correctly', () => {
-      Object.defineProperty(global.window, 'innerWidth', {
-        value: breakpoints.sm + 50,
-        writable: true,
-      })
+      const { result } = renderAt(breakpoints.sm + 50)
 
-      const { result } = renderHook(() => useResponsive())
-
-      // Tablet is between sm and lg
-      // This depends on the exact breakpoint values
-      expect(typeof result.current.isTablet).toBe('boolean')
+      expect(result.current.isMobile).toBe(false)
+      expect(result.current.isTablet).toBe(true)
+      expect(result.current.isDesktop).toBe(false)
     })
 
     it('should detect desktop correctly', () => {
-      Object.defineProperty(global.window, 'innerWidth', { value: breakpoints.lg + 100, writable: true })
+      const { result } = renderAt(breakpoints.lg + 100)
 
-      const { result } = renderHook(() => useResponsive())
-
+      expect(result.current.isMobile).toBe(false)
+      expect(result.current.isTablet).toBe(false)
       expect(result.current.isDesktop).toBe(true)
     })
   })
 
   describe('Web Platform', () => {
     it('should add resize event listener on web', () => {
+      const addSpy = vi.spyOn(window, 'addEventListener')
+
       renderHook(() => useResponsive())
 
-      expect(mockAddEventListener).toHaveBeenCalledWith('resize', expect.any(Function))
+      expect(addSpy).toHaveBeenCalledWith('resize', expect.any(Function))
+      addSpy.mockRestore()
     })
 
     it('should remove resize event listener on unmount', () => {
-      const { unmount } = renderHook(() => useResponsive())
+      const removeSpy = vi.spyOn(window, 'removeEventListener')
 
+      const { unmount } = renderHook(() => useResponsive())
       unmount()
 
-      expect(mockRemoveEventListener).toHaveBeenCalledWith('resize', expect.any(Function))
+      expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function))
+      removeSpy.mockRestore()
     })
   })
 })

@@ -23,12 +23,12 @@ const packageConfig = {
     ],
   },
   test: {
-    // TODO: Fix NX vitest executor path resolution so this config can use
-    // the correct include pattern. Currently kept as scaffald-ui to avoid
-    // a double-path esbuild error in the NX executor. The new test files
-    // (Input, Checkbox, Radio, Toggle, Dropdown, useSidebarState) inline
-    // their mocks and run through the root vitest config instead.
-    include: ['packages/scaffald-ui/src/**/*.{test,spec}.{ts,tsx}'],
+    // `root` is the workspace root (above), so include patterns are relative to
+    // it. This said `packages/scaffald-ui/...` -- a path that has not existed
+    // since the package was renamed to `packages/ui` -- so the config matched
+    // zero files and exited as though everything passed, hiding every test in
+    // this package (#469).
+    include: ['packages/ui/src/**/*.{test,spec}.{ts,tsx}'],
     watchExclude: ['**/dist/**'],
     setupFiles: [resolve(packageRoot, 'vitest.setup.ts')],
     coverage: {
@@ -46,5 +46,5 @@ const packageConfig = {
 }
 
 const merged = mergeConfig(baseConfig, packageConfig)
-merged.test.include = ['packages/scaffald-ui/src/**/*.{test,spec}.{ts,tsx}']
+merged.test.include = ['packages/ui/src/**/*.{test,spec}.{ts,tsx}']
 export default merged

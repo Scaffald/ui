@@ -49,9 +49,15 @@ describe('Modal', () => {
 
   it('should call onClose when backdrop is pressed', () => {
     const onClose = vi.fn()
-    // Mock Date.now to be past the 200ms debounce window
+    // Modal ignores a backdrop click within 200ms of opening, to swallow the
+    // stray click that can follow the gesture that opened it. Pinning Date.now
+    // to one fixed value does not clear that guard -- it guarantees it fires,
+    // because `openedAtRef` is stamped from the same mocked clock at render, so
+    // `Date.now() - openedAtRef.current` is always 0. The clock has to *move*
+    // between opening and clicking.
     const baseTime = Date.now()
-    const dateSpy = vi.spyOn(Date, 'now').mockReturnValue(baseTime + 300)
+    let now = baseTime
+    const dateSpy = vi.spyOn(Date, 'now').mockImplementation(() => now)
     const { getByRole } = render(
       <TestWrapper>
         <Modal visible={true} onClose={onClose} testID="modal">
@@ -61,6 +67,7 @@ describe('Modal', () => {
     )
 
     // Find the dialog (modal container) and click its parent (backdrop/overlay)
+    now = baseTime + 300
     const dialog = getByRole('dialog')
     const backdrop = dialog.parentElement
     if (backdrop) {
@@ -73,8 +80,12 @@ describe('Modal', () => {
 
   it('should not call onClose when closeOnBackdropPress is false', () => {
     const onClose = vi.fn()
+    // See the note above: the clock must advance past the open guard, or this
+    // test passes for the wrong reason -- the click never reaching the
+    // closeOnBackdropPress check at all.
     const baseTime = Date.now()
-    const dateSpy = vi.spyOn(Date, 'now').mockReturnValue(baseTime + 300)
+    let now = baseTime
+    const dateSpy = vi.spyOn(Date, 'now').mockImplementation(() => now)
     const { getByRole } = render(
       <TestWrapper>
         <Modal
@@ -88,6 +99,7 @@ describe('Modal', () => {
       </TestWrapper>
     )
 
+    now = baseTime + 300
     const dialog = getByRole('dialog')
     const backdrop = dialog.parentElement
     if (backdrop) {
