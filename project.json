@@ -17,7 +17,8 @@
       "executor": "@nx/vitest:test",
       "options": {
         "config": "packages/ui/vitest.config.ts",
-        "passWithNoTests": true
+        "//": "passWithNoTests must stay false. It was true while the config's include pattern pointed at a directory that no longer existed, which is exactly why 41 test files could vanish from CI without anyone noticing (#469). A glob that matches nothing should be loud.",
+        "passWithNoTests": false
       },
       "outputs": ["{workspaceRoot}/tests/reports/coverage/beyond-ui"]
     },
