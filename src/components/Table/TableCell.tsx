@@ -19,13 +19,7 @@
 
 import { useState } from 'react'
 import { View, Text, Pressable, Platform } from 'react-native'
-import {
-  ChevronRight,
-  ChevronDown,
-  MoreVertical,
-  ArrowUpRight,
-  Star,
-} from 'lucide-react-native'
+import { ChevronRight, ChevronDown, MoreVertical, ArrowUpRight, Star } from 'lucide-react-native'
 import type { TableCellProps } from './TableCell.types'
 import { getTableCellStyles } from './TableCell.styles'
 import { useStyles } from '../../hooks'
@@ -53,9 +47,17 @@ export function TableCell(props: TableCellProps) {
   const style = props.style
   const textStyle = props.textStyle
   const onPress = 'onPress' in props ? props.onPress : undefined
-  
+
   // Extract pressableProps (all other props not explicitly handled)
-  const { type: _, align: __, width: ___, style: ____, textStyle: _____, onPress: ______, ...pressableProps } = props as Record<string, unknown>
+  const {
+    type: _,
+    align: __,
+    width: ___,
+    style: ____,
+    textStyle: _____,
+    onPress: ______,
+    ...pressableProps
+  } = props as Record<string, unknown>
 
   // Extract props that may not exist on all variants (using type guards)
   const state = 'state' in props ? props.state : 'default'
@@ -114,7 +116,7 @@ export function TableCell(props: TableCellProps) {
     isHovered && state === 'default' ? 'hover' : state,
     align,
     theme,
-    width
+    width,
   ] as const)
 
   // Handle selection change
@@ -251,10 +253,12 @@ export function TableCell(props: TableCellProps) {
 
     return (
       <Container
-        {...(Platform.OS === 'web' && onPress && {
-          onMouseEnter: () => setIsHovered(true),
-          onMouseLeave: () => setIsHovered(false),
-        } as object)}
+        {...(Platform.OS === 'web' &&
+          onPress &&
+          ({
+            onMouseEnter: () => setIsHovered(true),
+            onMouseLeave: () => setIsHovered(false),
+          } as object))}
         onPress={onPress}
         style={({ pressed }) => [
           styles.container,
@@ -271,11 +275,7 @@ export function TableCell(props: TableCellProps) {
 
   // Render checkbox/radio/switch only cells
   if (type === 'checkbox-only' || type === 'radio-only' || type === 'switch-only') {
-    return (
-      <View style={[styles.container, style]}>
-        {renderSelectionControl()}
-      </View>
-    )
+    return <View style={[styles.container, style]}>{renderSelectionControl()}</View>
   }
 
   // Render icon cells (open/close)
@@ -298,7 +298,10 @@ export function TableCell(props: TableCellProps) {
     return (
       <View style={[styles.container, style]}>
         <StatusIndicator
-          type={(statusType as 'success' | 'error' | 'caution' | 'in-progress' | 'undefined') || 'success'}
+          type={
+            (statusType as 'success' | 'error' | 'caution' | 'in-progress' | 'undefined') ||
+            'success'
+          }
           variant={statusStyle || 'light'}
           label={statusLabel || ''}
         />
@@ -416,7 +419,9 @@ export function TableCell(props: TableCellProps) {
               borderRadius: borderRadius.xs,
             }}
           >
-            <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>Chart {chartType}</Text>
+            <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
+              Chart {chartType}
+            </Text>
           </View>
         )}
       </View>
@@ -428,10 +433,12 @@ export function TableCell(props: TableCellProps) {
 
   return (
     <Container
-      {...(Platform.OS === 'web' && onPress && {
-        onMouseEnter: () => setIsHovered(true),
-        onMouseLeave: () => setIsHovered(false),
-      } as object)}
+      {...(Platform.OS === 'web' &&
+        onPress &&
+        ({
+          onMouseEnter: () => setIsHovered(true),
+          onMouseLeave: () => setIsHovered(false),
+        } as object))}
       onPress={onPress}
       style={({ pressed }) => [
         styles.container,
@@ -443,62 +450,57 @@ export function TableCell(props: TableCellProps) {
       {renderSelectionControl()}
 
       {/* Avatar cell */}
-      {type === 'avatar' && (
-        typeof avatar === 'string' ? (
-            <Avatar size={40} src={avatar} status={showIndicator ? 'online' : undefined} />
-          ) : (
-            avatar
-          )
-      )}
+      {type === 'avatar' &&
+        (typeof avatar === 'string' ? (
+          <Avatar size={40} src={avatar} status={showIndicator ? 'online' : undefined} />
+        ) : (
+          avatar
+        ))}
 
       {/* Assignee cell (avatar group) */}
       {type === 'assignee' && avatars && (
         <View style={{ flexDirection: 'row', marginLeft: -spacing[12] }}>
           {avatars.slice(0, maxAvatars).map((avatarItem, index) => (
             <View key={index} style={{ marginLeft: index > 0 ? -spacing[12] : 0 }}>
-              {typeof avatarItem === 'string' ? (
-                <Avatar size={32} src={avatarItem} />
-              ) : (
-                avatarItem
-              )}
+              {typeof avatarItem === 'string' ? <Avatar size={32} src={avatarItem} /> : avatarItem}
             </View>
           ))}
         </View>
       )}
 
       {/* Card cell */}
-      {type === 'card' && (
-        cardIcon || (
-            <View
-              style={{
-                width: 43,
-                height: 30,
-                backgroundColor: colors.bg[theme].default,
-                borderWidth: borderWidth.thin,
-                borderColor: colors.border[theme].default,
-                borderRadius: borderRadius.xs,
-              }}
-            />
-          )
-      )}
+      {type === 'card' &&
+        (cardIcon || (
+          <View
+            style={{
+              width: 43,
+              height: 30,
+              backgroundColor: colors.bg[theme].default,
+              borderWidth: borderWidth.thin,
+              borderColor: colors.border[theme].default,
+              borderRadius: borderRadius.xs,
+            }}
+          />
+        ))}
 
       {/* File cell */}
-      {type === 'file' && (
-        fileIcon || (
-            <View
-              style={{
-                width: 32,
-                height: 34,
-                backgroundColor: colors.error[100],
-                borderRadius: borderRadius.xs,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Text style={{ fontSize: 9, color: colors.text[theme].secondary }}>{fileType || 'PDF'}</Text>
-            </View>
-          )
-      )}
+      {type === 'file' &&
+        (fileIcon || (
+          <View
+            style={{
+              width: 32,
+              height: 34,
+              backgroundColor: colors.error[100],
+              borderRadius: borderRadius.xs,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={{ fontSize: 9, color: colors.text[theme].secondary }}>
+              {fileType || 'PDF'}
+            </Text>
+          </View>
+        ))}
 
       {/* Brand icon cell */}
       {type === 'brand-icon' && brandIcon && <View>{brandIcon}</View>}
@@ -510,28 +512,26 @@ export function TableCell(props: TableCellProps) {
       {type === 'company' && logo && <View>{logo}</View>}
 
       {/* Crypto cell */}
-      {type === 'crypto' && (
-        cryptoIcon || (
-            <View
-              style={{
-                width: 28,
-                height: 28,
-                backgroundColor: colors.warning[400],
-                borderRadius: borderRadius.s,
-              }}
-            />
-          )
-      )}
+      {type === 'crypto' &&
+        (cryptoIcon || (
+          <View
+            style={{
+              width: 28,
+              height: 28,
+              backgroundColor: colors.warning[400],
+              borderRadius: borderRadius.s,
+            }}
+          />
+        ))}
 
       {/* Stock market cell */}
-      {type === 'stock-market' && (
-        trendIcon || (
-            <ArrowUpRight
-              size={16}
-              color={trendDirection === 'up' ? colors.success[500] : colors.error[500]}
-            />
-          )
-      )}
+      {type === 'stock-market' &&
+        (trendIcon || (
+          <ArrowUpRight
+            size={16}
+            color={trendDirection === 'up' ? colors.success[500] : colors.error[500]}
+          />
+        ))}
 
       {/* Text content */}
       {text && (
@@ -545,7 +545,9 @@ export function TableCell(props: TableCellProps) {
           {type === 'brand-icon' && brandHandle && (
             <Text style={styles.descriptionText}>{brandHandle}</Text>
           )}
-          {type === 'flag' && countryCode && <Text style={styles.descriptionText}>{countryCode}</Text>}
+          {type === 'flag' && countryCode && (
+            <Text style={styles.descriptionText}>{countryCode}</Text>
+          )}
           {type === 'crypto' && symbol && <Text style={styles.descriptionText}>{symbol}</Text>}
           {type === 'avatar' && description && (
             <Text style={styles.descriptionText}>{description}</Text>

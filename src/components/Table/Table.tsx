@@ -33,6 +33,28 @@ import { useTable } from './useTable'
  * (it renders zero rows at height 0, in grid mode too), so the rendered form
  * is covered by scripts/audit/smoke-wide-tables.mjs against the real app.
  */
+/**
+ * Grid or cards?
+ *
+ * On web the answer is the viewport: below `stackBelow` the grid does not fit.
+ * On native the answer is always cards. The grid mode is a web layout — a
+ * horizontal ScrollView around an unbounded `'100%'`-wide View around a
+ * vertical FlatList with a sticky header — and Yoga lays it out as an empty
+ * header block, a row of sort glyphs, and cells drawn over each other. That
+ * is what every Office table showed on an iPad (#768): at 768pt portrait it
+ * was not even below the default breakpoint, and in landscape it never would
+ * be. Cards are the native-safe rendering at every width; `stackBelow` still
+ * governs web.
+ */
+export function shouldStackTable(
+  platformOS: string,
+  viewportWidth: number,
+  stackBelow: number
+): boolean {
+  if (platformOS !== 'web') return true
+  return viewportWidth > 0 && viewportWidth < stackBelow
+}
+
 export function stackedDataColumns(columns: TableColumn[], selectableRows = false): TableColumn[] {
   return columns.filter(
     (c) => Boolean(c.title) && !c.headerEmpty && !(selectableRows && c.showCheckbox)
@@ -84,7 +106,7 @@ export function Table({
   // 342px viewport — 708px of every row parked off-frame, with nothing on
   // screen to say it was there. That is the same answer the kanban board gave
   // to "more stages", and the same reason Lanes exists.
-  const stacked = viewportWidth > 0 && viewportWidth < stackBelow
+  const stacked = shouldStackTable(Platform.OS, viewportWidth, stackBelow)
 
   const table = useTable({
     columns,
@@ -145,7 +167,10 @@ export function Table({
               return (
                 <View key={column.id} style={styles.stackedLine}>
                   <Text
-                    style={[styles.stackedLabel, { color: colors.text[theme].tertiary, fontSize: 13 }]}
+                    style={[
+                      styles.stackedLabel,
+                      { color: colors.text[theme].tertiary, fontSize: 13 },
+                    ]}
                   >
                     {column.title}
                   </Text>

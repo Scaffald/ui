@@ -415,7 +415,13 @@ export type TableCellProps = {
    */
   type?: TableCellType
 } & (
-  | ({ type: 'interactive-default' | 'interactive-hover' | 'interactive-focused' | 'interactive-error' } & InteractiveCellProps)
+  | ({
+      type:
+        | 'interactive-default'
+        | 'interactive-hover'
+        | 'interactive-focused'
+        | 'interactive-error'
+    } & InteractiveCellProps)
   | ({ type: 'text-default' } & TextCellProps)
   | ({ type: 'card' } & CardCellProps)
   | ({ type: 'avatar' } & AvatarCellProps)
@@ -427,27 +433,29 @@ export type TableCellProps = {
   | ({ type: 'crypto' } & CryptoCellProps)
   | ({ type: 'stock-market' } & StockMarketCellProps)
   | ({ type: 'checkbox-only' | 'radio-only' | 'switch-only' } & BaseTableCellProps & {
-      checked?: boolean
-      onSelectionChange?: (checked: boolean) => void
-    })
+        checked?: boolean
+        onSelectionChange?: (checked: boolean) => void
+      })
   | ({ type: 'icon-open' | 'icon-close' } & BaseTableCellProps & {
-      onIconPress?: () => void
-    })
+        onIconPress?: () => void
+      })
   | ({ type: 'empty' } & BaseTableCellProps)
-  | ({ type: 'guideline-vertical-full' | 'guideline-vertical-half' | 'guideline-vertical-f-h' } & BaseTableCellProps)
+  | ({
+      type: 'guideline-vertical-full' | 'guideline-vertical-half' | 'guideline-vertical-f-h'
+    } & BaseTableCellProps)
   | ({ type: 'status' } & StatusCellProps)
   | ({ type: 'labels' } & LabelsCellProps)
   | ({ type: 'actions' } & ActionsCellProps)
   | ({ type: 'more' } & BaseTableCellProps & {
-      onMorePress?: () => void
-    })
+        onMorePress?: () => void
+      })
   | ({ type: 'progress-bar' } & ProgressBarCellProps)
   | ({ type: 'rating' } & RatingCellProps)
   | ({ type: 'chart-01' | 'chart-02' | 'chart-03' } & ChartCellProps)
   | ({ type?: never } & BaseTableCellProps & {
-      /**
-       * Custom content (overrides type-based rendering)
-       */
-      children?: React.ReactNode
-    })
+        /**
+         * Custom content (overrides type-based rendering)
+         */
+        children?: React.ReactNode
+      })
 )

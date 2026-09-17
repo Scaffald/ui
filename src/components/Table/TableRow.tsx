@@ -17,7 +17,7 @@
  */
 
 import { useState } from 'react'
-import { Pressable, } from 'react-native'
+import { Pressable } from 'react-native'
 import { getTableStyles } from './Table.styles'
 import { useStyles } from '../../hooks'
 import { colors } from '../../tokens/colors'
@@ -37,7 +37,9 @@ interface TableRowProps {
 function getRowStyles(selected: boolean, expanded: boolean, theme: ResolvedThemeMode = 'light') {
   return {
     backgroundColor: selected
-      ? (theme === 'light' ? colors.primary[50] : colors.primary[900])
+      ? theme === 'light'
+        ? colors.primary[50]
+        : colors.primary[900]
       : expanded
         ? colors.bg[theme].subtle || colors.gray[50]
         : colors.bg[theme].default,
@@ -58,8 +60,7 @@ export function TableRow({
   const [internalExpanded, setInternalExpanded] = useState(false)
 
   // Use controlled or internal state
-  const expanded =
-    controlledExpanded !== undefined ? controlledExpanded : internalExpanded
+  const expanded = controlledExpanded !== undefined ? controlledExpanded : internalExpanded
 
   const _styles = useStyles(getTableStyles, [theme] as const)
   const rowStyles = useStyles(getRowStyles, [selected, expanded, theme] as const)
