@@ -3,7 +3,6 @@ import { View, Text, Platform } from 'react-native'
 import { Stack } from '../Layout'
 import { Row } from '../Layout'
 import { Button } from '../Button'
-import { Heading } from '../Typography'
 import { Paragraph } from '../Typography'
 import { useCookieConsent } from './CookieConsentProvider'
 import { useBottomBarContext } from '../BottomBar/BottomBarProvider'
@@ -20,7 +19,10 @@ export interface CookieConsentBannerProps {
   style?: { maxWidth?: number; [key: string]: unknown }
 }
 
-export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: CookieConsentBannerProps) {
+export function CookieConsentBanner({
+  privacyPolicyUrl,
+  style: styleProp,
+}: CookieConsentBannerProps) {
   const { shouldShowBanner, acceptAll, rejectAll, openPreferences, isReady, reportBannerHeight } =
     useCookieConsent()
   const [pendingAction, setPendingAction] = useState<'accept' | 'reject' | null>(null)
@@ -54,9 +56,18 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
   const bodyColor = colors.text[theme].secondary
   const linkColor = theme === 'light' ? colors.primary[600] : colors.primary[400]
 
+  // Hidden means gone: `display: none` plus `aria-hidden`, not `opacity: 0`.
+  // An opacity-0 card is still in the accessibility tree and the tab order —
+  // three focusable buttons and a heading on every page after consent, and the
+  // reason "did the banner hide?" probes kept answering no (#452). Rendering
+  // it unconditionally is still right for hydration (see the provider): the
+  // server and the client's first render both have isReady false, so both
+  // emit the hidden card.
   return (
     <View
+      testID="cookie-consent-banner"
       pointerEvents={isVisible ? 'box-none' : 'none'}
+      aria-hidden={!isVisible}
       style={{
         position: 'absolute',
         bottom: spacing[16] + navBarHeight,
@@ -65,11 +76,13 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
         zIndex: 1000,
         paddingHorizontal: spacing[8],
         alignItems: 'center',
-        opacity: isVisible ? 1 : 0,
+        display: isVisible ? 'flex' : 'none',
       }}
     >
       <View
         onLayout={(e) => setMeasuredHeight(e.nativeEvent.layout.height)}
+        role="region"
+        aria-label="Cookie consent"
         style={{
           width: '100%',
           maxWidth,
@@ -83,9 +96,16 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
       >
         <Stack gap={spacing[12]}>
           <Stack gap={spacing[8]}>
-            <Heading level={6} style={{ color: titleColor }}>
+            {/* Not a heading: as an <h6> after a page's <h1>/<h2> it broke
+                the heading order on every page (Lighthouse `heading-order`,
+                #774), and a consent card is a labelled region, not a section
+                of the document. */}
+            <Text
+              style={{ color: titleColor, fontSize: 15, fontWeight: '600' }}
+              accessibilityRole="text"
+            >
               This site uses cookies
-            </Heading>
+            </Text>
             <Paragraph size="sm" style={{ color: bodyColor }}>
               We use cookies to make things work smoothly and help us learn.
               {privacyPolicyUrl ? (

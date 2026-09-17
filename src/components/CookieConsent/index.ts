@@ -1,4 +1,8 @@
-export { CookieConsentProvider, useCookieConsent, COOKIE_CONSENT_DEFAULTS } from './CookieConsentProvider'
+export {
+  CookieConsentProvider,
+  useCookieConsent,
+  COOKIE_CONSENT_DEFAULTS,
+} from './CookieConsentProvider'
 export { CookieConsentBanner } from './CookieConsentBanner'
 export { CookiePreferencesDialog } from './CookiePreferencesDialog'
 export type { CookieConsentProviderProps } from './CookieConsentProvider'
