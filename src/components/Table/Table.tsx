@@ -5,6 +5,7 @@
  */
 
 import { useCallback, useMemo } from 'react'
+import type { ReactNode } from 'react'
 import { View, Text, ScrollView, Pressable, Platform, FlatList } from 'react-native'
 import type { TableColumn, TableProps, TableRowData } from './Table.types'
 import { getTableStyles } from './Table.styles'
@@ -46,6 +47,20 @@ import { useTable } from './useTable'
  * be. Cards are the native-safe rendering at every width; `stackBelow` still
  * governs web.
  */
+/**
+ * What a stacked line shows for a cell. Strings, numbers and empty values
+ * become a <Text>; anything else (a rendered element) is used as-is.
+ */
+export function stackedCellContent(value: unknown, color: string): ReactNode {
+  if (value === null || value === undefined || value === '') {
+    return <Text style={{ color, fontSize: 14 }}>—</Text>
+  }
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return <Text style={{ color, fontSize: 14 }}>{String(value)}</Text>
+  }
+  return value as ReactNode
+}
+
 export function shouldStackTable(
   platformOS: string,
   viewportWidth: number,
@@ -156,12 +171,15 @@ export function Table({
           <View style={[styles.stackedCard, { borderBottomColor: colors.border[theme].default }]}>
             {dataColumns.map((column) => {
               const cellValue = row[column.id]
-              const content = column.render ? (
-                column.render(cellValue, row, rowIndex)
-              ) : (
-                <Text style={{ color: colors.text[theme].primary, fontSize: 14 }}>
-                  {cellValue !== null && cellValue !== undefined ? String(cellValue) : '—'}
-                </Text>
+              // A column's `render` may return a bare string or number — the
+              // grid path's TableCell wraps those in <Text>, but here they
+              // went straight into a <View>, which react-native-web tolerates
+              // and native throws on ("Text strings must be rendered within a
+              // <Text> component"). It surfaced the moment native stacked
+              // (#768). Same wrapping as the no-render case.
+              const content = stackedCellContent(
+                column.render ? column.render(cellValue, row, rowIndex) : cellValue,
+                colors.text[theme].primary
               )
 
               return (

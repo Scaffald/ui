@@ -38,3 +38,21 @@ describe('resolveColumnWidth', () => {
     expect(resolveColumnWidth('auto')).toBeUndefined()
   })
 })
+
+describe('stackedCellContent', () => {
+  it('wraps strings, numbers and empties in Text so native can render them', async () => {
+    const { stackedCellContent } = await import('../Table')
+    const { isValidElement } = await import('react')
+    for (const v of ['55.0 MB', 42, true, '', null, undefined]) {
+      const node = stackedCellContent(v, '#000')
+      expect(isValidElement(node)).toBe(true)
+    }
+  })
+
+  it('passes a rendered element through untouched', async () => {
+    const { stackedCellContent } = await import('../Table')
+    const { createElement } = await import('react')
+    const el = createElement('span', null, 'x')
+    expect(stackedCellContent(el, '#000')).toBe(el)
+  })
+})
