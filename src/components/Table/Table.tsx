@@ -1,12 +1,14 @@
 /**
  * Table component
- * Comprehensive table component with sorting, selection, expansion, and pagination
- * Features virtualization and sticky headers for high-performance SaaS data grids.
+ * Comprehensive table component with sorting, selection, expansion, and pagination.
+ * Renders a grid on web and labelled cards on native; rows are bounded by
+ * pagination, not virtualised.
  */
 
-import { Fragment, useCallback, useMemo } from 'react'
+import { Fragment, useCallback, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { View, Text, ScrollView, Pressable, Platform, FlatList } from 'react-native'
+import { View, Text, ScrollView, Pressable, Platform } from 'react-native'
+import type { LayoutChangeEvent, ViewStyle } from 'react-native'
 import type { TableColumn, TableProps, TableRowData } from './Table.types'
 import { getTableStyles } from './Table.styles'
 import { useStyles } from '../../hooks'
@@ -29,19 +31,18 @@ import { useTable } from './useTable'
  * have no heading, so stacking them prints a line with a blank label and a
  * blank value. Only columns that carry a title say anything.
  *
- * Exported because it is the part of stacking worth pinning in a unit test —
- * the rendering itself needs a laid-out FlatList, which jsdom does not give
- * (it renders zero rows at height 0, in grid mode too), so the rendered form
- * is covered by scripts/audit/smoke-wide-tables.mjs against the real app.
+ * Exported because it is the part of stacking worth pinning in a unit test;
+ * the rendered form is measured by scripts/audit/smoke-wide-tables.mjs
+ * against the real app.
  */
 /**
  * Grid or cards?
  *
  * On web the answer is the viewport: below `stackBelow` the grid does not fit.
  * On native the answer is always cards. The grid mode is a web layout — a
- * horizontal ScrollView around an unbounded `'100%'`-wide View around a
- * vertical FlatList with a sticky header — and Yoga lays it out as an empty
- * header block, a row of sort glyphs, and cells drawn over each other. That
+ * horizontal ScrollView around a body-wide View of header and rows — and
+ * Yoga laid its earlier FlatList form out as an empty header block, a row of
+ * sort glyphs, and cells drawn over each other. That
  * is what every Office table showed on an iPad (#768): at 768pt portrait it
  * was not even below the default breakpoint, and in landscape it never would
  * be. Cards are the native-safe rendering at every width; `stackBelow` still
@@ -68,6 +69,32 @@ export function shouldStackTable(
 ): boolean {
   if (platformOS !== 'web') return true
   return viewportWidth > 0 && viewportWidth < stackBelow
+}
+
+/**
+ * How a grid column takes its width.
+ *
+ * A declared width is fixed (a number) or proportional (a percentage). A
+ * column with no declared width shares whatever the row has left, and never
+ * drops below `DEFAULT_COLUMN_WIDTH` — the same figure the row's total width
+ * is built from, so the header and every cell agree.
+ *
+ * Before this, an undeclared column got no width at all: the header cell sized
+ * to its title and sort glyph, each data cell to its own text, and the row's
+ * wrapper to 150px per column. On the storage table that put a 124px "Total
+ * Usage" heading over a 54px "65.0 MB" cell, every row's values running into
+ * each other (#799).
+ */
+export const DEFAULT_COLUMN_WIDTH = 150
+
+export function columnSizing(width: number | string | undefined): ViewStyle {
+  if (typeof width === 'number') {
+    return { flexGrow: 0, flexShrink: 0, width, minWidth: width }
+  }
+  if (typeof width === 'string' && width.trim().endsWith('%')) {
+    return { flexGrow: 0, flexShrink: 0, width: width.trim() as `${number}%` }
+  }
+  return { flexGrow: 1, flexShrink: 0, flexBasis: 0, minWidth: DEFAULT_COLUMN_WIDTH }
 }
 
 export function stackedDataColumns(columns: TableColumn[], selectableRows = false): TableColumn[] {
@@ -123,6 +150,14 @@ export function Table({
   // to "more stages", and the same reason Lanes exists.
   const stacked = shouldStackTable(Platform.OS, viewportWidth, stackBelow)
 
+  // The grid's rows are as wide as the body or the columns, whichever is
+  // more. The body's width is only known once it is laid out; until then the
+  // rows take the columns' total, which is what they were always given.
+  const [bodyWidth, setBodyWidth] = useState(0)
+  const onBodyLayout = useCallback((event: LayoutChangeEvent) => {
+    setBodyWidth(event.nativeEvent.layout.width)
+  }, [])
+
   const table = useTable({
     columns,
     data,
@@ -146,7 +181,7 @@ export function Table({
         if (typeof col.width === 'number') {
           return sum + col.width
         }
-        return sum + 150 // Default width
+        return sum + DEFAULT_COLUMN_WIDTH
       }, 0),
     [table.visibleColumns]
   )
@@ -232,10 +267,7 @@ export function Table({
                   type={cellType}
                   width={column.width}
                   align={column.align}
-                  style={{
-                    flexShrink: 0,
-                    minWidth: typeof column.width === 'number' ? column.width : undefined,
-                  }}
+                  style={columnSizing(column.width)}
                   {...({ children: column.render(cellValue, row, rowIndex) } as any)}
                 />
               )
@@ -249,10 +281,7 @@ export function Table({
                   width={column.width}
                   checked={isSelected}
                   onSelectionChange={(checked: boolean) => table.handleRowSelect(rowId, checked)}
-                  style={{
-                    flexShrink: 0,
-                    minWidth: typeof column.width === 'number' ? column.width : undefined,
-                  }}
+                  style={columnSizing(column.width)}
                 />
               )
             }
@@ -264,16 +293,20 @@ export function Table({
                   type={isExpanded ? 'icon-close' : 'icon-open'}
                   width={column.width}
                   onIconPress={() => table.handleRowExpand(rowId, !isExpanded)}
-                  style={{
-                    flexShrink: 0,
-                    minWidth: typeof column.width === 'number' ? column.width : undefined,
-                  }}
+                  style={columnSizing(column.width)}
                 />
               )
             }
 
             if (column.headerEmpty) {
-              return <TableCell key={column.id} type="empty" width={column.width} />
+              return (
+                <TableCell
+                  key={column.id}
+                  type="empty"
+                  width={column.width}
+                  style={columnSizing(column.width)}
+                />
+              )
             }
 
             return (
@@ -282,10 +315,7 @@ export function Table({
                 type={cellType}
                 width={column.width}
                 align={column.align}
-                style={{
-                  flexShrink: 0,
-                  minWidth: typeof column.width === 'number' ? column.width : undefined,
-                }}
+                style={columnSizing(column.width)}
                 {...({
                   text: cellValue !== null && cellValue !== undefined ? String(cellValue) : '',
                 } as any)}
@@ -374,10 +404,7 @@ export function Table({
               state={column.headerEmpty ? 'empty' : 'default'}
               width={column.width}
               align={column.align}
-              style={{
-                flexShrink: 0,
-                minWidth: typeof column.width === 'number' ? column.width : undefined,
-              }}
+              style={columnSizing(column.width)}
             />
           )
         })}
@@ -444,12 +471,12 @@ export function Table({
   }
 
   return (
-    // Stacked cards size to their content, so the container must not be
-    // `flex: 1`: inside a content-sized parent (a Card in a page ScrollView)
-    // Yoga resolves flex: 1 to a height of zero and `overflow: hidden` then
-    // clips every row — the rows were there, painted nowhere, on an iPad
-    // (#768). Web's CSS flex sizes such a box to its content, which is why
-    // the phone layout never showed it.
+    // Neither container is `flex: 1` any more. Inside a content-sized parent
+    // (a Card in a page ScrollView) Yoga resolved flex: 1 to a height of zero
+    // and `overflow: hidden` clipped every row on an iPad (#768); Chrome
+    // resolved the same chain to 116px and clipped the web grid to a row and
+    // a half (#799). Both size to their content now; a consumer that gives
+    // the table a bounded panel passes `style={{ flex: 1 }}` itself.
     <View style={[stacked ? styles.stackedContainer : styles.container, style]}>
       {/* The toolbar only exists when it has something in it. With neither a
           search box nor actions it was still a 64px padded block — the "empty
@@ -510,26 +537,35 @@ export function Table({
           ))}
         </View>
       ) : (
+        // Header plus rows, in a horizontal scroller for when the columns are
+        // wider than the body. The rows are laid out at the body's width, so
+        // undeclared columns share the slack instead of leaving the right
+        // third of the card empty; below the columns' total the scroller
+        // takes over.
+        //
+        // A plain map here as well. The vertical FlatList this used to be
+        // needs a bounded height to scroll, and inside a content-sized Card
+        // it never had one: Chrome resolved the `flex: 1` chain above it to
+        // 116px and clipped the storage table to a header and a row and a
+        // half (#799). Pagination bounds the row count; the page scrolls.
         <ScrollView
           style={[styles.body, bodyStyle]}
           horizontal
           showsHorizontalScrollIndicator={false}
+          onLayout={onBodyLayout}
         >
-          <View style={{ width: totalColumnWidth || '100%', minWidth: totalColumnWidth }}>
-            <FlatList
-              data={table.displayData}
-              renderItem={renderRow}
-              keyExtractor={(item, index) =>
-                getRowIdProp?.(item, index) ?? item.id ?? String(index)
-              }
-              ListHeaderComponent={renderHeader}
-              stickyHeaderIndices={[0]}
-              showsVerticalScrollIndicator={false}
-              removeClippedSubviews={Platform.OS !== 'web'}
-              initialNumToRender={10}
-              maxToRenderPerBatch={5}
-              windowSize={5}
-            />
+          <View
+            style={{
+              width: Math.max(totalColumnWidth, bodyWidth) || undefined,
+              minWidth: totalColumnWidth,
+            }}
+          >
+            {renderHeader()}
+            {table.displayData.map((item, index) => (
+              <Fragment key={getRowIdProp?.(item, index) ?? item.id ?? String(index)}>
+                {renderRow({ item, index })}
+              </Fragment>
+            ))}
           </View>
         </ScrollView>
       )}

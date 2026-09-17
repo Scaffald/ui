@@ -119,6 +119,19 @@ export function TableCell(props: TableCellProps) {
     width,
   ] as const)
 
+  // A function style is only a thing on Pressable. Handing it to a plain View
+  // — every cell without onPress, which is most of them — dropped the whole
+  // container style: no height, no padding, no border, no column width, and
+  // a column direction instead of a row. That is why data cells sized to
+  // their text while the headers, which never took this path, did not (#799).
+  const containerStyle = onPress
+    ? ({ pressed }: { pressed: boolean }) => [
+        styles.container,
+        pressed && Platform.OS !== 'web' && { opacity: 0.8 },
+        style,
+      ]
+    : [styles.container, style]
+
   // Handle selection change
   const handleSelectionChange = (newChecked: boolean) => {
     onSelectionChange?.(newChecked)
@@ -260,11 +273,7 @@ export function TableCell(props: TableCellProps) {
             onMouseLeave: () => setIsHovered(false),
           } as object))}
         onPress={onPress}
-        style={({ pressed }) => [
-          styles.container,
-          pressed && Platform.OS !== 'web' && { opacity: 0.8 },
-          style,
-        ]}
+        style={containerStyle}
         {...pressableProps}
       >
         {text && <Text style={[styles.text, textStyle]}>{text}</Text>}
@@ -440,11 +449,7 @@ export function TableCell(props: TableCellProps) {
           onMouseLeave: () => setIsHovered(false),
         } as object))}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.container,
-        pressed && Platform.OS !== 'web' && { opacity: 0.8 },
-        style,
-      ]}
+      style={containerStyle}
       {...pressableProps}
     >
       {renderSelectionControl()}

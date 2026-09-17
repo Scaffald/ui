@@ -36,13 +36,17 @@ export interface TableStyleConfig {
  */
 export function getTableStyles(theme: ResolvedThemeMode = 'light'): TableStyleConfig {
   return {
+    // Content-sized, not `flex: 1`. With `flex: 1` inside a content-sized
+    // parent, Chrome resolved this box to 116px and clipped the storage table
+    // to a row and a half (#799); Yoga resolved it to zero (#768). A consumer
+    // that wants the table to fill a bounded panel passes `style={{ flex: 1 }}`.
     container: {
-      flex: 1,
       backgroundColor: colors.bg[theme].default,
       borderRadius: borderRadius.m,
       overflow: 'hidden',
     },
-    // Same surface as `container` minus `flex: 1` — see Table.tsx.
+    // Same surface as `container` — kept as its own key because stacked
+    // rows and grid rows may yet diverge, and every call site names one.
     stackedContainer: {
       backgroundColor: colors.bg[theme].default,
       borderRadius: borderRadius.m,
@@ -65,8 +69,11 @@ export function getTableStyles(theme: ResolvedThemeMode = 'light'): TableStyleCo
       alignItems: 'center',
       gap: spacing[16],
     },
+    // The horizontal scroller around the grid. Content-sized for the same
+    // reason as `container`; it only ever needs to scroll sideways.
     body: {
-      flex: 1,
+      flexGrow: 0,
+      flexShrink: 0,
     },
     stackedCard: {
       paddingHorizontal: spacing[16],
