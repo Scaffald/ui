@@ -39,8 +39,7 @@ export function TableColumnVisibilityModal({
       <ModalContent>
         <Stack gap={spacing[4]}>
           <Paragraph color="secondary">
-            Toggle which columns are visible in the table. At least{' '}
-            {minimumVisibleColumns} column
+            Toggle which columns are visible in the table. At least {minimumVisibleColumns} column
             {minimumVisibleColumns === 1 ? '' : 's'} must remain enabled.
           </Paragraph>
           <Separator />
@@ -48,8 +47,7 @@ export function TableColumnVisibilityModal({
             {columns.map((column: TableColumnVisibilityOption) => {
               const isVisible = visibility[column.id] ?? true
               const disableToggle =
-                column.disabled ||
-                (isVisible && !canDisableMore && !column.disabled)
+                column.disabled || (isVisible && !canDisableMore && !column.disabled)
 
               return (
                 <Row key={column.id} gap={spacing[4]} align="center">

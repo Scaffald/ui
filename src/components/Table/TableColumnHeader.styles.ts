@@ -3,7 +3,7 @@
  * All styles mapped from Figma Forsured Design System
  */
 
-import type { ViewStyle, TextStyle } from 'react-native'
+import type { ViewStyle, TextStyle, DimensionValue } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ResolvedThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -50,7 +50,7 @@ export function getTableColumnHeaderStyles(
     borderBottomColor: colors.border[theme].default,
     backgroundColor: colors.bg[theme].subtle || colors.gray[50],
     gap: spacing[4],
-    ...(width && { width: typeof width === 'string' ? (parseFloat(width) || undefined) : width }),
+    ...(width && { width: resolveColumnWidth(width) }),
   }
 
   // Base text styles
@@ -80,4 +80,16 @@ export function getTableColumnHeaderStyles(
     text: baseText,
     iconColor: colors.text[theme].secondary,
   }
+}
+
+/**
+ * A column width of `'20%'` is a percentage, not 20px. `parseFloat` threw
+ * the unit away, so every percentage column rendered a 20px-wide cell — on
+ * web as well as native (#768). Percentages pass through (React Native
+ * accepts them); other strings are treated as pixel numbers as before.
+ */
+export function resolveColumnWidth(width: number | string): DimensionValue | undefined {
+  if (typeof width !== 'string') return width
+  if (width.trim().endsWith('%')) return width.trim() as `${number}%`
+  return Number.parseFloat(width) || undefined
 }

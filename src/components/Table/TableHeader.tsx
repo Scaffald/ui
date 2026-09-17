@@ -68,11 +68,7 @@ export function TableHeader({
       )}
 
       {/* Action Buttons */}
-      {actions && (
-        <View style={localStyles.actionsContainer}>
-          {actions}
-        </View>
-      )}
+      {actions && <View style={localStyles.actionsContainer}>{actions}</View>}
     </View>
   )
 }

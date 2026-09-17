@@ -1,5 +1,11 @@
 import { useState, useMemo, useCallback } from 'react'
-import type { TableColumn, TableSortConfig, TableSelectionConfig, TableExpansionConfig, TableRowData } from './Table.types'
+import type {
+  TableColumn,
+  TableSortConfig,
+  TableSelectionConfig,
+  TableExpansionConfig,
+  TableRowData,
+} from './Table.types'
 import type { SortDirection } from './TableColumnHeader.types'
 
 export interface UseTableProps {
@@ -55,7 +61,8 @@ export function useTable({
   const [internalPage, setInternalPage] = useState(1)
 
   // Resolved values
-  const searchValue = controlledSearchValue !== undefined ? controlledSearchValue : internalSearchValue
+  const searchValue =
+    controlledSearchValue !== undefined ? controlledSearchValue : internalSearchValue
   const sortConfig = controlledSortConfig || internalSortConfig
   const selectionConfig = controlledSelectionConfig || internalSelectionConfig
   const expansionConfig = controlledExpansionConfig || internalExpansionConfig
@@ -92,12 +99,16 @@ export function useTable({
       if (aValue === null || aValue === undefined) return 1
       if (bValue === null || bValue === undefined) return -1
       if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return sortConfig.direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
+        return sortConfig.direction === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue)
       }
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue
       }
-      return sortConfig.direction === 'asc' ? String(aValue).localeCompare(String(bValue)) : String(bValue).localeCompare(String(aValue))
+      return sortConfig.direction === 'asc'
+        ? String(aValue).localeCompare(String(bValue))
+        : String(bValue).localeCompare(String(aValue))
     })
   }, [filteredData, sortConfig, visibleColumns])
 
@@ -114,68 +125,88 @@ export function useTable({
   }, [sortedData, pageSize, currentPage])
 
   // Actions
-  const handleSearchChange = useCallback((value: string) => {
-    if (controlledSearchValue === undefined) setInternalSearchValue(value)
-    onSearchChange?.(value)
-  }, [controlledSearchValue, onSearchChange])
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      if (controlledSearchValue === undefined) setInternalSearchValue(value)
+      onSearchChange?.(value)
+    },
+    [controlledSearchValue, onSearchChange]
+  )
 
-  const handleSort = useCallback((columnId: string, direction: SortDirection) => {
-    if (!controlledSortConfig) setInternalSortConfig({ columnId, direction })
-    onSort?.(columnId, direction)
-  }, [controlledSortConfig, onSort])
+  const handleSort = useCallback(
+    (columnId: string, direction: SortDirection) => {
+      if (!controlledSortConfig) setInternalSortConfig({ columnId, direction })
+      onSort?.(columnId, direction)
+    },
+    [controlledSortConfig, onSort]
+  )
 
-  const handleRowSelect = useCallback((rowId: string, selected: boolean) => {
-    const newSelectedIds = new Set(selectionConfig.selectedIds)
-    if (selected) {
-      if (selectionConfig.mode === 'single') newSelectedIds.clear()
-      newSelectedIds.add(rowId)
-    } else {
-      newSelectedIds.delete(rowId)
-    }
+  const handleRowSelect = useCallback(
+    (rowId: string, selected: boolean) => {
+      const newSelectedIds = new Set(selectionConfig.selectedIds)
+      if (selected) {
+        if (selectionConfig.mode === 'single') newSelectedIds.clear()
+        newSelectedIds.add(rowId)
+      } else {
+        newSelectedIds.delete(rowId)
+      }
 
-    if (!controlledSelectionConfig) {
-      setInternalSelectionConfig({
-        ...selectionConfig,
-        selectedIds: newSelectedIds,
-        allSelected: newSelectedIds.size === data.length && data.length > 0,
-        indeterminate: newSelectedIds.size > 0 && newSelectedIds.size < data.length,
-      })
-    }
-    onRowSelect?.(Array.from(newSelectedIds))
-  }, [selectionConfig, data.length, controlledSelectionConfig, onRowSelect])
+      if (!controlledSelectionConfig) {
+        setInternalSelectionConfig({
+          ...selectionConfig,
+          selectedIds: newSelectedIds,
+          allSelected: newSelectedIds.size === data.length && data.length > 0,
+          indeterminate: newSelectedIds.size > 0 && newSelectedIds.size < data.length,
+        })
+      }
+      onRowSelect?.(Array.from(newSelectedIds))
+    },
+    [selectionConfig, data.length, controlledSelectionConfig, onRowSelect]
+  )
 
-  const handleSelectAll = useCallback((selected: boolean) => {
-    const newSelectedIds = selected ? new Set(data.map((row) => row.id || String(row))) : new Set<string>()
-    if (!controlledSelectionConfig) {
-      setInternalSelectionConfig({
-        ...selectionConfig,
-        selectedIds: newSelectedIds,
-        allSelected: selected,
-        indeterminate: false,
-      })
-    }
-    onRowSelect?.(Array.from(newSelectedIds))
-  }, [data, selectionConfig, controlledSelectionConfig, onRowSelect])
+  const handleSelectAll = useCallback(
+    (selected: boolean) => {
+      const newSelectedIds = selected
+        ? new Set(data.map((row) => row.id || String(row)))
+        : new Set<string>()
+      if (!controlledSelectionConfig) {
+        setInternalSelectionConfig({
+          ...selectionConfig,
+          selectedIds: newSelectedIds,
+          allSelected: selected,
+          indeterminate: false,
+        })
+      }
+      onRowSelect?.(Array.from(newSelectedIds))
+    },
+    [data, selectionConfig, controlledSelectionConfig, onRowSelect]
+  )
 
-  const handleRowExpand = useCallback((rowId: string, expanded: boolean) => {
-    const newExpandedIds = new Set(expansionConfig.expandedIds)
-    if (expanded) {
-      if (!expansionConfig.allowMultiple) newExpandedIds.clear()
-      newExpandedIds.add(rowId)
-    } else {
-      newExpandedIds.delete(rowId)
-    }
+  const handleRowExpand = useCallback(
+    (rowId: string, expanded: boolean) => {
+      const newExpandedIds = new Set(expansionConfig.expandedIds)
+      if (expanded) {
+        if (!expansionConfig.allowMultiple) newExpandedIds.clear()
+        newExpandedIds.add(rowId)
+      } else {
+        newExpandedIds.delete(rowId)
+      }
 
-    if (!controlledExpansionConfig) {
-      setInternalExpansionConfig({ ...expansionConfig, expandedIds: newExpandedIds })
-    }
-    onRowExpand?.(rowId, expanded)
-  }, [expansionConfig, controlledExpansionConfig, onRowExpand])
+      if (!controlledExpansionConfig) {
+        setInternalExpansionConfig({ ...expansionConfig, expandedIds: newExpandedIds })
+      }
+      onRowExpand?.(rowId, expanded)
+    },
+    [expansionConfig, controlledExpansionConfig, onRowExpand]
+  )
 
-  const handlePageChange = useCallback((page: number) => {
-    if (pagination?.currentPage === undefined) setInternalPage(page)
-    pagination?.onPageChange?.(page)
-  }, [pagination])
+  const handlePageChange = useCallback(
+    (page: number) => {
+      if (pagination?.currentPage === undefined) setInternalPage(page)
+      pagination?.onPageChange?.(page)
+    },
+    [pagination]
+  )
 
   return {
     // State
@@ -187,7 +218,7 @@ export function useTable({
     expansionConfig,
     currentPage,
     totalPages,
-    
+
     // Actions
     handleSearchChange,
     handleSort,
