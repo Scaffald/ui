@@ -4,7 +4,7 @@
  * Features virtualization and sticky headers for high-performance SaaS data grids.
  */
 
-import { useCallback, useMemo } from 'react'
+import { Fragment, useCallback, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { View, Text, ScrollView, Pressable, Platform, FlatList } from 'react-native'
 import type { TableColumn, TableProps, TableRowData } from './Table.types'
@@ -444,8 +444,17 @@ export function Table({
   }
 
   return (
-    <View style={[styles.container, style]}>
-      {showHeader && (
+    // Stacked cards size to their content, so the container must not be
+    // `flex: 1`: inside a content-sized parent (a Card in a page ScrollView)
+    // Yoga resolves flex: 1 to a height of zero and `overflow: hidden` then
+    // clips every row — the rows were there, painted nowhere, on an iPad
+    // (#768). Web's CSS flex sizes such a box to its content, which is why
+    // the phone layout never showed it.
+    <View style={[stacked ? styles.stackedContainer : styles.container, style]}>
+      {/* The toolbar only exists when it has something in it. With neither a
+          search box nor actions it was still a 64px padded block — the "empty
+          header" above every Office table on an iPad (#768). */}
+      {showHeader && (searchable || actions.length > 0) && (
         <View style={[styles.header, headerStyle]}>
           <View style={styles.headerContent}>
             {searchable && (
@@ -487,18 +496,18 @@ export function Table({
         // stacked list stretched to the panel height, left a screen of blank
         // above the first row, and clipped the last one at the panel edge.
         // Cards size to their content and let the page scroll.
+        // A plain map, not a FlatList. The list does not scroll (the page
+        // does), so virtualisation buys nothing — and a VirtualizedList nested
+        // in the page's ScrollView with `removeClippedSubviews` measures a
+        // zero-height window on native and paints no rows at all, which is
+        // what an iPad showed once #768 made native stack: the header card,
+        // the search box, and nothing underneath.
         <View style={bodyStyle}>
-          <FlatList
-            scrollEnabled={false}
-            data={table.displayData}
-            renderItem={renderRow}
-            keyExtractor={(item, index) => getRowIdProp?.(item, index) ?? item.id ?? String(index)}
-            showsVerticalScrollIndicator={false}
-            removeClippedSubviews={Platform.OS !== 'web'}
-            initialNumToRender={10}
-            maxToRenderPerBatch={5}
-            windowSize={5}
-          />
+          {table.displayData.map((item, index) => (
+            <Fragment key={getRowIdProp?.(item, index) ?? item.id ?? String(index)}>
+              {renderRow({ item, index })}
+            </Fragment>
+          ))}
         </View>
       ) : (
         <ScrollView
