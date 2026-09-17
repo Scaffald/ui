@@ -31,6 +31,7 @@
 import { useSyncExternalStore, useCallback } from 'react'
 import { Platform, Dimensions } from 'react-native'
 import { breakpoints, getCurrentBreakpoint, type Breakpoint } from '../tokens/breakpoints'
+import { useServerViewport } from './ServerViewport'
 
 /**
  * Responsive value map - specify values for different breakpoints
@@ -148,19 +149,12 @@ function _getWebSnapshot(): Snapshot {
 }
 
 /**
- * Server snapshot. Must be a stable reference, not a fresh object.
- *
- * Returning `{ width: 1280, height: 900 }` from here allocated a new object on
- * every call, so React saw the snapshot change on every read and warned "The
- * result of getServerSnapshot should be cached to avoid an infinite loop" —
- * repeatedly, because useResponsive backs Box/Stack/Grid and so runs many times
- * per SSR page. Hoisting it makes the identity stable.
+ * Server snapshot: read from `ServerViewportProvider` inside the hooks (see
+ * ServerViewport.tsx). It must be a stable reference per value — a fresh
+ * object on every call made React warn "The result of getServerSnapshot
+ * should be cached to avoid an infinite loop", once per Box/Stack/Grid.
  */
-const _SERVER_SNAPSHOT: Snapshot = { width: 1280, height: 900 }
 
-function _getServerSnapshot(): Snapshot {
-  return _SERVER_SNAPSHOT
-}
 
 // Initialize web store immediately on module load
 if (Platform.OS === 'web' && typeof window !== 'undefined') {
@@ -233,7 +227,12 @@ function selectValue<T>(values: ResponsiveValue<T>, width: number): T | undefine
  * primitives (Box/Stack/Grid) are mounted in the same tree.
  */
 export function useResponsive(): UseResponsiveReturn {
-  const { width, height } = useSyncExternalStore(_subscribe, _getSnapshot, _getServerSnapshot)
+  // The server snapshot comes from `ServerViewportProvider` when one is
+  // mounted (a per-request guess at the device), else the 1280×900 default.
+  // It must be a stable reference per value — see ServerViewport.tsx.
+  const serverViewport = useServerViewport()
+  const getServerSnapshot = useCallback((): Snapshot => serverViewport, [serverViewport])
+  const { width, height } = useSyncExternalStore(_subscribe, _getSnapshot, getServerSnapshot)
 
   const breakpoint = width >= breakpoints.xs ? getCurrentBreakpoint(width) : 'base'
   const isMobile = width < breakpoints.sm
@@ -287,7 +286,9 @@ export function useWindowDimensions(): {
   scale: number
   fontScale: number
 } {
-  const { width, height } = useSyncExternalStore(_subscribe, _getSnapshot, _getServerSnapshot)
+  const serverViewport = useServerViewport()
+  const getServerSnapshot = useCallback((): Snapshot => serverViewport, [serverViewport])
+  const { width, height } = useSyncExternalStore(_subscribe, _getSnapshot, getServerSnapshot)
   const { scale, fontScale } = Dimensions.get('window')
   return { width, height, scale, fontScale }
 }
