@@ -323,9 +323,7 @@ export function CookieConsentProvider({
     ]
   )
 
-  return (
-    <CookieConsentContext.Provider value={value}>{children}</CookieConsentContext.Provider>
-  )
+  return <CookieConsentContext.Provider value={value}>{children}</CookieConsentContext.Provider>
 }
 
 export function useCookieConsent(): CookieConsentContextValue {

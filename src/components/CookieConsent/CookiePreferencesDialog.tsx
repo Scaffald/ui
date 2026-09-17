@@ -69,7 +69,11 @@ function OptionalCategoryRow({
         }}
       >
         <Row justify="space-between" align="center" style={{ gap: spacing[8] }}>
-          <Paragraph size="md" weight="semibold" style={{ color: colors.text[theme].primary, flex: 1 }}>
+          <Paragraph
+            size="md"
+            weight="semibold"
+            style={{ color: colors.text[theme].primary, flex: 1 }}
+          >
             {category.label}
           </Paragraph>
           <Toggle checked={value} onChange={onChange} size="md" color="primary" />
@@ -83,14 +87,8 @@ function OptionalCategoryRow({
 }
 
 export function CookiePreferencesDialog() {
-  const {
-    categories,
-    selections,
-    isPreferencesOpen,
-    closePreferences,
-    saveSelections,
-    rejectAll,
-  } = useCookieConsent()
+  const { categories, selections, isPreferencesOpen, closePreferences, saveSelections, rejectAll } =
+    useCookieConsent()
   const { theme } = useThemeContext()
 
   const initialDraft = useMemo(() => selections, [selections])
@@ -222,7 +220,12 @@ export function CookiePreferencesDialog() {
               }}
             >
               <Row gap={spacing[8]} justify="flex-end" align="center" style={{ flexWrap: 'wrap' }}>
-                <Button color="success" variant="filled" onPress={handleSave} disabled={isSubmitting}>
+                <Button
+                  color="success"
+                  variant="filled"
+                  onPress={handleSave}
+                  disabled={isSubmitting}
+                >
                   Save
                 </Button>
                 <Button
