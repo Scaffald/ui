@@ -27,6 +27,7 @@ export interface TableStyleConfig {
   stackedLabel: ViewStyle
   /** The value half of a stacked line. */
   stackedValue: ViewStyle
+  stackedContainer: ViewStyle
   footer: ViewStyle
 }
 
@@ -37,6 +38,12 @@ export function getTableStyles(theme: ResolvedThemeMode = 'light'): TableStyleCo
   return {
     container: {
       flex: 1,
+      backgroundColor: colors.bg[theme].default,
+      borderRadius: borderRadius.m,
+      overflow: 'hidden',
+    },
+    // Same surface as `container` minus `flex: 1` — see Table.tsx.
+    stackedContainer: {
       backgroundColor: colors.bg[theme].default,
       borderRadius: borderRadius.m,
       overflow: 'hidden',
