@@ -77,7 +77,11 @@ const config: Config = {
                 'react-native/Libraries/TurboModule/TurboModuleRegistry': path.join(mockDir, 'TurboModuleRegistry.js'),
                 'react-native': 'react-native-web',
                 'react-native-svg': path.join(mockDir, 'react-native-svg.jsx'),
-                'lucide-react-native': 'lucide-react',
+                // No alias for lucide-react-native: #31 removed lucide-react from the
+                // package, and #32 declared lucide-react-native here, so it resolves
+                // as itself and renders through the react-native-svg mock above. An
+                // alias to a package nothing declares built fine from a warm webpack
+                // cache and failed on every clean install (Scaffald/SaaS#794 CI).
               },
             },
             module: {
