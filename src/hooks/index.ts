@@ -8,6 +8,12 @@ export { useInteractiveState } from './useInteractiveState'
 export type { InteractiveState } from './useInteractiveState'
 export { useResponsive } from './useResponsive'
 export type { ResponsiveValue, UseResponsiveReturn } from './useResponsive'
+export {
+  DEFAULT_SERVER_VIEWPORT,
+  ServerViewportProvider,
+  useServerViewport,
+} from './ServerViewport'
+export type { ServerViewport, ServerViewportProviderProps } from './ServerViewport'
 export { useWindowDimensions } from './useWindowDimensions'
 export { useSidebarState } from './useSidebarState'
 export type { UseSidebarStateOptions } from './useSidebarState'

@@ -46,6 +46,12 @@ export { extractPlainText, plainTextToTipTap } from "./utils/tiptap";
 
 // Export hooks
 export { useResponsive, useSidebarState, useWindowDimensions } from "./hooks";
+export {
+  DEFAULT_SERVER_VIEWPORT,
+  ServerViewportProvider,
+  useServerViewport,
+} from "./hooks";
+export type { ServerViewport, ServerViewportProviderProps } from "./hooks";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
 //   ResponsiveValue,
