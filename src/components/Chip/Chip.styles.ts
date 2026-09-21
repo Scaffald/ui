@@ -108,9 +108,11 @@ export function getChipStyles(
   const borderDefault = isLight ? colors.border.light.default : colors.border.dark.default
   if (isLight) {
     if (selected) {
+      // A selected chip is a tinted tag from the primary ramp — light step
+      // fill, mid step border — not an inverted black pill.
       baseStyles.push({
-        backgroundColor: colors.gray[900],
-        borderColor: colors.gray[900],
+        backgroundColor: colors.primary[50],
+        borderColor: colors.primary[300],
         borderWidth: 1,
       })
     } else if (isHovered && !disabled) {
@@ -129,8 +131,8 @@ export function getChipStyles(
   } else {
     if (selected) {
       baseStyles.push({
-        backgroundColor: colors.gray[100],
-        borderColor: colors.gray[100],
+        backgroundColor: colors.primary[900],
+        borderColor: colors.primary[700],
         borderWidth: 1,
       })
     } else if (isHovered && !disabled) {
@@ -185,11 +187,11 @@ export function getChipTextStyles(
 
   if (isLight) {
     baseTextStyles.push({
-      color: selected ? colors.text.light.quaternary : colors.text.light.primary,
+      color: selected ? colors.primary[700] : colors.text.light.primary,
     })
   } else {
     baseTextStyles.push({
-      color: selected ? colors.text.dark.quaternary : colors.text.dark.primary,
+      color: selected ? colors.primary[200] : colors.text.dark.primary,
     })
   }
 

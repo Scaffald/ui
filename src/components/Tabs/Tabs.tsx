@@ -161,7 +161,7 @@ export function Tabs({
               })}
             </ScrollView>
           ) : (
-            <View style={getTabListStyles(orientation, theme, { wrap: shouldWrap })}>
+            <View style={getTabListStyles(orientation, theme, { wrap: shouldWrap, type })}>
               {tabItems.map((item, index) => {
                 return cloneElement(item.fullItem, {
                   key: item.value || `trigger-${index}`,

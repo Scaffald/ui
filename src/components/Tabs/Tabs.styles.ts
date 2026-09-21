@@ -6,6 +6,7 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ResolvedThemeMode } from '../../tokens/colors'
+import { borderRadius } from '../../tokens/borders'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
 import { boxShadows } from '../../tokens/shadows'
@@ -74,14 +75,18 @@ export function getTabsStyles(
  */
 export function getTabListStyles(
   orientation: TabOrientation,
-  _theme: ResolvedThemeMode = 'light',
-  options?: { gap?: number; wrap?: boolean }
+  theme: ResolvedThemeMode = 'light',
+  options?: { gap?: number; wrap?: boolean; type?: TabType }
 ): ViewStyle {
-  const gap = options?.gap ?? (orientation === 'horizontal' ? spacing[8] : 0)
+  const folder = options?.type === 'folder' && orientation === 'horizontal'
+  const gap = options?.gap ?? (orientation === 'horizontal' ? (folder ? spacing[4] : spacing[8]) : 0)
   return {
     flexDirection: orientation === 'horizontal' ? 'row' : 'column',
-    alignItems: orientation === 'horizontal' ? 'flex-start' : 'stretch',
+    alignItems: orientation === 'horizontal' ? (folder ? 'flex-end' : 'flex-start') : 'stretch',
     width: '100%',
+    // Folder tabs sit on a hairline; the selected tab paints over it so it
+    // reads as attached to the panel beneath.
+    ...(folder && { borderBottomWidth: 1, borderBottomColor: colors.border[theme].default }),
     // Wrapping beats clipping. A row of five tabs on a 390px screen ran its
     // last one half off the right edge with nothing saying the strip
     // continued — so "Audit Log" read as the end of the list rather than a
@@ -198,10 +203,11 @@ export function getTabTriggerStyles(
     } else {
       borderRightWidth = 2
     }
-    // Default type: Background color + border indicator
+    // Default type: 2px border indicator, no fill. The selected tab used to
+    // take a grey background as well; a tinted block on every tab strip is
+    // exactly the kind of fill the prototype keeps off the page.
     if (isSelected && !isDisabled) {
-      // Selected: background + 2px bottom border in theme color
-      backgroundColor = colors.bg[theme].emphasis // Base/200 #e4e7ec for selected background
+      backgroundColor = 'transparent'
       if (isHorizontal) {
         borderBottomColor = color === 'primary' ? colors.primary[600] : colors.text[theme].primary
       } else {
@@ -251,6 +257,25 @@ export function getTabTriggerStyles(
     if (isHovered && !isSelected && !isDisabled) {
       backgroundColor = colors.bg[theme].subtle
     }
+  } else if (type === 'folder') {
+    // Folder type: a bordered tab with rounded top corners. The strip draws
+    // the hairline (see getTabListStyles); the selected tab overlaps it by one
+    // pixel and paints its own bottom edge in the surface colour, so the tab
+    // and the panel below read as one shape. Unselected tabs sit on the
+    // subtle ground a step back.
+    container.borderWidth = 1
+    container.borderColor = colors.border[theme].default
+    container.borderTopLeftRadius = borderRadius.l
+    container.borderTopRightRadius = borderRadius.l
+    container.marginBottom = -1
+    if (isSelected && !isDisabled) {
+      backgroundColor = colors.bg[theme].default
+      container.borderBottomColor = colors.bg[theme].default
+    } else {
+      backgroundColor = isHovered && !isDisabled ? colors.bg[theme].default : colors.bg[theme].subtle
+    }
+    borderBottomWidth = undefined
+    borderRightWidth = undefined
   } else if (type === 'shadow') {
     // Shadow type: Box shadow for selected tab, no borders
     backgroundColor = isSelected && !isDisabled ? colors.bg[theme].default : 'transparent'

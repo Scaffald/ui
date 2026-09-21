@@ -9,11 +9,14 @@ import type { IconComponent } from '../types'
 
 /**
  * Tab type variants
- * - default: Background color changes on selection
+ * - default: 2px underline indicator, no fill (the selected tab used to take a
+ *   grey fill as well; the redesign keeps surfaces quiet)
  * - line: Border/underline indicator (2px selected, 1px unselected)
  * - shadow: Box shadow for selected tab
+ * - folder: the SCF prototype's folder tabs — bordered tabs with rounded top
+ *   corners on a hairline, the selected one attached to the panel below it
  */
-export type TabType = 'default' | 'line' | 'shadow'
+export type TabType = 'default' | 'line' | 'shadow' | 'folder'
 
 /**
  * Tab color variants

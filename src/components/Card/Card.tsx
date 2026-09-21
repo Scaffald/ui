@@ -65,7 +65,7 @@ import { useThemeContext } from '../../theme'
  */
 export function Card({
   children,
-  variant: variantProp = 'elevated',
+  variant: variantProp = 'outlined',
   padding = 'none',
   radius = 'lg',
   elevation = 'sm',
