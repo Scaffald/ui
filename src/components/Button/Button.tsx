@@ -41,7 +41,10 @@ import { useInteractiveState } from '../../hooks/useInteractiveState'
 export const Button = forwardRef<View, ButtonProps>(function Button({
   children,
   color = 'gray',
-  variant = 'filled',
+  // Outlined by default: the prototype draws actions as a 1px outline on
+  // transparent and reserves a solid fill for the one or two CTAs a screen
+  // genuinely leads with. Pass `variant="filled"` for those.
+  variant = 'outline',
   size = 'md',
   disabled = false,
   fullWidth = false,

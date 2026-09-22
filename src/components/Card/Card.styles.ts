@@ -17,7 +17,6 @@ import type {
 } from "./Card.types";
 import type { ResolvedThemeMode } from "../../tokens/colors";
 import type { GlassMaterial } from "../../tokens/glass";
-import { getGlassMaterialStyles } from "../../utils/glassStyles";
 
 // ============================================================================
 // Types
@@ -71,13 +70,16 @@ const PADDING_MAP: Record<CardPadding, number> = {
   '2xl': spacing[32],
 };
 
+// The SCF prototype keeps corners nearly square (2 / 4 / 7) and separates with
+// hairlines rather than rounded, floating panels. Every card radius above `sm`
+// resolves to the 7px interface step; the old 20/24/32 bubbles are gone.
 const RADIUS_MAP: Record<CardRadius, number> = {
-  sm: borderRadius.l,      // 8
-  md: borderRadius.xxl,    // 12
-  lg: borderRadius.xxxl,   // 16
-  xl: 20,                  // large
-  '2xl': borderRadius.xxxxl, // 24
-  '3xl': 32,               // extra large
+  sm: borderRadius.m,      // 4
+  md: borderRadius.l,      // 7
+  lg: borderRadius.l,      // 7
+  xl: borderRadius.l,      // 7
+  '2xl': borderRadius.l,   // 7
+  '3xl': borderRadius.l,   // 7
 };
 
 const SHADOW_MAP: Record<CardElevation, ShadowStyle> = {
@@ -138,10 +140,13 @@ export function getCardStyles(
       break;
     }
     case "outlined":
+      // The default card: a bordered, unfilled surface with no shadow. The
+      // border is the visible hairline (border.default), not the near-white
+      // `subtle` step, which disappears against a white card.
       container = {
         ...baseStyle,
         borderWidth: 1,
-        borderColor: colors.border[theme].subtle,
+        borderColor: colors.border[theme].default,
       };
       break;
     case "filled":
@@ -151,27 +156,18 @@ export function getCardStyles(
       };
       break;
     case "glass": {
-      // When a specific glassMaterial is set, use the Liquid Glass material system
-      const materialLevel = glassMaterial ?? 'regular';
-      const materialStyles = getGlassMaterialStyles(materialLevel, theme);
-
+      // Quiet by design. `glass` used to be a blurred, shadowed Liquid Glass
+      // panel; the redesign keeps the name (110 callers) but renders it as the
+      // same hairline-bordered surface as `outlined`, with a translucent fill
+      // so it still reads over a map or a photograph. Callers that need the
+      // blurred material should use GlassSurface directly.
+      void glassMaterial;
       container = {
         ...baseStyle,
+        backgroundColor: theme === 'dark' ? 'rgba(47, 40, 32, 0.92)' : 'rgba(255, 255, 255, 0.92)',
         borderWidth: 1,
-        borderColor: colors.border[theme].ghost,
+        borderColor: colors.border[theme].default,
       };
-      if (Platform.OS === "web") {
-        // Web: use material fallback bg as base (layers render via GlassSurface or nested divs)
-        container.backgroundColor = materialStyles.nativeContainer.backgroundColor;
-        // Apply Liquid Glass blur — always 50px for full material effect
-        (container as Record<string, unknown>).backdropFilter = "blur(50px) saturate(180%)";
-        (container as Record<string, unknown>).WebkitBackdropFilter = "blur(50px) saturate(180%)";
-        (container as Record<string, unknown>).boxShadow = BOX_SHADOW_MAP.glass;
-      } else {
-        // Native: higher-opacity fallback + subtle shadow
-        container.backgroundColor = materialStyles.nativeContainer.backgroundColor;
-        Object.assign(container, SHADOW_MAP.glass);
-      }
       break;
     }
     default:
