@@ -4,8 +4,10 @@
 
 import { useState } from 'react'
 import { ChevronDown, Check } from 'lucide-react-native'
+import type { TextStyle, ViewStyle } from 'react-native'
 import { Pressable, Text } from 'react-native'
 import { useWindowDimensions } from '../../hooks/useWindowDimensions'
+import { useThemeContext } from '../../theme'
 import { breakpoints } from '../../tokens/breakpoints'
 import { Stack } from '../Layout'
 import { Button } from '../Button'
@@ -36,6 +38,8 @@ export function ResponsiveSelect({
   testID,
 }: ResponsiveSelectProps) {
   const { width } = useWindowDimensions()
+  const { theme } = useThemeContext()
+  const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const isMobile = width < MOBILE_BREAKPOINT
   const [isOpen, setIsOpen] = useState(false)
 
@@ -117,6 +121,36 @@ export function ResponsiveSelect({
     )
   }
 
+  // A select is a field, not a button.
+  //
+  // `Dropdown`'s own trigger is a dark filled pill with centred white text,
+  // which is right for a menu button ("Actions ▾") and wrong for a form
+  // control: on the apply form it rendered as the heaviest element on the
+  // screen, darker than the submit button, sitting in a column of white
+  // inputs. In Office toolbars the same pill outweighed the primary action
+  // beside it. So the select supplies `Input`'s own treatment — same height,
+  // radius, surface, border and left-aligned label — and leaves the pill to
+  // the menus it was drawn for. Callers can still override either.
+  const fieldTriggerStyle: ViewStyle = {
+    minHeight: size === 'sm' ? 32 : 40,
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[8],
+    borderRadius: borderRadius.xxl,
+    backgroundColor:
+      resolvedTheme === 'dark' ? colors.bg.dark.subtle : colors.bg.light.default,
+    borderWidth: 1,
+    borderColor: colors.border[resolvedTheme].default,
+    justifyContent: 'space-between',
+    width: '100%',
+  }
+  const fieldTriggerTextStyle: TextStyle = {
+    color: value
+      ? colors.text[resolvedTheme].primary
+      : colors.text[resolvedTheme].tertiary,
+    textAlign: 'left',
+    flexShrink: 1,
+  }
+
   return (
     <Stack gap={spacing[2]}>
       {label ? <Label>{label}</Label> : null}
@@ -126,8 +160,9 @@ export function ResponsiveSelect({
         trigger={displayValue}
         disabled={disabled}
         position="bottom-left"
-        triggerStyle={triggerStyle}
-        triggerTextStyle={triggerTextStyle}
+        triggerStyle={{ ...fieldTriggerStyle, ...triggerStyle }}
+        triggerTextStyle={{ ...fieldTriggerTextStyle, ...triggerTextStyle }}
+        caretColor={colors.text[resolvedTheme].tertiary}
       >
         {options.map((opt) => (
           <DropdownItem

@@ -27,8 +27,9 @@ import { useDropdown } from './useDropdown'
 /**
  * Simple caret icon component
  */
-function CaretIcon({ isOpen }: { isOpen: boolean }) {
+function CaretIcon({ isOpen, color }: { isOpen: boolean; color?: string }) {
   const styles = getDropdownStyles()
+  const caretColor = color ?? styles.caretColor
 
   // Simple arrow shape using View borders
   return (
@@ -41,7 +42,7 @@ function CaretIcon({ isOpen }: { isOpen: boolean }) {
             {
               borderBottomWidth: 8,
               borderTopWidth: 0,
-              borderBottomColor: styles.caretColor,
+              borderBottomColor: caretColor,
             },
           ]}
         />
@@ -53,7 +54,7 @@ function CaretIcon({ isOpen }: { isOpen: boolean }) {
             {
               borderTopWidth: 8,
               borderBottomWidth: 0,
-              borderTopColor: styles.caretColor,
+              borderTopColor: caretColor,
             },
           ]}
         />
@@ -89,6 +90,7 @@ export function Dropdown({
   children,
   triggerStyle,
   triggerTextStyle,
+  caretColor,
   menuStyle,
 }: DropdownProps) {
   const dropdown = useDropdown({
@@ -112,7 +114,7 @@ export function Dropdown({
         ]}
       >
         <Text style={[styles.triggerText, triggerTextStyle]}>{trigger || 'Select'}</Text>
-        <CaretIcon isOpen={dropdown.isOpen} />
+        <CaretIcon isOpen={dropdown.isOpen} color={caretColor} />
       </Pressable>
 
       {/* Dropdown Menu */}
