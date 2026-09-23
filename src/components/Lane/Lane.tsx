@@ -104,6 +104,7 @@ export function LaneGroup({
 
 export function Lane({
   age,
+  ageLabel = 'in stage',
   overdue = false,
   title,
   subtitle,
@@ -156,7 +157,7 @@ export function Lane({
                 color: colors.text[theme].tertiary,
               }}
             >
-              in stage
+              {ageLabel}
             </Text>
           </View>
         ) : null}

@@ -36,6 +36,13 @@ export interface LaneProps {
    * the row because it is the number that says "act on this".
    */
   age?: string
+  /**
+   * What the figure counts, under it. Defaults to "in stage", which is right
+   * for a pipeline row and wrong everywhere else: the employer's job list
+   * uses the same row for days a posting has been open, and read "11d in
+   * stage" (#835).
+   */
+  ageLabel?: string
   /** Marks the age as past its promise; renders it in the attention hue. */
   overdue?: boolean
   /** Primary identity for the row — a name, a case number. */
