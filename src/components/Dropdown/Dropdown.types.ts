@@ -56,6 +56,8 @@ export interface DropdownProps {
    * Custom trigger text style (e.g. to change text color when trigger bg is overridden)
    */
   triggerTextStyle?: TextStyle
+  /** Colour of the caret. Defaults to the dark-pill trigger's white. */
+  caretColor?: string
 
   /**
    * Custom menu container style
