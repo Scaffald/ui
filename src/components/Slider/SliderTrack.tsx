@@ -84,8 +84,13 @@ export function SliderTrack({
 
   const getFillColor = (): string => {
     if (color === 'primary') {
-      // iOS 26: accent blue for filled track
-      return colors.accents[theme].blue
+      // The brand primary, not iOS system blue.
+      //
+      // `color="primary"` resolved to `accents[theme].blue` while the value
+      // tooltip on the same control resolved to `primary[500]` — so one
+      // slider showed two different "primary" colours, a blue track under a
+      // teal bubble, on a screen with nothing else blue on it.
+      return colors.primary[500]
     }
     // Gray variant
     return isLight ? colors.gray[900] : colors.gray[100]
