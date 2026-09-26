@@ -237,11 +237,20 @@ export interface TabContentProps {
    */
   children: ReactNode
 
-  /**
-   * Value that associates this content panel with a TabTrigger (for Radix-style API)
-   * When the active tab value matches, this content is shown
-   */
-  value?: string
+  // There is deliberately no `value` prop here (#906).
+  //
+  // One used to be declared, documented as "value that associates this content
+  // panel with a TabTrigger (for Radix-style API) — when the active tab value
+  // matches, this content is shown". Nothing ever read it. `TabContent` decides
+  // purely on `useTabItemContext().isSelected`, so a panel written in that
+  // Radix shape — as a sibling of the triggers rather than nested in its
+  // `Tabs.Item` — rendered nothing at all.
+  //
+  // Four screens believed that docstring and shipped with empty tab panels,
+  // including the IPIP share-link page, where the reader is someone outside the
+  // account (#896, fixed in #899). Re-adding the prop without also teaching
+  // `Tabs` to read it would restore the trap, so: nest `Tabs.Content` inside
+  // its `Tabs.Item`, which is what every example and story does.
 
   /**
    * Custom container style
