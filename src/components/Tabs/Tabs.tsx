@@ -47,6 +47,22 @@ import { useTabs } from './useTabs'
 
 export { useTabsContext } from './TabsContext'
 
+/** The component function behind an element, however it was authored. */
+function componentTypeOf(el: React.ReactElement) {
+  return el.type as React.FC & { displayName?: string }
+}
+
+/** Tolerates the displayName/name variants a bundler may leave behind. */
+function isTabContent(t: React.FC & { displayName?: string }) {
+  return t === TabContent || t?.displayName === 'TabContent' || t?.name === 'TabContent'
+}
+
+/** A readable name for an element, for the dev warning below. */
+function nameOf(el: React.ReactElement) {
+  const t = componentTypeOf(el)
+  return typeof el.type === 'string' ? el.type : t?.displayName || t?.name || 'unknown'
+}
+
 export function Tabs({
   value,
   defaultValue,
@@ -134,6 +150,27 @@ export function Tabs({
             content,
             fullItem: child as React.ReactElement,
           })
+        } else if (process.env.NODE_ENV !== 'production') {
+          // Say so, rather than dropping it (#906).
+          //
+          // A child with no `TabTrigger` among its own children cannot become a
+          // tab, and this branch used to discard it and move on — no render, no
+          // warning, no DOM. `TabContent` never ran, so even the
+          // "TabItem components must be used within a TabItem" throw inside
+          // `useTabItemContext` never fired. That silence is what let four
+          // screens ship with a tab strip over empty space (#896).
+          const dropped = isTabContent(componentTypeOf(child))
+            ? 'a Tabs.Content'
+            : `<${nameOf(child)}>`
+          console.warn(
+            `[Tabs] Ignored ${dropped} passed directly to <Tabs>: it has no ` +
+              'Tabs.Trigger among its children, so it cannot become a tab. ' +
+              'Nest Tabs.Trigger and Tabs.Content inside a Tabs.Item:\n' +
+              '  <Tabs.Item value="x">\n' +
+              '    <Tabs.Trigger>X</Tabs.Trigger>\n' +
+              '    <Tabs.Content>…</Tabs.Content>\n' +
+              '  </Tabs.Item>'
+          )
         }
       }
     })
