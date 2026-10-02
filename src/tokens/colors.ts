@@ -671,14 +671,14 @@ export const colors = {
       subtle: '#3c352c', // gray[700] warm - Used for subtle borders
       muted: '#504940', // gray[600] warm - Used for muted borders
       emphasis: '#9e9790', // gray[400] warm - Used for borders requiring more visual emphasis
-      active: '#1d7282', // primary[500] teal - Used for borders currently active
-      selected: '#1d7282', // primary[500] teal - Used for borders currently selected
+      active: '#3fb5c7', // primary[300] teal — inverted for dark (#951); was primary[500] #1d7282, 2.62:1 on bg.dark.muted
+      selected: '#3fb5c7', // primary[300] teal — inverted for dark (#951); was primary[500] #1d7282, 2.62:1 on bg.dark.muted
       disabled: '#3c352c', // gray[700] warm - Used for borders currently disabled
-      focus: '#1d7282', // primary[500] teal - Used for borders currently focused
-      error: '#b84f3b', // error[500] terracotta - Used for borders indicating an error state
+      focus: '#3fb5c7', // primary[300] teal — inverted for dark (#951); was primary[500] #1d7282, 2.62:1 on bg.dark.muted
+      error: '#e58e80', // error[300] terracotta — inverted for dark (#951); was error[500] #b84f3b, 2.92:1 on bg.dark.muted
       warning: '#c28d41', // warning[500] amber - Used for borders indicating a warning state
-      success: '#3a7d4c', // success[500] moss - Used for borders indicating a success state
-      info: '#2e72a0', // info[500] slate - Used for borders indicating an informational state
+      success: '#74b480', // success[300] moss — inverted for dark (#951); was success[500] #3a7d4c, 2.92:1 on bg.dark.muted
+      info: '#7cb0d5', // info[300] — inverted for dark (#951); was info[500] #2e72a0, 2.79:1 on bg.dark.muted
       /** Attention outline — the amber rule around an over-SLA row or a chip */
       attention: '#c28d41', // warning[500] amber
       /** Ghost border — barely visible outline for glass cards and subtle separation */
@@ -725,12 +725,12 @@ export const colors = {
       active: '#3fb5c7', // primary[300] teal — 7.72:1 on gray[900]
       selected: '#3fb5c7', // primary[300] teal — 7.72:1 on gray[900]
       disabled: '#504940', // gray[600] warm - Used for foreground elements currently disabled
-      error: '#b84f3b', // error[500] terracotta - Used for foreground elements indicating an error state
+      error: '#e58e80', // error[300] terracotta — inverted for dark (#951); was error[500] #b84f3b, 2.92:1 on bg.dark.muted
       warning: '#c28d41', // warning[500] amber - Used for foreground elements indicating a warning state
       /** "Act on this": overdue, over-SLA, stale in stage. Never for errors. */
       attention: '#e1ad66', // warning[400] amber — 9.26:1 on gray[900]
-      success: '#3a7d4c', // success[500] moss - Used for foreground elements indicating a success state
-      info: '#2e72a0', // info[500] slate - Used for foreground elements indicating an informational state
+      success: '#74b480', // success[300] moss — inverted for dark (#951); was success[500] #3a7d4c, 2.92:1 on bg.dark.muted
+      info: '#7cb0d5', // info[300] — inverted for dark (#951); was info[500] #2e72a0, 2.79:1 on bg.dark.muted
     },
   },
 
@@ -755,13 +755,13 @@ export const colors = {
       subtle: '#e3dfd9', // gray[200] warm - Used for subtle icons
       muted: '#9e9790', // gray[400] warm - Used for muted icons
       emphasis: '#6e6760', // gray[500] warm - Used for icons requiring more visual emphasis
-      active: '#1d7282', // primary[500] teal - Used for icons currently active
-      selected: '#1d7282', // primary[500] teal - Used for icons currently selected
+      active: '#3fb5c7', // primary[300] teal — inverted for dark (#951); was primary[500] #1d7282, 2.62:1 on bg.dark.muted
+      selected: '#3fb5c7', // primary[300] teal — inverted for dark (#951); was primary[500] #1d7282, 2.62:1 on bg.dark.muted
       disabled: '#504940', // gray[600] warm - Used for icons currently disabled
-      error: '#b84f3b', // error[500] terracotta - Used for icons indicating an error state
-      warning: '#9a6614', // warning[500] ochre - Used for icons indicating a warning state
-      success: '#3a7d4c', // success[500] moss - Used for icons indicating a success state
-      info: '#2e72a0', // info[500] slate - Used for icons indicating an informational state
+      error: '#e58e80', // error[300] terracotta — inverted for dark (#951); was error[500] #b84f3b, 2.92:1 on bg.dark.muted
+      warning: '#c28d41', // warning[500] amber — matches fg.dark.warning (#951); was #9a6614, 2.96:1 on bg.dark.muted
+      success: '#74b480', // success[300] moss — inverted for dark (#951); was success[500] #3a7d4c, 2.92:1 on bg.dark.muted
+      info: '#7cb0d5', // info[300] — inverted for dark (#951); was info[500] #2e72a0, 2.79:1 on bg.dark.muted
     },
   },
 } as const
