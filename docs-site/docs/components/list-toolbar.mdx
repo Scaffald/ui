@@ -1,0 +1,55 @@
+---
+sidebar_position: 123
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# ListToolbar
+
+Search, a filter flyout, the active-filter chip strip and a result count — the one toolbar every list screen uses.
+
+The flyout is where filters are **set**; the chip strip is where ones already applied are **removed**. It is deliberately not a second place to set them.
+
+## Import
+
+```tsx
+import { ListToolbar } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{padding: 16}}>
+    <ListToolbar searchPlaceholder="Search applicants" resultCount={248} resultNoun="applicant" />
+  </Stack>
+</ThemeProvider>`} />
+
+## The result count
+
+One template everywhere — `{n} {noun}`. The prototype's audit found this slot phrased four different ways across the app.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12} style={{padding: 16}}>
+    <ListToolbar resultCount={0} resultNoun="applicant" />
+    <ListToolbar resultCount={1} resultNoun="applicant" />
+    <ListToolbar resultCount={12} resultNoun="company" resultNounPlural="companies" />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/ListToolbar/ListToolbar.types.ts) for the complete props API.
+
+## In Storybook
+
+Eleven stories, including the count at 0 / 1 / many, an irregular plural, the flyout with an active count, and a removable chip strip:
+
+```
+Components/ListToolbar
+```
+
+Storybook is not published yet (Scaffald/SaaS#959), so run it locally:
+
+```bash
+pnpm --filter @scaffald/ui storybook
+```

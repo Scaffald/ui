@@ -1,0 +1,62 @@
+---
+sidebar_position: 124
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# MetricBlock / MetricRow
+
+A labelled figure, and a hairline-divided row of them.
+
+Two things are deliberate. The delta's **tone is stated, not inferred from direction** — a rising ghost rate is bad, so `up` is not automatically good. And the row **wraps whole columns below 640 px** rather than squeezing, because a vertical rule on the first cell of a second line reads as a stray divider hanging off the edge.
+
+## Import
+
+```tsx
+import { MetricBlock, MetricRow } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{padding: 16}}>
+    <MetricRow bordered>
+      <MetricBlock label="Open roles" value="12" />
+      <MetricBlock label="Applicants" value="248" />
+      <MetricBlock label="In screening" value="18" />
+    </MetricRow>
+  </Stack>
+</ThemeProvider>`} />
+
+## Tone and emphasis
+
+The middle figure falling is good; the right figure rising is bad. Both are deltas — only `tone` says which. `emphasis` puts the figure itself in the attention hue.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{padding: 16}}>
+    <MetricRow bordered>
+      <MetricBlock label="Open roles" value="12" delta="3 this week" />
+      <MetricBlock label="Time to first response" value="1.2d" delta="▼ 18%" tone="positive" />
+      <MetricBlock label="Ghosted after apply" value="9%" delta="▲ 4%" tone="attention" />
+      <MetricBlock label="Over SLA" value="4" delta="needs a decision today" emphasis tone="attention" />
+    </MetricRow>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Metric/Metric.types.ts) for the complete props API.
+
+## In Storybook
+
+Eight stories, including the six-up row either side of the 640 px wrap — the case where the sixth block used to orphan onto a second line with a stray divider:
+
+```
+Components/Metric
+```
+
+Storybook is not published yet (Scaffald/SaaS#959), so run it locally:
+
+```bash
+pnpm --filter @scaffald/ui storybook
+```
