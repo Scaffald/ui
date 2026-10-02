@@ -55,6 +55,17 @@ const preview: Preview = {
             height: '800px',
           },
         },
+        // The redesign's reference width. The prototype's desktop shots are
+        // 1440, and the components that wrap (MetricRow at 640, Lane at its
+        // `stackBelow`) read differently either side of 1280, so both are worth
+        // having in the toolbar.
+        desktopWide: {
+          name: 'Desktop wide (1440)',
+          styles: {
+            width: '1440px',
+            height: '900px',
+          },
+        },
       },
     },
   },

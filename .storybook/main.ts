@@ -43,8 +43,12 @@ const config: StorybookConfig = {
       'react-native$': 'react-native-web',
       // Alias react-native-svg to a mock for web to avoid React Native internals
       'react-native-svg': require.resolve('./mocks/react-native-svg.jsx'),
-      // Alias lucide-react-native to lucide-react for web compatibility
-      'lucide-react-native': 'lucide-react',
+      // No alias for lucide-react-native. It used to point at `lucide-react`,
+      // which is not a dependency of this package or of the workspace — so the
+      // alias redirected a package that resolves to one that does not, and
+      // `storybook build` failed outright on any story importing an icon.
+      // lucide-react-native runs under react-native-web like the app does; its
+      // react-native-svg dependency is already mocked below.
       // Mock React Native internal modules that don't have web equivalents
       'react-native/Libraries/ReactNative/requireNativeComponent': require.resolve('./mocks/requireNativeComponent.js'),
       'react-native/Libraries/Alert/RCTAlertManager': require.resolve('./mocks/RCTAlertManager.js'),

@@ -1,0 +1,57 @@
+---
+sidebar_position: 122
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# ScreenHeader
+
+The one header every screen uses: kicker → title (+ optional collapse caret) → tip (+ optional pager), with room for actions on the title row and a full-width slot beneath.
+
+Every part except `title` is optional. A screen that only needs a title renders one and nothing else moves.
+
+## Import
+
+```tsx
+import { ScreenHeader } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{padding: 16}}>
+    <ScreenHeader title="Applications" />
+  </Stack>
+</ThemeProvider>`} />
+
+## With kicker and tip
+
+The kicker is the screen's context, not a second title.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{padding: 16}}>
+    <ScreenHeader
+      kicker="Employer view — applicant workflow"
+      title="Applications"
+      tip="Move candidates between stages with the arrows — the worker sees each move as honest progress, not silence."
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/ScreenHeader/ScreenHeader.types.ts) for the complete props API.
+
+## In Storybook
+
+Eleven stories cover every combination from title-only to all parts at once, plus the collapsed state and a 375 px pass:
+
+```
+Components/ScreenHeader
+```
+
+Storybook is not published yet (Scaffald/SaaS#959), so run it locally:
+
+```bash
+pnpm --filter @scaffald/ui storybook
+```

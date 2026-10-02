@@ -1,0 +1,73 @@
+---
+sidebar_position: 125
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Lane / LaneGroup
+
+A pipeline row and the stage that holds it.
+
+The row **leads with the staleness figure**, because that is the number that says "act on this". Its middle cells carry their own labels — the row has no column headings, so a bare `88 | Scaffald | — | Unassigned` says what none of its values are.
+
+`LaneGroup`'s `emptyState` is the one worth reading: a stage with nothing in it should say what would put something there, rather than repeating "No applications" once per stage down the whole board.
+
+## Import
+
+```tsx
+import { Lane, LaneGroup } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{padding: 16}}>
+    <Lane age="2d" title="Marcus Rivera" subtitle="Journeyman Electrician · Tulsa, OK" />
+  </Stack>
+</ThemeProvider>`} />
+
+## `ageLabel`, and overdue
+
+`ageLabel` defaults to "in stage", which is right for a pipeline row and wrong for an employer's job list — where the same row counts days a posting has been open and used to read "11d in stage".
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={8} style={{padding: 16}}>
+    <Lane age="2d" title="Marcus Rivera" subtitle="Pipeline row — the default label" />
+    <Lane age="11d" ageLabel="open" title="Journeyman Electrician" subtitle="Job list row — same component" />
+    <Lane age="9d" overdue title="Jake Hendricks" subtitle="Past the first-response promise" />
+  </Stack>
+</ThemeProvider>`} />
+
+## A stage, and an empty one
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12} style={{padding: 16}}>
+    <LaneGroup title="Screening" count={1} tone="active" hint="untouched — the first-response clock is running">
+      <Lane age="9d" overdue title="Marcus Rivera" subtitle="Journeyman Electrician" />
+    </LaneGroup>
+    <LaneGroup
+      title="Offer out"
+      count={0}
+      hint="waiting on the candidate"
+      emptyState={<Text>Nothing here yet. Move someone from Screening once you have agreed terms.</Text>}
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Lane/Lane.types.ts) for the complete props API.
+
+## In Storybook
+
+Twelve stories, including a whole board with an empty stage, the three stage tones, and the 375 px pass where the middle cells collapse into a vertical list:
+
+```
+Components/Lane
+```
+
+Storybook is not published yet (Scaffald/SaaS#959), so run it locally:
+
+```bash
+pnpm --filter @scaffald/ui storybook
+```
