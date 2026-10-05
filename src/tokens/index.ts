@@ -161,3 +161,4 @@ export const tokens = {
 } as const
 
 export type Tokens = typeof tokens
+export { quietPanel, quietStrip } from './surfaces'

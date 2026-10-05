@@ -4,15 +4,9 @@
  */
 
 import type { ViewStyle } from 'react-native'
-import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import type { ResolvedThemeMode } from '../../tokens/colors'
-
-const PILL_BG = {
-  light: 'rgba(235, 235, 237, 0.6)',
-  dark: 'rgba(58, 58, 60, 0.6)',
-} as const
 
 export interface PageControlStyleConfig {
   container: ViewStyle
@@ -27,7 +21,7 @@ export interface PageControlStyleConfig {
 export function getPageControlStyles(
   theme: ResolvedThemeMode,
 ): PageControlStyleConfig {
-  const dotColor = colors.labels[theme].primary
+  const dotColor = colors.text[theme].primary
 
   const container: ViewStyle = {
     height: 44,
@@ -45,16 +39,12 @@ export function getPageControlStyles(
   }
 
   const pillContainer: ViewStyle = {
-    backgroundColor: PILL_BG[theme],
-    borderRadius: borderRadius.pill,
+    backgroundColor: colors.bg[theme].subtle,
+    borderWidth: 1,
+    borderColor: colors.border[theme].default,
+    borderRadius: borderRadius.xs,
     paddingHorizontal: 10,
     paddingVertical: 6,
-  }
-
-  if (Platform.OS === 'web') {
-    const webPill = pillContainer as Record<string, unknown>
-    webPill.backdropFilter = 'blur(30px)'
-    webPill.WebkitBackdropFilter = 'blur(30px)'
   }
 
   const dot: ViewStyle = {

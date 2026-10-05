@@ -6,6 +6,7 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
+import { fontSize, lineHeight } from '../../tokens/typography'
 import type { ResolvedThemeMode } from '../../tokens/colors'
 
 export interface ToolbarButtonStyleConfig {
@@ -34,15 +35,16 @@ export interface ToolbarButtonStyleConfig {
 export function getToolbarButtonStyles(
   theme: ResolvedThemeMode,
 ): ToolbarButtonStyleConfig {
-  const tintColor = colors.accents[theme].blue
-  const iconColor = colors.labelsVibrant[theme].primary
+  // Teal, the interactive accent (Scaffald/SaaS#983) — not iOS system blue.
+  const tintColor = theme === 'dark' ? colors.primary[300] : colors.primary[600]
+  const iconColor = colors.icon[theme].default
 
   const iconButton: ViewStyle = {
     width: 44,
     height: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 22,
+    borderRadius: borderRadius.xs,
   }
 
   const textButton: ViewStyle = {
@@ -50,7 +52,7 @@ export function getToolbarButtonStyles(
     paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: borderRadius.pill,
+    borderRadius: borderRadius.xs,
   }
 
   const filledButton: ViewStyle = {
@@ -58,7 +60,7 @@ export function getToolbarButtonStyles(
     paddingHorizontal: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 15,
+    borderRadius: borderRadius.xs,
     backgroundColor: tintColor,
   }
 
@@ -72,20 +74,23 @@ export function getToolbarButtonStyles(
   }
 
   const textLabel: TextStyle = {
-    fontSize: 17,
-    fontWeight: '400',
+    fontSize: fontSize.md,
+    lineHeight: lineHeight.md,
+    fontWeight: '500',
     color: tintColor,
   }
 
   const filledLabel: TextStyle = {
-    fontSize: 15,
+    fontSize: fontSize.md,
+    lineHeight: lineHeight.md,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.white,
   }
 
   const backLabel: TextStyle = {
-    fontSize: 17,
-    fontWeight: '400',
+    fontSize: fontSize.md,
+    lineHeight: lineHeight.md,
+    fontWeight: '500',
     color: tintColor,
   }
 

@@ -4,15 +4,8 @@
  */
 
 import type { ViewStyle } from 'react-native'
-import { Platform } from 'react-native'
-import { borderRadius } from '../../tokens/borders'
-import { shadows, boxShadows } from '../../tokens/shadows'
+import { quietStrip } from '../../tokens/surfaces'
 import type { ResolvedThemeMode } from '../../tokens/colors'
-
-const GLASS_BG = {
-  light: 'rgba(245, 245, 245, 0.6)',
-  dark: 'rgba(44, 44, 46, 0.7)',
-} as const
 
 export interface BottomToolbarStyleConfig {
   /** Outer wrapper with safe-area padding */
@@ -37,32 +30,19 @@ export function getBottomToolbarStyles(
     bottom: 0,
     left: 0,
     right: 0,
-    alignItems: 'center',
-    paddingBottom: 8,
-    paddingHorizontal: 16,
+    alignItems: 'stretch',
   }
 
+  // The prototype pins its toolbars to the edge as a strip — full width, a
+  // hairline on top, opaque — not a floating glass pill. The key is still
+  // `pill` because the components reach for it by that name.
   const pill: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: GLASS_BG[theme],
-    borderRadius: borderRadius.sheet,
-    paddingHorizontal: 4,
-    paddingVertical: 4,
-    ...shadows.iosSheet,
-  }
-
-  if (Platform.OS === 'web') {
-    const webPill = pill as Record<string, unknown>
-    webPill.backdropFilter = 'blur(50px)'
-    webPill.WebkitBackdropFilter = 'blur(50px)'
-    webPill.boxShadow = boxShadows.iosSheet
-    delete webPill.shadowColor
-    delete webPill.shadowOffset
-    delete webPill.shadowOpacity
-    delete webPill.shadowRadius
-    delete webPill.elevation
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    ...quietStrip(theme, 'bottom'),
   }
 
   const contentRow: ViewStyle = {
