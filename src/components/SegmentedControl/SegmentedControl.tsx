@@ -1,8 +1,9 @@
 /**
- * SegmentedControl — iOS 26 style segmented control
+ * SegmentedControl — a bordered box of options, one of which is chosen.
  *
- * A horizontal control with pill-shaped segments. The selected segment
- * gets a white (light) or gray (dark) background pill indicator.
+ * The SCF prototype's `.seg`: hairline border, hairline between options, the
+ * chosen one marked by an inset accent ring and accent text. No thumb, no
+ * animation — the choice reads from the ring.
  *
  * @example
  * ```tsx
@@ -35,23 +36,30 @@ export function SegmentedControl({
   const styles = useStyles(getSegmentedControlStyles, [theme] as const)
 
   return (
-    <View style={[styles.container, style]} testID={testID} accessibilityRole="tablist">
+    <View
+      style={[styles.container, disabled && { opacity: 0.5 }, style]}
+      testID={testID}
+      accessibilityRole="tablist"
+    >
       {segments.map((label, index) => {
         const isSelected = index === selectedIndex
         return (
           <Pressable
             key={`${label}-${index}`}
-            style={isSelected ? styles.selectedSegment : styles.segment}
+            style={({ hovered }: { pressed: boolean; hovered?: boolean }) => [
+              styles.segment,
+              index > 0 && styles.segmentDivider,
+              hovered && !isSelected && !disabled && styles.segmentHovered,
+            ]}
             onPress={() => !disabled && onSelectionChange(index)}
             disabled={disabled}
             accessibilityRole="tab"
             accessibilityState={{ selected: isSelected, disabled }}
+            aria-selected={isSelected}
             accessibilityLabel={label}
           >
-            <Text
-              style={isSelected ? styles.selectedLabel : styles.label}
-              numberOfLines={1}
-            >
+            {isSelected ? <View pointerEvents="none" style={styles.ring} /> : null}
+            <Text style={isSelected ? styles.selectedLabel : styles.label} numberOfLines={1}>
               {label}
             </Text>
           </Pressable>

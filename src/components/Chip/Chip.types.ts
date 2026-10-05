@@ -8,6 +8,15 @@ import type { IconComponent } from '../types'
 export type ChipType = 'default' | 'icon' | 'avatar' | 'flag' | 'brand-icon' | 'crypto'
 export type ChipSize = 'sm' | 'md' | 'lg'
 
+/**
+ * What the chip is saying — the SCF prototype's `.tag` tones.
+ * - neutral: a plain bordered tag (default)
+ * - accent: a tinted tag from the primary ramp — a count, a selected filter
+ * - attention: the amber tag — act on this (overdue, over-SLA, needs work)
+ * - outline: accent border and text on no fill
+ */
+export type ChipTone = 'neutral' | 'accent' | 'attention' | 'outline'
+
 export interface ChipProps extends Omit<PressableProps, 'style' | 'children'> {
   /**
    * Content of the chip (text or custom node)
@@ -35,6 +44,8 @@ export interface ChipProps extends Omit<PressableProps, 'style' | 'children'> {
    * Whether the chip is selected (for selectable chips)
    */
   selected?: boolean
+  /** Tone of an unselected chip; a selected chip always reads as `accent`. @default 'neutral' */
+  tone?: ChipTone
 
   /**
    * Callback when chip is pressed

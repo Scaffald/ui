@@ -734,6 +734,7 @@ export { SelectionCard } from "./components/SelectionCard";
 export { Chip } from "./components/Chip";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type { ChipProps, ChipSize, ChipType } from "./components/Chip";
+export type { ChipTone } from "./components/Chip";
 
 export { Accordion } from "./components/Accordion";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
@@ -836,6 +837,8 @@ export { StatusIndicator } from "./components/StatusIndicator";
 // One header, one list toolbar, one metric block, and stage-grouped rows.
 // See docs/plans/redesign/2026-08-19-prototype-parity-plan.md in the monorepo.
 export { ScreenHeader } from "./components/ScreenHeader";
+export { TextLink } from "./components/TextLink";
+export type { TextLinkProps } from "./components/TextLink";
 export type {
   ScreenHeaderPager,
   ScreenHeaderProps,

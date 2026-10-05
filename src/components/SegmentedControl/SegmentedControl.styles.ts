@@ -1,73 +1,86 @@
 /**
- * SegmentedControl styles
- * iOS 26 style — pill background, sliding white selection indicator
+ * SegmentedControl styles — the SCF prototype's `.seg`.
+ *
+ * A bordered box with a hairline between options. The selected option is an
+ * inset accent ring and accent text; nothing slides and nothing fills. The
+ * iOS thumb this replaces (a white pill gliding over a grey track) was the
+ * one control in the account menu that did not look like the rest of it.
  */
 
 import type { ViewStyle, TextStyle } from 'react-native'
-import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ResolvedThemeMode } from '../../tokens/colors'
+import { borderRadius } from '../../tokens/borders'
+import { fontSize, fontWeight, lineHeight, typography } from '../../tokens/typography'
 
 export interface SegmentedControlStyleConfig {
   container: ViewStyle
   segment: ViewStyle
-  selectedSegment: ViewStyle
+  /** Added to every segment after the first. */
+  segmentDivider: ViewStyle
+  segmentHovered: ViewStyle
+  /** The inset ring drawn inside the selected segment. */
+  ring: ViewStyle
   label: TextStyle
   selectedLabel: TextStyle
 }
 
-export function getSegmentedControlStyles(
-  theme: ResolvedThemeMode,
-): SegmentedControlStyleConfig {
-  const trackBg = colors.fills[theme].tertiary
-  const selectedBg = theme === 'dark' ? 'rgba(110, 110, 115, 0.36)' : '#ffffff'
+export function getSegmentedControlStyles(theme: ResolvedThemeMode): SegmentedControlStyleConfig {
+  const accent = theme === 'dark' ? colors.primary[300] : colors.primary[600]
+  const hairline = colors.border[theme].default
 
   const container: ViewStyle = {
-    backgroundColor: trackBg,
-    borderRadius: 100,
-    padding: 2,
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    height: 32,
+    alignItems: 'stretch',
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: hairline,
+    borderRadius: borderRadius.xs,
     overflow: 'hidden',
   }
 
   const segment: ViewStyle = {
     flex: 1,
-    height: '100%' as unknown as number,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 20,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    position: 'relative',
   }
 
-  const selectedSegment: ViewStyle = {
-    ...segment,
-    backgroundColor: selectedBg,
+  const segmentDivider: ViewStyle = {
+    borderLeftWidth: 1,
+    borderLeftColor: hairline,
   }
 
-  // Add web shadow for selected segment
-  if (Platform.OS === 'web') {
-    (selectedSegment as Record<string, unknown>).boxShadow =
-      '0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)'
-    ;(selectedSegment as Record<string, unknown>).transition =
-      'background-color 0.2s ease'
+  const segmentHovered: ViewStyle = {
+    backgroundColor: colors.bg[theme].subtle,
+  }
+
+  const ring: ViewStyle = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderWidth: 1,
+    borderColor: accent,
   }
 
   const label: TextStyle = {
-    fontSize: 13,
-    fontWeight: '500', // medium (510)
+    fontFamily: typography.bodyMedium.fontFamily,
+    fontSize: fontSize.sm,
+    lineHeight: lineHeight.sm,
+    fontWeight: fontWeight.medium,
     textAlign: 'center',
-    color: colors.labels[theme].primary,
-    letterSpacing: -0.08,
+    color: colors.text[theme].primary,
   }
 
   const selectedLabel: TextStyle = {
     ...label,
-    fontWeight: '600', // semibold (590)
+    fontWeight: fontWeight.semibold,
+    color: accent,
   }
 
-  return { container, segment, selectedSegment, label, selectedLabel }
+  return { container, segment, segmentDivider, segmentHovered, ring, label, selectedLabel }
 }

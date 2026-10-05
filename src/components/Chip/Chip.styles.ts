@@ -5,14 +5,16 @@ import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import type { ResolvedThemeMode } from '../../tokens/colors'
-import type { ChipSize } from './Chip.types'
+import type { ChipSize, ChipTone } from './Chip.types'
 
 export const staticStyles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: borderRadius.max, // Fully rounded (pill shape)
+    // Near-square, like the prototype's `.tag` — the pill went with #861's
+    // quiet surfaces; a tag is a label, not a button.
+    borderRadius: borderRadius.xxs,
     borderWidth: 1,
   },
   focusRing: {
@@ -89,7 +91,8 @@ export function getChipStyles(
   selected: boolean,
   isHovered: boolean,
   isFocused: boolean,
-  disabled: boolean
+  disabled: boolean,
+  tone: ChipTone = 'neutral'
 ): ViewStyle[] {
   const sizeConfig = sizeConfigs[size]
   const isLight = theme === 'light'
@@ -104,51 +107,34 @@ export function getChipStyles(
     },
   ]
 
-  // Background and border based on state
-  const borderDefault = isLight ? colors.border.light.default : colors.border.dark.default
-  if (isLight) {
-    if (selected) {
-      // A selected chip is a tinted tag from the primary ramp — light step
-      // fill, mid step border — not an inverted black pill.
-      baseStyles.push({
-        backgroundColor: colors.primary[50],
-        borderColor: colors.primary[300],
-        borderWidth: 1,
-      })
-    } else if (isHovered && !disabled) {
-      baseStyles.push({
-        backgroundColor: colors.bg.light.subtle,
-        borderColor: borderDefault,
-        borderWidth: 1,
-      })
-    } else {
-      baseStyles.push({
-        backgroundColor: colors.bg.light.default,
-        borderColor: borderDefault,
-        borderWidth: 1,
-      })
+  // Fill and border: a selected chip is always the accent tag; an unselected
+  // one takes its tone. Hover lifts a neutral chip to the subtle ground and
+  // leaves tinted tags as they are.
+  const borderDefault = colors.border[theme].default
+  const toneStyle: ViewStyle = (() => {
+    if (selected || tone === 'accent') {
+      return isLight
+        ? { backgroundColor: colors.primary[50], borderColor: colors.primary[300] }
+        : { backgroundColor: colors.primary[900], borderColor: colors.primary[700] }
     }
-  } else {
-    if (selected) {
-      baseStyles.push({
-        backgroundColor: colors.primary[900],
-        borderColor: colors.primary[700],
-        borderWidth: 1,
-      })
-    } else if (isHovered && !disabled) {
-      baseStyles.push({
-        backgroundColor: colors.bg.dark.subtle,
-        borderColor: borderDefault,
-        borderWidth: 1,
-      })
-    } else {
-      baseStyles.push({
-        backgroundColor: colors.bg.dark.default,
-        borderColor: borderDefault,
-        borderWidth: 1,
-      })
+    if (tone === 'attention') {
+      return isLight
+        ? { backgroundColor: colors.warning[100], borderColor: colors.warning[300] }
+        : { backgroundColor: colors.warning[900], borderColor: colors.warning[700] }
     }
-  }
+    if (tone === 'outline') {
+      return {
+        backgroundColor: 'transparent',
+        borderColor: isLight ? colors.primary[600] : colors.primary[300],
+      }
+    }
+    const hovered = isHovered && !disabled
+    return {
+      backgroundColor: hovered ? colors.bg[theme].subtle : colors.bg[theme].default,
+      borderColor: borderDefault,
+    }
+  })()
+  baseStyles.push({ ...toneStyle, borderWidth: 1 })
 
   // Focus state
   if (isFocused && !disabled) {
@@ -172,7 +158,8 @@ export function getChipTextStyles(
   size: ChipSize,
   theme: ResolvedThemeMode,
   selected: boolean,
-  disabled: boolean
+  disabled: boolean,
+  tone: ChipTone = 'neutral'
 ): TextStyle[] {
   const sizeConfig = sizeConfigs[size]
   const isLight = theme === 'light'
@@ -185,15 +172,16 @@ export function getChipTextStyles(
     },
   ]
 
-  if (isLight) {
-    baseTextStyles.push({
-      color: selected ? colors.primary[700] : colors.text.light.primary,
-    })
-  } else {
-    baseTextStyles.push({
-      color: selected ? colors.primary[200] : colors.text.dark.primary,
-    })
-  }
+  const accentText = isLight ? colors.primary[700] : colors.primary[200]
+  const color =
+    selected || tone === 'accent' || tone === 'outline'
+      ? accentText
+      : tone === 'attention'
+        ? isLight
+          ? colors.warning[800]
+          : colors.warning[300]
+        : colors.text[theme].primary
+  baseTextStyles.push({ color })
 
   if (disabled) {
     baseTextStyles.push({
