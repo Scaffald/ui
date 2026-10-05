@@ -38,9 +38,13 @@ import { radius } from '../../tokens/borders'
 import { Text } from '../Typography/Text'
 import { Input } from '../Input'
 import { Popover, PopoverContent } from '../Popover'
+import { Tabs } from '../Tabs'
 import type { ListToolbarProps } from './ListToolbar.types'
 
 export function ListToolbar({
+  tabs,
+  activeTab,
+  onTabChange,
   searchValue,
   onSearchChange,
   searchPlaceholder = 'Search...',
@@ -121,57 +125,75 @@ export function ListToolbar({
     </Pressable>
   )
 
-  return (
-    <View style={[styles.root, style]} testID={testID}>
-      <View style={styles.primaryRow}>
-        {showSearch ? (
-          <View style={styles.searchCell}>
-            {renderSearch ? (
-              renderSearch()
-            ) : (
-              <Input
-                placeholder={searchPlaceholder}
-                value={searchValue ?? ''}
-                onChangeText={onSearchChange}
-                iconStart={Search}
-                iconEnd={hasSearch ? X : undefined}
-                iconEndOnPress={hasSearch ? () => onSearchChange?.('') : undefined}
-                iconEndAccessibilityLabel={hasSearch ? 'Clear search' : undefined}
-              />
-            )}
-          </View>
-        ) : null}
+  const hasTabs = tabs != null && tabs.length > 0
+  const showPrimaryRow =
+    showSearch || filterContent != null || countLabel != null || actions != null
 
-        {filterContent ? (
-          <Popover
-            placement="bottom"
-            trigger="manual"
-            open={open}
-            onOpenChange={setOpen}
-            offset={6}
-            content={<PopoverContent>{filterContent}</PopoverContent>}
-          >
-            {trigger}
-          </Popover>
-        ) : null}
+  // With tabs, the rows become the panel the tabs attach to: a hairline box
+  // whose top edge is the strip's own hairline (the selected tab paints over
+  // it in the panel colour, so tab and panel read as one shape — the
+  // prototype's list screens). Without tabs nothing changes.
+  const body = (
+    <View
+      style={[
+        styles.rows,
+        hasTabs && [
+          styles.panel,
+          { backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default },
+        ],
+      ]}
+    >
+      {showPrimaryRow ? (
+        <View style={styles.primaryRow}>
+          {showSearch ? (
+            <View style={styles.searchCell}>
+              {renderSearch ? (
+                renderSearch()
+              ) : (
+                <Input
+                  placeholder={searchPlaceholder}
+                  value={searchValue ?? ''}
+                  onChangeText={onSearchChange}
+                  iconStart={Search}
+                  iconEnd={hasSearch ? X : undefined}
+                  iconEndOnPress={hasSearch ? () => onSearchChange?.('') : undefined}
+                  iconEndAccessibilityLabel={hasSearch ? 'Clear search' : undefined}
+                />
+              )}
+            </View>
+          ) : null}
 
-        <View style={styles.spacer} />
+          {filterContent ? (
+            <Popover
+              placement="bottom"
+              trigger="manual"
+              open={open}
+              onOpenChange={setOpen}
+              offset={6}
+              content={<PopoverContent>{filterContent}</PopoverContent>}
+            >
+              {trigger}
+            </Popover>
+          ) : null}
 
-        {countLabel ? (
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              color: colors.text[theme].tertiary,
-              fontVariant: ['tabular-nums'],
-            }}
-            numberOfLines={1}
-          >
-            {countLabel}
-          </Text>
-        ) : null}
+          <View style={styles.spacer} />
 
-        {actions ? <View style={styles.actions}>{actions}</View> : null}
-      </View>
+          {countLabel ? (
+            <Text
+              style={{
+                fontSize: fontSize.md,
+                color: colors.text[theme].tertiary,
+                fontVariant: ['tabular-nums'],
+              }}
+              numberOfLines={1}
+            >
+              {countLabel}
+            </Text>
+          ) : null}
+
+          {actions ? <View style={styles.actions}>{actions}</View> : null}
+        </View>
+      ) : null}
 
       {chips && chips.length > 0 ? (
         <View style={styles.chipStrip}>
@@ -240,12 +262,38 @@ export function ListToolbar({
       ) : null}
     </View>
   )
+
+  return (
+    <View style={[styles.root, style]} testID={testID}>
+      {hasTabs ? (
+        <Tabs type="folder" value={activeTab ?? ''} onValueChange={(key) => onTabChange?.(key)}>
+          {tabs.map((tab) => (
+            <Tabs.Item key={tab.key} value={tab.key}>
+              <Tabs.Trigger>
+                {tab.count == null ? tab.label : `${tab.label} · ${tab.count}`}
+              </Tabs.Trigger>
+            </Tabs.Item>
+          ))}
+        </Tabs>
+      ) : null}
+      {body}
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
   root: {
     width: '100%',
+  },
+  rows: {
     gap: spacing[8],
+  },
+  panel: {
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderBottomLeftRadius: radius.lg,
+    borderBottomRightRadius: radius.lg,
+    padding: spacing[12],
   },
   primaryRow: {
     flexDirection: 'row',

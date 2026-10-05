@@ -12,7 +12,26 @@ export interface ListToolbarFilterChip {
   onClear?: () => void
 }
 
+/** One folder tab on the toolbar's top edge — a screen's own partition. */
+export interface ListToolbarTab {
+  key: string
+  label: string
+  /** Rendered after the label as "Label · n", the prototype's form. */
+  count?: number
+}
+
 export interface ListToolbarProps {
+  /**
+   * The screen's own partition — Open / Closed, Recommended / All — as
+   * folder tabs sitting on the toolbar's top edge, so the toolbar is the
+   * panel the tabs attach to. Section navigation is the shell's strip, not
+   * this; this is for a partition of one list.
+   */
+  tabs?: ListToolbarTab[]
+  /** Key of the active tab. */
+  activeTab?: string
+  onTabChange?: (key: string) => void
+
   searchValue?: string
   onSearchChange?: (value: string) => void
   searchPlaceholder?: string

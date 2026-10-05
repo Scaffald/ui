@@ -116,8 +116,7 @@ export const WithActiveFilterCount: Story = {
           filterContent={
             <View style={styles.flyout}>
               <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
-                Stage, trade, distance, certifications, availability — one flyout per
-                screen.
+                Stage, trade, distance, certifications, availability — one flyout per screen.
               </Text>
             </View>
           }
@@ -240,3 +239,31 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 })
+
+/**
+ * A screen's own partition as folder tabs on the toolbar's top edge — the
+ * toolbar is the panel the tabs attach to (#984). Section navigation is the
+ * shell's strip; this is for one list's Open / Closed, Recommended / All.
+ */
+export const WithTabs: Story = {
+  render: () => {
+    const [tab, setTab] = useState('open')
+    const [search, setSearch] = useState('')
+    return (
+      <ListToolbar
+        tabs={[
+          { key: 'open', label: 'Open', count: 3 },
+          { key: 'paused', label: 'Paused', count: 1 },
+          { key: 'closed', label: 'Closed', count: 12 },
+        ]}
+        activeTab={tab}
+        onTabChange={setTab}
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search your postings…"
+        resultCount={tab === 'open' ? 3 : tab === 'paused' ? 1 : 12}
+        resultNoun="posting"
+      />
+    )
+  },
+}
