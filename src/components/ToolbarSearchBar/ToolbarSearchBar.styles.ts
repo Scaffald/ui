@@ -7,12 +7,8 @@ import type { ViewStyle, TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
+import { fontSize } from '../../tokens/typography'
 import type { ResolvedThemeMode } from '../../tokens/colors'
-
-const GLASS_BG = {
-  light: 'rgba(235, 235, 237, 0.7)',
-  dark: 'rgba(58, 58, 60, 0.7)',
-} as const
 
 export interface ToolbarSearchBarStyleConfig {
   container: ViewStyle
@@ -30,19 +26,15 @@ export function getToolbarSearchBarStyles(
   theme: ResolvedThemeMode,
 ): ToolbarSearchBarStyleConfig {
   const container: ViewStyle = {
-    backgroundColor: GLASS_BG[theme],
-    borderRadius: borderRadius.pill,
+    backgroundColor: colors.bg[theme].subtle,
+    borderWidth: 1,
+    borderColor: colors.border[theme].default,
+    borderRadius: borderRadius.xs,
     height: 36,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
     flex: 1,
-  }
-
-  if (Platform.OS === 'web') {
-    const webContainer = container as Record<string, unknown>
-    webContainer.backdropFilter = 'blur(30px)'
-    webContainer.WebkitBackdropFilter = 'blur(30px)'
   }
 
   const row: ViewStyle = {
@@ -61,9 +53,9 @@ export function getToolbarSearchBarStyles(
 
   const input: TextStyle = {
     flex: 1,
-    fontSize: 17,
+    fontSize: fontSize.md,
     fontWeight: '400',
-    color: colors.labels[theme].primary,
+    color: colors.text[theme].primary,
     paddingVertical: 0,
     height: 36,
   }
@@ -84,7 +76,7 @@ export function getToolbarSearchBarStyles(
     height: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 14,
+    borderRadius: borderRadius.xs,
   }
 
   return {

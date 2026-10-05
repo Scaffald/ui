@@ -4,11 +4,10 @@
  */
 
 import type { ViewStyle, TextStyle } from 'react-native'
-import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ResolvedThemeMode } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
-import { shadows } from '../../tokens/shadows'
+import { quietPanel } from '../../tokens/surfaces'
 
 export function getActionSheetStyles(theme: ResolvedThemeMode) {
   const overlay: ViewStyle = {
@@ -25,29 +24,14 @@ export function getActionSheetStyles(theme: ResolvedThemeMode) {
   const container: ViewStyle = {
     width: '100%',
     maxWidth: 400,
-    borderTopLeftRadius: borderRadius.sheet,
-    borderTopRightRadius: borderRadius.sheet,
+    // The prototype's sheet: the quiet panel, squared off along the bottom
+    // edge it rises from. No blur — it is opaque, like every other surface.
+    ...quietPanel(theme),
+    borderBottomWidth: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
     padding: 14,
     gap: 10,
-    ...shadows.iosSheet,
-    // Glass background
-    ...(Platform.OS === 'web'
-      ? {
-          backgroundColor: theme === 'light'
-            ? 'rgba(245, 245, 245, 0.6)'
-            : 'rgba(44, 44, 46, 0.7)',
-        }
-      : {
-          backgroundColor: theme === 'light'
-            ? 'rgba(245, 245, 245, 0.88)'
-            : 'rgba(44, 44, 46, 0.92)',
-        }),
-  }
-
-  // Apply backdrop-filter on web
-  if (Platform.OS === 'web') {
-    (container as Record<string, unknown>).backdropFilter = 'blur(50px)';
-    (container as Record<string, unknown>).WebkitBackdropFilter = 'blur(50px)';
   }
 
   const titleArea: ViewStyle = {
