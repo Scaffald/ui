@@ -54,6 +54,25 @@ describe('ScreenHeader', () => {
 })
 
 describe('ListToolbar', () => {
+  it('renders a partition as tabs on its top edge and reports the choice', () => {
+    const onTabChange = vi.fn()
+    wrap(
+      <ListToolbar
+        tabs={[
+          { key: 'open', label: 'Open', count: 3 },
+          { key: 'closed', label: 'Closed', count: 12 },
+        ]}
+        activeTab="open"
+        onTabChange={onTabChange}
+        resultCount={3}
+        resultNoun="posting"
+      />,
+    )
+    expect(screen.getByText('Open · 3')).toBeTruthy()
+    fireEvent.click(screen.getByText('Closed · 12'))
+    expect(onTabChange).toHaveBeenCalledWith('closed')
+  })
+
   it('uses one "{n} {noun}" template, pluralising only when n is not 1', () => {
     const { unmount } = wrap(<ListToolbar resultCount={14} resultNoun="case" />)
     expect(screen.getByText('14 cases')).toBeTruthy()
