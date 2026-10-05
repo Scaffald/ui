@@ -60,8 +60,10 @@ export const FocusGuard = forwardRef<View, FocusGuardProps>(
         // Web-specific prop for tab navigation
         {...(Platform.OS === 'web' && { tabIndex: 0 })}
         onFocus={handleFocus}
+        // `accessible={false}` is the whole of it on web: react-native-web has
+        // no mapping for `importantForAccessibility`, so it reached the DOM and
+        // React warned on every page that mounted a guard (Scaffald/SaaS#993).
         accessible={false}
-        importantForAccessibility="no"
         {...props}
       />
     )

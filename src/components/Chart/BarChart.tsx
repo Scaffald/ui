@@ -12,7 +12,7 @@
  * ```
  */
 
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 import Svg, { Rect } from 'react-native-svg'
 import type { BarChartProps } from './Chart.types'
 import { normalizeData, getBarChartColors } from './Chart.utils'
@@ -99,7 +99,11 @@ export function BarChart({
         height={height}
         viewBox={`0 0 ${width} ${height}`}
         accessible={false}
-        importantForAccessibility="no-hide-descendants"
+        // The native prop has no web mapping and would reach the DOM; the
+        // labelled wrapper above carries the chart's meaning on both.
+        {...(Platform.OS === 'web'
+          ? { 'aria-hidden': true }
+          : { importantForAccessibility: 'no-hide-descendants' as const })}
       >
         {normalizedData.map((value, index) => {
           const x = gap + index * (barWidth + gap)
