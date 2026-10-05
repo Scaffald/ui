@@ -46,6 +46,7 @@ export function Chip({
   size = 'md',
   disabled = false,
   selected = false,
+  tone = 'neutral',
   onPress,
   closeIcon = false,
   onClose,
@@ -76,10 +77,10 @@ export function Chip({
   }
 
   // Get chip container styles
-  const chipStyles = useStyles(getChipStyles, [size, theme, selected, isHovered, isFocused, disabled] as const)
+  const chipStyles = useStyles(getChipStyles, [size, theme, selected, isHovered, isFocused, disabled, tone] as const)
 
   // Get text styles
-  const textStyles = useStyles(getChipTextStyles, [size, theme, selected, disabled] as const)
+  const textStyles = useStyles(getChipTextStyles, [size, theme, selected, disabled, tone] as const)
 
   // Render leading content based on type
   const renderLeadingContent = () => {

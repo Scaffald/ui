@@ -356,3 +356,19 @@ const styles = StyleSheet.create({
     marginTop: spacing[8],
   },
 })
+
+/**
+ * The prototype's `.tag` tones. Near-square, tinted; a selected chip always
+ * reads as `accent`.
+ */
+export const Tones: Story = {
+  render: () => (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+      <Chip tone="neutral">Full-time</Chip>
+      <Chip tone="accent">4 new</Chip>
+      <Chip tone="attention">Over SLA</Chip>
+      <Chip tone="outline">Verified</Chip>
+      <Chip selected>Selected</Chip>
+    </View>
+  ),
+}
