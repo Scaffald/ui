@@ -8,8 +8,6 @@ import { View } from 'react-native'
 import { useState } from 'react'
 import { GlassSurface } from '../../../components/GlassSurface'
 import { GlassPanel } from '../../../components/GlassPanel'
-import { GlassIconButton } from '../../../components/GlassIconButton'
-import { GlassGroup } from '../../../components/GlassGroup'
 import { GlassSlider } from '../../../components/GlassSlider'
 import { GlassWidget } from '../../../components/GlassWidget'
 import { Text, } from '../../../components/Typography'
@@ -92,107 +90,6 @@ export const MaterialDensities: StoryObj = {
 
 // ============================================================================
 // Control Center
-// ============================================================================
-
-export const ControlCenter: StoryObj = {
-  name: 'Control Center Demo',
-  render: () => {
-    const [brightness, setBrightness] = useState(0.6)
-    const [volume, setVolume] = useState(0.4)
-
-    const CircleIcon = ({ char }: { char: string }) => (
-      <Text style={{ color: 'white', fontSize: 19, fontWeight: 'bold' }}>{char}</Text>
-    )
-
-    return (
-      <WallpaperBackground>
-        <Text style={{ color: 'white', marginBottom: 24, fontWeight: '600', fontSize: 18 }}>
-          Control Center
-        </Text>
-        <Row gap={16} style={{ alignItems: 'flex-start' }}>
-          {/* Connectivity group */}
-          <GlassGroup radius="2xl" gap={8}>
-            <GlassIconButton
-              icon={<CircleIcon char="✈" />}
-              onPress={() => {}}
-              accessibilityLabel="Airplane Mode"
-            />
-            <GlassIconButton
-              icon={<CircleIcon char="📶" />}
-              onPress={() => {}}
-              active
-              activeColor="rgba(0, 136, 255, 0.95)"
-              accessibilityLabel="Wi-Fi"
-            />
-            <GlassIconButton
-              icon={<CircleIcon char="📱" />}
-              onPress={() => {}}
-              active
-              activeColor="rgba(52, 199, 89, 1)"
-              size="sm"
-              accessibilityLabel="Cellular"
-            />
-            <GlassIconButton
-              icon={<CircleIcon char="🔵" />}
-              onPress={() => {}}
-              size="sm"
-              accessibilityLabel="Bluetooth"
-            />
-          </GlassGroup>
-
-          {/* Brightness & Volume sliders */}
-          <GlassSlider
-            value={brightness}
-            onValueChange={setBrightness}
-            vertical
-            icon={<Text style={{ color: 'white', fontSize: 20 }}>☀️</Text>}
-            accessibilityLabel="Brightness"
-          />
-          <GlassSlider
-            value={volume}
-            onValueChange={setVolume}
-            vertical
-            icon={<Text style={{ color: 'white', fontSize: 20 }}>🔊</Text>}
-            accessibilityLabel="Volume"
-          />
-
-          {/* Standalone icon buttons */}
-          <Stack gap={12}>
-            <GlassIconButton
-              icon={<CircleIcon char="📷" />}
-              onPress={() => {}}
-              accessibilityLabel="Camera"
-            />
-            <GlassIconButton
-              icon={<CircleIcon char="🔇" />}
-              onPress={() => {}}
-              accessibilityLabel="Silent Mode"
-            />
-          </Stack>
-        </Row>
-
-        {/* Widgets row */}
-        <Row gap={16} style={{ marginTop: 16 }}>
-          <GlassWidget
-            title="Focus"
-            subtitle="Do Not Disturb"
-            icon={<Text style={{ color: 'white', fontSize: 15 }}>🌙</Text>}
-            size="md"
-          />
-          <GlassWidget
-            title="Floor Lamp"
-            subtitle="Living Room"
-            icon={<Text style={{ color: 'white', fontSize: 15 }}>💡</Text>}
-            size="lg"
-          />
-        </Row>
-      </WallpaperBackground>
-    )
-  },
-}
-
-// ============================================================================
-// Glass Panel
 // ============================================================================
 
 export const GlassPanels: StoryObj = {

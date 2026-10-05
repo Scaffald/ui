@@ -43,7 +43,7 @@ export interface PaginationProps {
 
   /**
    * Border radius style for page number buttons
-   * - 'square': 8px border radius
+   * - 'square': near-square corners (the default — the comp has no pill pager)
    * - 'rounded': Fully rounded (pill shape)
    * @default 'rounded'
    */

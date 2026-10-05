@@ -303,14 +303,10 @@ export { GlassSurface } from "./components/GlassSurface";
 // export type { GlassPanelProps } from "./components/GlassPanel";
 
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
-// export { GlassIconButton } from "./components/GlassIconButton";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
-// export type { GlassIconButtonProps, GlassIconButtonSize } from "./components/GlassIconButton";
 
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
-// export { GlassGroup } from "./components/GlassGroup";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
-// export type { GlassGroupProps } from "./components/GlassGroup";
 
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export { GlassSlider } from "./components/GlassSlider";
@@ -338,9 +334,7 @@ export { SegmentedControl } from "./components/SegmentedControl";
 export type { ToolbarButtonProps, ToolbarButtonConfig, ToolbarButtonVariant } from "./components/ToolbarButton";
 
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
-// export { ToolbarButtonGroup } from "./components/ToolbarButtonGroup";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
-// export type { ToolbarButtonGroupProps, ToolbarButtonGroupPosition } from "./components/ToolbarButtonGroup";
 
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export { ToolbarSearchBar } from "./components/ToolbarSearchBar";
@@ -353,9 +347,7 @@ export type { ToolbarButtonProps, ToolbarButtonConfig, ToolbarButtonVariant } fr
 // export type { SearchAccessoryProps, SearchAccessoryScope } from "./components/SearchAccessory";
 
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
-// export { NavigationBar } from "./components/NavigationBar";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
-// export type { NavigationBarProps, NavigationBarTitleSize, NavigationBarBackButton } from "./components/NavigationBar";
 
 /** @deprecated Use BottomBar instead */
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
@@ -600,7 +592,6 @@ export { AppStoreButton } from "./components/AppStoreButton";
 //   AppStoreButtonStyle,
 // } from "./components/AppStoreButton";
 
-export { ButtonGroup } from "./components/ButtonGroup";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
 //   ButtonGroupItem,
@@ -608,7 +599,6 @@ export { ButtonGroup } from "./components/ButtonGroup";
 //   ButtonGroupOrientation,
 //   ButtonGroupProps,
 //   ButtonGroupSize,
-// } from "./components/ButtonGroup";
 
 export { Input, PasswordInput, TextArea } from "./components/Input";
 export { UploadSurface } from "./components/UploadSurface";
@@ -786,14 +776,12 @@ export { ActivityView } from "./components/ActivityView";
 //   ActivityViewSection,
 // } from "./components/ActivityView";
 
-export { ContextMenu } from "./components/ContextMenu";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
 //   ContextMenuAction,
 //   ContextMenuProps,
 //   ContextMenuQuickAction,
 //   ContextMenuSection,
-// } from "./components/ContextMenu";
 
 export { EditMenu } from "./components/EditMenu";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
@@ -810,18 +798,14 @@ export { EditMenu } from "./components/EditMenu";
 // export type { NumericStepperProps } from "./components/NumericStepper";
 
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
-// export { TabBar } from "./components/TabBar";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
-// export type { TabBarItem, TabBarProps } from "./components/TabBar";
 
-export { NavigationList } from "./components/NavigationList";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
 //   NavigationListItem,
 //   NavigationListProps,
 //   NavigationListSection,
 //   NavigationListToolbarAction,
-// } from "./components/NavigationList";
 
 export { StatusIndicator } from "./components/StatusIndicator";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
@@ -1087,14 +1071,12 @@ export { TradeControls } from "./components/TradeControls";
 // } from "./components/TradeControls";
 
 // Navigation components
-export { NavIconButton } from "./components/NavIconButton";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
 //   NavIconButtonBadge,
 //   NavIconButtonProps,
 //   NavIconButtonState,
 //   NavIconButtonVariant,
-// } from "./components/NavIconButton";
 
 export { NotificationListItem } from "./components/NotificationListItem";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
@@ -1116,14 +1098,12 @@ export { SaaSSectionHeader } from "./components/SaaSSectionHeader";
 //   TimePeriodOption,
 // } from "./components/SaaSSectionHeader";
 
-export { SaaSNavigation } from "./components/SaaSNavigation";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
 //   NavigationAction,
 //   NavigationAvatar,
 //   SaaSNavigationProps,
 //   SaaSNavigationVariant,
-// } from "./components/SaaSNavigation";
 
 // DatePicker components
 export { DatePickerDay } from "./components/DatePickerDay";
@@ -1498,14 +1478,11 @@ export {
 // } from "./components/Widgets/Crypto";
 
 // Command Menu components
-export { CommandMenu } from "./components/CommandMenu";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
 //   CommandMenuProps,
 //   CommandMenuTab,
-// } from "./components/CommandMenu";
 
-export { CommandMenuItem } from "./components/CommandMenu";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
 //   CommandMenuItemData,
@@ -1513,21 +1490,16 @@ export { CommandMenuItem } from "./components/CommandMenu";
 //   CommandMenuItemProps,
 //   CommandMenuItemState,
 //   CommandMenuItemType,
-// } from "./components/CommandMenu";
 
-export { CommandShortcut } from "./components/CommandMenu";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
 //   CommandShortcutProps,
 //   CommandShortcutVariant,
-// } from "./components/CommandMenu";
 
-export { CommandMenuFooter } from "./components/CommandMenu";
 // [SC-27 hidden 2026-06-23 — dead export, see UI-KIT-INVENTORY.md]
 // export type {
 //   CommandMenuFooterProps,
 //   ShortcutHint,
-// } from "./components/CommandMenu";
 
 // Settings components
 export { AppearanceThemeCard } from "./components/AppearanceThemeCard";
