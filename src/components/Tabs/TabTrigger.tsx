@@ -3,7 +3,7 @@
  * Clickable tab button
  */
 
-import { View, Pressable, Text } from 'react-native'
+import { View, Pressable, StyleSheet, Text } from 'react-native'
 import type { TabTriggerProps } from './Tabs.types'
 import { useTabsContext } from './TabsContext'
 import { useTabItemContext } from './TabItem'
@@ -52,6 +52,10 @@ export function TabTrigger({
       ]}
       {...pressableProps}
     >
+      {styles.backdrop ? (
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.backdrop]} />
+      ) : null}
+
       {/* Icon Start */}
       {IconStart && (
         <View style={{ width: iconSize, height: iconSize }}>

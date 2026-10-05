@@ -238,6 +238,16 @@ export const boxShadows = {
   // Extra large shadow - shadow-xl
   xl: '0 20px 25px -5px rgba(22, 17, 13, 0.102)', // #16110d1a, spread: -5
 
+  /**
+   * Folder tabs (the SCF prototype's). The selected tab lifts off the strip
+   * with a short upward shadow; an unselected one carries an inset shadow at
+   * its foot so it reads as sitting a step behind the panel. Web only — the
+   * inset form has no native equivalent, and the lift is too subtle to matter
+   * there.
+   */
+  folderTabSelected: '0 -2px 6px rgba(32, 31, 29, 0.10)',
+  folderTab: 'inset 0 -8px 10px -8px rgba(32, 31, 29, 0.14)',
+
   // Extra extra large shadow - shadow-xxl
   xxl: '0 25px 50px -12px rgba(22, 17, 13, 0.251)', // #16110d40, spread: -12
 
