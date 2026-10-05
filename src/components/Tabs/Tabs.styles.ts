@@ -3,12 +3,13 @@
  * All styles mapped from Figma Forsured Design System
  */
 
+import { Platform } from 'react-native'
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ResolvedThemeMode } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import { spacing } from '../../tokens/spacing'
-import { typography } from '../../tokens/typography'
+import { fontWeight, typography } from '../../tokens/typography'
 import { boxShadows } from '../../tokens/shadows'
 import type { TabType, TabColor, TabSize, TabOrientation, TabStyleConfig } from './Tabs.types'
 
@@ -79,7 +80,7 @@ export function getTabListStyles(
   options?: { gap?: number; wrap?: boolean; type?: TabType }
 ): ViewStyle {
   const folder = options?.type === 'folder' && orientation === 'horizontal'
-  const gap = options?.gap ?? (orientation === 'horizontal' ? (folder ? spacing[4] : spacing[8]) : 0)
+  const gap = options?.gap ?? (orientation === 'horizontal' ? (folder ? spacing[2] : spacing[8]) : 0)
   return {
     flexDirection: orientation === 'horizontal' ? 'row' : 'column',
     alignItems: orientation === 'horizontal' ? (folder ? 'flex-end' : 'flex-start') : 'stretch',
@@ -174,6 +175,7 @@ export function getTabTriggerStyles(
   let borderRightWidth: number | undefined
   let borderRightColor: string | undefined
   let boxShadow: string | undefined
+  let backdrop: ViewStyle | undefined
 
   // Determine colors based on state
   if (isDisabled) {
@@ -258,22 +260,54 @@ export function getTabTriggerStyles(
       backgroundColor = colors.bg[theme].subtle
     }
   } else if (type === 'folder') {
-    // Folder type: a bordered tab with rounded top corners. The strip draws
-    // the hairline (see getTabListStyles); the selected tab overlaps it by one
-    // pixel and paints its own bottom edge in the surface colour, so the tab
-    // and the panel below read as one shape. Unselected tabs sit on the
-    // subtle ground a step back.
-    container.borderWidth = 1
-    container.borderColor = colors.border[theme].default
-    container.borderTopLeftRadius = borderRadius.l
-    container.borderTopRightRadius = borderRadius.l
+    // Folder type — the SCF prototype's tab: a bordered shape with rounded
+    // top corners, leaning back very slightly (perspective 12px, 1.4° about
+    // its bottom edge) so the row reads as index-card tabs rather than
+    // buttons. The shape is a layer behind the label (`backdrop`), so the
+    // label stays flat; the strip draws the hairline (see getTabListStyles),
+    // the selected tab overlaps it by a pixel and paints its own bottom edge
+    // in the panel colour, so tab and panel read as one surface. Unselected
+    // tabs sit on the ground a step back, with an inset shadow at the foot on
+    // web; hovering lifts one to the panel colour.
+    //
+    // Typography follows the prototype's folder tabs: the heading face at
+    // body size, medium weight, accent when selected and the secondary text
+    // colour otherwise.
+    const selected = isSelected && !isDisabled
+    container.paddingHorizontal = spacing[24]
+    container.paddingVertical = spacing[8]
+    container.height = undefined
+    container.minHeight = undefined
     container.marginBottom = -1
-    if (isSelected && !isDisabled) {
-      backgroundColor = colors.bg[theme].default
-      container.borderBottomColor = colors.bg[theme].default
-    } else {
-      backgroundColor = isHovered && !isDisabled ? colors.bg[theme].default : colors.bg[theme].subtle
+    container.zIndex = selected ? 2 : 1
+    text.fontFamily = typography.h5.fontFamily
+    text.fontWeight = fontWeight.medium
+    // Accent-700 on the light panel; on the dark ground the same step is
+    // near-invisible, so the selected label takes the ramp's light step.
+    textColor = isDisabled
+      ? colors.text[theme].disabled
+      : selected
+        ? theme === 'dark'
+          ? colors.primary[300]
+          : colors.primary[700]
+        : colors.text[theme].secondary
+    iconColor = textColor
+    backdrop = {
+      borderWidth: 1,
+      borderColor: colors.border[theme].default,
+      borderTopLeftRadius: borderRadius.l,
+      borderTopRightRadius: borderRadius.l,
+      borderBottomWidth: selected ? 1 : 0,
+      borderBottomColor: colors.bg[theme].default,
+      backgroundColor:
+        selected || (isHovered && !isDisabled) ? colors.bg[theme].default : colors.bg[theme].subtle,
+      transform: [{ perspective: 12 }, { rotateX: '1.4deg' }],
+      transformOrigin: 'bottom',
+      ...(Platform.OS === 'web' && {
+        boxShadow: selected ? boxShadows.folderTabSelected : boxShadows.folderTab,
+      }),
     }
+    backgroundColor = 'transparent'
     borderBottomWidth = undefined
     borderRightWidth = undefined
   } else if (type === 'shadow') {
@@ -318,6 +352,7 @@ export function getTabTriggerStyles(
     container,
     text,
     iconColor,
+    ...(backdrop && { backdrop }),
   }
 }
 

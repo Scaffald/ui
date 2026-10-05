@@ -366,6 +366,12 @@ export interface TabStyleConfig {
   container: ViewStyle
 
   /**
+   * An absolutely-positioned layer drawn behind the label. The folder tab
+   * draws its bordered, skewed shape here so the label itself stays flat.
+   */
+  backdrop?: ViewStyle
+
+  /**
    * Text style for tab label
    */
   text: TextStyle
