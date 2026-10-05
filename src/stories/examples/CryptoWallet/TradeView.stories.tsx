@@ -5,7 +5,6 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 import { View, StyleSheet, Text, ScrollView } from 'react-native'
-import { SaaSNavigation } from '../../../components/SaaSNavigation'
 import { Tabs } from '../../../components/Tabs'
 import { TradeControls } from '../../../components/TradeControls'
 import { Chart, LinearChart } from '../../../components/Chart'
@@ -53,14 +52,6 @@ function TradeSingleView() {
         { backgroundColor: isLight ? colors.bg.light.default : colors.bg.dark.default },
       ]}
     >
-      <SaaSNavigation
-        variant="main"
-        pageTitle="Trade"
-        description={`${asset.name} (${asset.symbol})`}
-        featuredIcon={TrendingUp}
-        showNotifications
-        avatarSrc="https://i.pravatar.cc/150?img=1"
-      />
 
       <ScrollView
         style={styles.scrollView}

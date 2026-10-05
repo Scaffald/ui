@@ -204,7 +204,7 @@ export function Pagination({
   onPageChange,
   type = 'numbers',
   position = 'center',
-  pageRadius = 'rounded',
+  pageRadius = 'square',
   showNavText = false,
   showNavBorder = false,
   siblingCount = 1,

@@ -1,16 +1,14 @@
 /**
  * iOS 26 Toolbar System Stories
- * Demonstrates NavigationBar, BottomToolbar, ToolbarSearchBar,
- * ToolbarButton, ToolbarButtonGroup, SearchAccessory, and PageControl pill variant
+ * Demonstrates BottomToolbar, ToolbarSearchBar, ToolbarButton,
+ * SearchAccessory, and PageControl pill variant
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
 import { View } from 'react-native'
 import { useState } from 'react'
-import { NavigationBar } from '../../../components/NavigationBar'
 import { BottomToolbar } from '../../../components/BottomToolbar'
 import { ToolbarButton } from '../../../components/ToolbarButton'
-import { ToolbarButtonGroup } from '../../../components/ToolbarButtonGroup'
 import { ToolbarSearchBar } from '../../../components/ToolbarSearchBar'
 import { SearchAccessory } from '../../../components/SearchAccessory'
 import { PageControl } from '../../../components/PageControl'
@@ -24,141 +22,13 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          'iOS 26 toolbar system: NavigationBar (top), BottomToolbar, ToolbarButton, ToolbarButtonGroup, ToolbarSearchBar, SearchAccessory.',
+          'iOS 26 toolbar system: BottomToolbar, ToolbarButton, ToolbarSearchBar, SearchAccessory.',
       },
     },
   },
 }
 
 export default meta
-
-// ============================================================================
-// NavigationBar — iPhone Standard
-// ============================================================================
-
-export const NavigationBarStandard: StoryObj = {
-  name: 'NavigationBar — Standard',
-  render: () => (
-    <Stack gap={24} style={{ maxWidth: 440 }}>
-      <H4>Standard with back + trailing</H4>
-      <View style={{ borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 12 }}>
-        <NavigationBar
-          title="Title"
-          subtitle="Subtitle"
-          backButton={{ label: 'Back', onPress: () => {} }}
-          trailingItems={
-            <ToolbarButton variant="filled" label="Done" onPress={() => {}} />
-          }
-        />
-      </View>
-
-      <H4>Title only (no subtitle)</H4>
-      <View style={{ borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 12 }}>
-        <NavigationBar
-          title="Messages"
-          showSubtitle={false}
-          backButton={{ onPress: () => {} }}
-          trailingItems={
-            <ToolbarButton
-              icon={<Text style={{ fontSize: 20 }}>✎</Text>}
-              onPress={() => {}}
-            />
-          }
-        />
-      </View>
-    </Stack>
-  ),
-}
-
-// ============================================================================
-// NavigationBar — Large Title
-// ============================================================================
-
-export const NavigationBarLargeTitle: StoryObj = {
-  name: 'NavigationBar — Large Title',
-  render: () => (
-    <Stack gap={24} style={{ maxWidth: 440 }}>
-      <H4>Large title</H4>
-      <View style={{ borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 12 }}>
-        <NavigationBar
-          title="Settings"
-          titleSize="large"
-          trailingItems={
-            <ToolbarButton variant="text" label="Edit" onPress={() => {}} />
-          }
-        />
-      </View>
-
-      <H4>Large title with subtitle</H4>
-      <View style={{ borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 12 }}>
-        <NavigationBar
-          title="Library"
-          subtitle="42 items"
-          titleSize="large"
-          backButton={{ label: 'Back', onPress: () => {} }}
-        />
-      </View>
-    </Stack>
-  ),
-}
-
-// ============================================================================
-// NavigationBar — iPad with Segmented Control
-// ============================================================================
-
-export const NavigationBarIPad: StoryObj = {
-  name: 'NavigationBar — iPad',
-  render: () => {
-    const [tabIndex, setTabIndex] = useState(0)
-
-    return (
-      <Stack gap={24} style={{ maxWidth: 860 }}>
-        <H4>iPad with segmented control</H4>
-        <View style={{ borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 12 }}>
-          <NavigationBar
-            title="Library"
-            backButton={{ onPress: () => {} }}
-            segmentedControl={{
-              segments: ['Songs', 'Albums', 'Artists'],
-              selectedIndex: tabIndex,
-              onSelectionChange: setTabIndex,
-            }}
-            trailingItems={
-              <ToolbarButtonGroup
-                buttons={[
-                  { key: 'sort', icon: <Text style={{ fontSize: 18 }}>↕</Text>, onPress: () => {} },
-                  { key: 'grid', icon: <Text style={{ fontSize: 18 }}>⊞</Text>, onPress: () => {} },
-                ]}
-              />
-            }
-          />
-        </View>
-
-        <H4>iPad with search accessory</H4>
-        <View style={{ borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 12 }}>
-          <NavigationBar
-            title="Files"
-            backButton={{ label: 'Browse', onPress: () => {} }}
-            trailingItems={
-              <ToolbarButton
-                icon={<Text style={{ fontSize: 18 }}>⋯</Text>}
-                onPress={() => {}}
-              />
-            }
-            searchAccessory={{
-              placeholder: 'Search Files',
-              scopes: [
-                { label: 'All', value: 'all' },
-                { label: 'Recent', value: 'recent' },
-              ],
-              selectedScope: 'all',
-            }}
-          />
-        </View>
-      </Stack>
-    )
-  },
-}
 
 // ============================================================================
 // BottomToolbar — Buttons
@@ -408,43 +278,3 @@ export const ToolbarButtons: StoryObj = {
   ),
 }
 
-// ============================================================================
-// ToolbarButtonGroup
-// ============================================================================
-
-export const ToolbarButtonGroups: StoryObj = {
-  name: 'ToolbarButtonGroup',
-  render: () => (
-    <Stack gap={24} style={{ maxWidth: 400 }}>
-      <H4>3 buttons (glass)</H4>
-      <ToolbarButtonGroup
-        glass
-        buttons={[
-          { key: 'a', icon: <Text style={{ fontSize: 20 }}>↩</Text>, onPress: () => {} },
-          { key: 'b', icon: <Text style={{ fontSize: 20 }}>📁</Text>, onPress: () => {} },
-          { key: 'c', icon: <Text style={{ fontSize: 20 }}>🗑</Text>, onPress: () => {} },
-        ]}
-      />
-
-      <H4>5 buttons (glass)</H4>
-      <ToolbarButtonGroup
-        glass
-        buttons={[
-          { key: '1', icon: <Text style={{ fontSize: 20 }}>⊕</Text>, onPress: () => {} },
-          { key: '2', icon: <Text style={{ fontSize: 20 }}>↩</Text>, onPress: () => {} },
-          { key: '3', icon: <Text style={{ fontSize: 20 }}>📁</Text>, onPress: () => {} },
-          { key: '4', icon: <Text style={{ fontSize: 20 }}>🗑</Text>, onPress: () => {} },
-          { key: '5', icon: <Text style={{ fontSize: 20 }}>✎</Text>, onPress: () => {} },
-        ]}
-      />
-
-      <H4>No glass</H4>
-      <ToolbarButtonGroup
-        buttons={[
-          { key: 'x', icon: <Text style={{ fontSize: 20 }}>↗</Text>, onPress: () => {} },
-          { key: 'y', icon: <Text style={{ fontSize: 20 }}>🔖</Text>, onPress: () => {} },
-        ]}
-      />
-    </Stack>
-  ),
-}
