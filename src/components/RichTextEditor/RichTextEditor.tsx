@@ -5,6 +5,8 @@
 
 import { View, TextInput, Text } from 'react-native'
 import type { RichTextEditorProps } from './RichTextEditor.types'
+import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 
 const DEFAULT_MIN_HEIGHT = 120
 
@@ -22,6 +24,7 @@ export function RichTextEditor({
   style,
   children,
 }: RichTextEditorProps) {
+  const { theme } = useThemeContext()
   if (children != null) {
     return <View style={style}>{children}</View>
   }
@@ -42,21 +45,21 @@ export function RichTextEditor({
           minHeight,
           padding: 12,
           fontSize: 14,
-          color: '#111827',
-          backgroundColor: '#fff',
+          color: colors.text[theme].primary,
+          backgroundColor: colors.bg[theme].default,
           borderWidth: 1,
-          borderColor: displayError ? '#dc2626' : '#e5e7eb',
+          borderColor: displayError ? colors.border[theme].error : colors.border[theme].default,
           borderRadius: 8,
           textAlignVertical: 'top',
         }}
       />
       {(showCharacterCount && maxLength != null) && (
-        <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+        <Text style={{ fontSize: 12, color: colors.text[theme].tertiary, marginTop: 4 }}>
           {count} / {maxLength}
         </Text>
       )}
       {displayError && (
-        <Text style={{ fontSize: 12, color: '#dc2626', marginTop: 4 }}>{displayError}</Text>
+        <Text style={{ fontSize: 12, color: colors.text[theme].error, marginTop: 4 }}>{displayError}</Text>
       )}
     </View>
   )
