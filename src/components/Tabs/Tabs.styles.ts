@@ -184,8 +184,9 @@ export function getTabTriggerStyles(
   } else if (isSelected) {
     // Selected state colors
     if (color === 'primary') {
-      textColor = colors.primary[600] // #d54e21
-      iconColor = colors.primary[600]
+      // The light emphasis colour; 2.79:1 on the dark ground (#840).
+      textColor = colors.text[theme].emphasis
+      iconColor = colors.text[theme].emphasis
     } else {
       textColor = colors.text[theme].primary // #141c25
       iconColor = colors.text[theme].primary
@@ -211,9 +212,9 @@ export function getTabTriggerStyles(
     if (isSelected && !isDisabled) {
       backgroundColor = 'transparent'
       if (isHorizontal) {
-        borderBottomColor = color === 'primary' ? colors.primary[600] : colors.text[theme].primary
+        borderBottomColor = color === 'primary' ? colors.text[theme].emphasis : colors.text[theme].primary
       } else {
-        borderRightColor = color === 'primary' ? colors.primary[600] : colors.text[theme].primary
+        borderRightColor = color === 'primary' ? colors.text[theme].emphasis : colors.text[theme].primary
       }
     } else {
       // Unselected: transparent background + 2px border in subtle gray
@@ -242,9 +243,9 @@ export function getTabTriggerStyles(
     if (isSelected && !isDisabled) {
       // Selected: 2px underline/border in theme color
       if (isHorizontal) {
-        borderBottomColor = color === 'primary' ? colors.primary[600] : colors.text[theme].primary
+        borderBottomColor = color === 'primary' ? colors.text[theme].emphasis : colors.text[theme].primary
       } else {
-        borderRightColor = color === 'primary' ? colors.primary[600] : colors.text[theme].primary
+        borderRightColor = color === 'primary' ? colors.text[theme].emphasis : colors.text[theme].primary
       }
     } else {
       // Unselected: 2px underline/border in subtle gray (appears thinner visually)
