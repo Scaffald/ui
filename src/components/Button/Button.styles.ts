@@ -421,8 +421,8 @@ function getLightStyles(
       bg: disabled ? colors.gray[50] : colors.gray[100],
       hoverBg: colors.gray[200],
       pressedBg: colors.gray[300],
-      text: disabled ? colors.text[theme].disabled : colors.gray[700],
-      icon: disabled ? colors.text[theme].disabled : colors.gray[700],
+      text: disabled ? colors.text[theme].disabled : colors.text[theme].primary,
+      icon: disabled ? colors.text[theme].disabled : colors.text[theme].primary,
     },
     primary: {
       bg: disabled ? colors.primary[50] : colors.primary[100],
@@ -545,14 +545,16 @@ function getTextStyles(
 ): ButtonStyleConfig {
   const colorMap = {
     gray: {
-      text: disabled ? colors.text[theme].disabled : colors.gray[700],
-      icon: disabled ? colors.text[theme].disabled : colors.gray[700],
+      text: disabled ? colors.text[theme].disabled : colors.text[theme].primary,
+      icon: disabled ? colors.text[theme].disabled : colors.text[theme].primary,
       hoverBg: theme === 'light' ? colors.gray[50] : colors.gray[900],
       pressedBg: theme === 'light' ? colors.gray[100] : colors.gray[800],
     },
     primary: {
-      text: disabled ? colors.primary[300] : colors.primary[600],
-      icon: disabled ? colors.primary[300] : colors.primary[600],
+      // Teal text needs the ramp's light step on the dark ground: 600 is
+      // 2.8:1 there, 300 is 7.7:1 (the same split the text tokens make).
+      text: disabled ? colors.primary[300] : colors.text[theme].emphasis,
+      icon: disabled ? colors.primary[300] : colors.text[theme].emphasis,
       hoverBg: theme === 'light' ? colors.primary[50] : colors.primary[900],
       pressedBg: theme === 'light' ? colors.primary[100] : colors.primary[900],
     },
