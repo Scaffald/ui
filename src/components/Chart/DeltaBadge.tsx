@@ -15,6 +15,7 @@
 import { View, Text } from 'react-native'
 import type { DeltaBadgeProps } from './Chart.types'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { typography } from '../../tokens/typography'
 
 export function DeltaBadge({
@@ -24,22 +25,24 @@ export function DeltaBadge({
   size = 'sm',
   style,
 }: DeltaBadgeProps) {
+  const { theme } = useThemeContext()
+  const dark = theme === 'dark'
   const delta = current - previous
   const isPositive = delta > 0.05
   const isNegative = delta < -0.05
   const _isNeutral = !isPositive && !isNegative
 
   const badgeColor = isPositive
-    ? colors.green[500]
+    ? colors.green[dark ? 300 : 500]
     : isNegative
-      ? colors.error[500]
-      : colors.gray[400]
+      ? colors.error[dark ? 300 : 500]
+      : colors.text[theme].tertiary
 
   const bgColor = isPositive
-    ? colors.green[50]
+    ? colors.green[dark ? 900 : 50]
     : isNegative
-      ? colors.error[50]
-      : colors.gray[100]
+      ? colors.error[dark ? 900 : 50]
+      : colors.bg[theme].muted
 
   const arrow = isPositive ? '▲' : isNegative ? '▼' : '—'
 

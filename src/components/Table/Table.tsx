@@ -268,7 +268,16 @@ export function Table({
                   width={column.width}
                   align={column.align}
                   style={columnSizing(column.width)}
-                  {...({ children: column.render(cellValue, row, rowIndex) } as any)}
+                  {...({
+                    // A bare string or number from `render` has no <Text> of
+                    // its own in this path either: it went into the cell's
+                    // <View>, which web paints in the DOM default — black,
+                    // whatever the theme (every Office table in dark).
+                    children: stackedCellContent(
+                      column.render(cellValue, row, rowIndex),
+                      colors.text[theme].primary
+                    ),
+                  } as any)}
                 />
               )
             }
