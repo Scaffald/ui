@@ -26,6 +26,7 @@ import { View, Text } from 'react-native'
 import Svg, { Polygon, Line, Circle, Path, Defs, LinearGradient, Stop } from 'react-native-svg'
 import type { RadarChartProps } from './Chart.types'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { typography } from '../../tokens/typography'
 import { degreesToRadians } from './Chart.utils'
 
@@ -88,6 +89,7 @@ export function RadarChart({
   showValues = false,
   style,
 }: RadarChartProps) {
+  const { theme } = useThemeContext()
   if (!axes || axes.length < 3) return null
 
   const config = RADAR_SIZES[size]
@@ -101,8 +103,8 @@ export function RadarChart({
 
   const primaryColor = colorScheme === 'primary' ? colors.primary[500] : colors.blue[500]
   const comparisonColor = colors.orange[500]
-  const gridColor = colors.gray[300]
-  const labelColor = colors.text.light.primary
+  const gridColor = theme === 'dark' ? colors.gray[700] : colors.gray[300]
+  const labelColor = colors.text[theme].primary
 
   const primaryValues = axes.map((a) => a.value)
   const primaryPath = buildDataPath(cx, cy, maxRadius, primaryValues, maxValue, count)
