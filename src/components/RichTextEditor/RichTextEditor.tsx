@@ -59,7 +59,7 @@ export function RichTextEditor({
         </Text>
       )}
       {displayError && (
-        <Text style={{ fontSize: 12, color: colors.text[theme].error, marginTop: 4 }}>{displayError}</Text>
+        <Text style={{ fontSize: 12, color: colors.error[theme === 'dark' ? 300 : 600], marginTop: 4 }}>{displayError}</Text>
       )}
     </View>
   )
