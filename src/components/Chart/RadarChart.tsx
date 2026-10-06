@@ -256,7 +256,7 @@ export function RadarChart({
                   style={{
                     fontFamily: typography.caption.fontFamily,
                     fontSize: size === 'sm' ? 8 : 10,
-                    color: colors.text.light.tertiary,
+                    color: colors.text[theme].tertiary,
                     textAlign: isLeft ? 'right' : isRight ? 'left' : 'center',
                   }}
                 >

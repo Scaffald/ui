@@ -357,25 +357,27 @@ function getOutlineStyles(
       pressedBg: theme === 'light' ? colors.gray[100] : colors.bg.dark.default,
     },
     primary: {
+      // The 600 step is the light emphasis colour; on the dark ground it
+      // sat at 2.79:1 (Refresh, Checks, Manage verification — #840).
       border: disabled ? colors.primary[200] : colors.primary[600],
-      text: disabled ? colors.primary[300] : colors.primary[600],
-      icon: disabled ? colors.primary[300] : colors.primary[600],
+      text: disabled ? colors.primary[300] : colors.text[theme].emphasis,
+      icon: disabled ? colors.primary[300] : colors.text[theme].emphasis,
       bg: colors.bg[theme].default,
       hoverBg: theme === 'light' ? colors.primary[50] : colors.primary[900],
       pressedBg: theme === 'light' ? colors.primary[100] : colors.primary[900],
     },
     success: {
       border: disabled ? colors.success[200] : colors.success[600],
-      text: disabled ? colors.success[300] : colors.success[600],
-      icon: disabled ? colors.success[300] : colors.success[600],
+      text: disabled ? colors.success[300] : colors.success[theme === 'dark' ? 300 : 600],
+      icon: disabled ? colors.success[300] : colors.success[theme === 'dark' ? 300 : 600],
       bg: colors.bg[theme].default,
       hoverBg: theme === 'light' ? colors.success[50] : colors.success[900],
       pressedBg: theme === 'light' ? colors.success[100] : colors.success[800],
     },
     error: {
       border: disabled ? colors.error[200] : colors.error[600],
-      text: disabled ? colors.error[300] : colors.error[600],
-      icon: disabled ? colors.error[300] : colors.error[600],
+      text: disabled ? colors.error[300] : colors.error[theme === 'dark' ? 300 : 600],
+      icon: disabled ? colors.error[300] : colors.error[theme === 'dark' ? 300 : 600],
       bg: colors.bg[theme].default,
       hoverBg: theme === 'light' ? colors.error[50] : colors.error[900],
       pressedBg: theme === 'light' ? colors.error[100] : colors.error[900],
