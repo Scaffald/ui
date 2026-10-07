@@ -11,6 +11,7 @@ import { Button } from '../Button'
 import { AvatarCropModal } from './AvatarCropModal'
 import { useFilePicker } from './useFilePicker'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { spacing } from '../../tokens/spacing'
 import type { AvatarImagePickerProps } from './ImagePicker.types'
 
@@ -22,6 +23,8 @@ export function AvatarImagePicker({
   disabled = false,
   placeholder = 'Add Photo',
 }: AvatarImagePickerProps) {
+  const { theme: __theme } = useThemeContext()
+  const t = __theme === 'dark' ? 'dark' : 'light'
   const [cropModalOpen, setCropModalOpen] = useState(false)
   const [selectedImageUri, setSelectedImageUri] = useState('')
   const [shouldRevokeUri, setShouldRevokeUri] = useState(false)
@@ -160,7 +163,7 @@ export function AvatarImagePicker({
               <Text
                 style={{
                   fontSize: 12,
-                  color: colors.text.light.secondary,
+                  color: colors.text[t].secondary,
                   textAlign: 'center',
                   display: size < 80 ? 'none' : 'flex',
                 }}

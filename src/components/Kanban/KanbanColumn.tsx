@@ -4,6 +4,7 @@ import { Stack } from '../Layout'
 import { Row } from '../Layout'
 import { Button } from '../Button'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import type { KanbanColumnProps } from './Kanban.types'
@@ -18,6 +19,8 @@ export function KanbanColumn({
   emptyMessage = 'No items',
   children,
 }: KanbanColumnProps) {
+  const { theme: __theme } = useThemeContext()
+  const t = __theme === 'dark' ? 'dark' : 'light'
   const accentColor = color ?? colors.primary[500]
   const childArray = Array.isArray(children) ? children : children ? [children] : []
   const hasItems = childArray.length > 0
@@ -27,7 +30,7 @@ export function KanbanColumn({
       style={{
         width: 320,
         minHeight: 200,
-        backgroundColor: colors.gray[50],
+        backgroundColor: colors.bg[t].subtle,
         borderRadius: borderRadius.l,
         padding: spacing[4],
         gap: spacing[4],
@@ -44,19 +47,19 @@ export function KanbanColumn({
               backgroundColor: accentColor,
             }}
           />
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.light.primary }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text[t].primary }}>
             {title}
           </Text>
           {count !== undefined && (
             <View
               style={{
-                backgroundColor: colors.gray[200],
+                backgroundColor: colors.bg[t].muted,
                 paddingHorizontal: spacing[2],
                 paddingVertical: 2,
                 borderRadius: borderRadius.s,
               }}
             >
-              <Text style={{ fontSize: 12, color: colors.text.light.secondary }}>{count}</Text>
+              <Text style={{ fontSize: 12, color: colors.text[t].secondary }}>{count}</Text>
             </View>
           )}
         </Row>
@@ -89,7 +92,7 @@ export function KanbanColumn({
               borderColor: colors.gray[300],
             }}
           >
-            <Text style={{ fontSize: 14, color: colors.text.light.secondary }}>{emptyMessage}</Text>
+            <Text style={{ fontSize: 14, color: colors.text[t].secondary }}>{emptyMessage}</Text>
           </View>
         )}
       </Stack>

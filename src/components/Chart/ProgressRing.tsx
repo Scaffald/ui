@@ -12,6 +12,7 @@ import { View, Text } from 'react-native'
 import Svg, { Circle } from 'react-native-svg'
 import type { ProgressRingProps } from './Chart.types'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { typography } from '../../tokens/typography'
 
 const RING_SIZES = {
@@ -27,6 +28,8 @@ export function ProgressRing({
   color = colors.primary[500],
   style,
 }: ProgressRingProps) {
+  const { theme: __theme } = useThemeContext()
+  const t = __theme === 'dark' ? 'dark' : 'light'
   const clampedValue = Math.max(0, Math.min(100, value))
   const config = RING_SIZES[size]
   const { diameter, strokeWidth, valueFontSize, labelFontSize } = config
@@ -80,7 +83,7 @@ export function ProgressRing({
             fontFamily: typography.body.fontFamily,
             fontSize: valueFontSize,
             fontWeight: '700',
-            color: colors.text.light.primary,
+            color: colors.text[t].primary,
           }}
         >
           {Math.round(clampedValue)}%
@@ -90,7 +93,7 @@ export function ProgressRing({
             style={{
               fontFamily: typography.caption.fontFamily,
               fontSize: labelFontSize,
-              color: colors.text.light.tertiary,
+              color: colors.text[t].tertiary,
               marginTop: 1,
             }}
             numberOfLines={1}

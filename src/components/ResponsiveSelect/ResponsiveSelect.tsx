@@ -94,14 +94,14 @@ export function ResponsiveSelect({
                       borderColor: colors.primary[200],
                       opacity: opt.disabled ? 0.5 : 1,
                     },
-                    pressed && !opt.disabled && { backgroundColor: colors.gray[100] },
+                    pressed && !opt.disabled && { backgroundColor: colors.bg[resolvedTheme].muted },
                   ]}
                 >
                   <Text
                     style={{
                       flex: 1,
                       fontSize: 16,
-                      color: opt.disabled ? colors.text.light.disabled : colors.text.light.primary,
+                      color: opt.disabled ? colors.text[resolvedTheme].disabled : colors.text[resolvedTheme].primary,
                       fontWeight: isSelected ? '600' : '400',
                     }}
                     numberOfLines={1}

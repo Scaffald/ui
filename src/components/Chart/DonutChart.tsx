@@ -22,6 +22,7 @@ import Svg, { Path } from 'react-native-svg'
 import type { DonutChartProps } from './Chart.types'
 import { getChartSize, calculatePieAngles, getChartColors, getArcPath } from './Chart.utils'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { typography } from '../../tokens/typography'
 
 export function DonutChart({
@@ -32,6 +33,8 @@ export function DonutChart({
   showPercentage = false,
   style,
 }: DonutChartProps) {
+  const { theme: __theme } = useThemeContext()
+  const t = __theme === 'dark' ? 'dark' : 'light'
   if (data.length === 0) {
     return <View style={[{ width: 120, height: 120 }, style]} />
   }
@@ -67,7 +70,7 @@ export function DonutChart({
               innerRadius
             )}
             fill={angle.color}
-            stroke={colors.bg.light.default}
+            stroke={colors.bg[t].default}
             strokeWidth={2}
           />
         ))}
@@ -98,7 +101,7 @@ export function DonutChart({
                     left: labelX,
                     top: labelY,
                     transform: [{ translateX: -10 }, { translateY: -8 }],
-                    color: colors.text.light.primary,
+                    color: colors.text[t].primary,
                   },
                 ]}
               >
