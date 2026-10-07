@@ -244,7 +244,8 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input(
           <InputExternalAddon
             type={type}
             borderColor={
-              (styles.input.borderColor as string | undefined) || colors.border.light.default
+              (styles.input.borderColor as string | undefined) ||
+              colors.border[theme === 'dark' ? 'dark' : 'light'].default
             }
           >
             {externalAddon}

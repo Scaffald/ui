@@ -27,6 +27,7 @@
 import { View, Text, Pressable, type ViewStyle, type TextStyle } from 'react-native'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { typography } from '../../tokens/typography'
 import { borderRadius } from '../../tokens/borders'
 import { shadows } from '../../tokens/shadows'
@@ -67,17 +68,22 @@ export interface InputExternalAddonProps {
 export function InputExternalAddon({
   children,
   type = 'classic',
-  borderColor = colors.border.light.default,
+    borderColor,
   style,
   textStyle,
 }: InputExternalAddonProps) {
+  // Read the theme: this was pinned to the light palette, so in dark mode the
+  // prefix of a URL field ("scaffald.com/users/") sat on a near-white block
+  // (Scaffald/SaaS#1027).
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const containerStyle: ViewStyle = {
-    backgroundColor: colors.bg.light.subtle, // bg-50
+    backgroundColor: colors.bg[t].subtle, // bg-50
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderLeftWidth: 1,
-    borderRightWidth: 0,
-    borderColor,
+        borderRightWidth: 0,
+    borderColor: borderColor ?? colors.border[t].default,
     paddingHorizontal: spacing[12],
     paddingVertical: spacing[8],
     borderTopLeftRadius: borderRadius.m,
@@ -89,10 +95,10 @@ export function InputExternalAddon({
     ...(type === 'classic' ? shadows.button : {}),
   }
 
-  const textStyleBase: TextStyle = {
+    const textStyleBase: TextStyle = {
     ...typography.body,
     letterSpacing: 0,
-    color: colors.text.light.tertiary,
+    color: colors.text[t].tertiary,
   }
 
   return (
@@ -130,25 +136,28 @@ export interface InputLeftSideProps {
  */
 export function InputLeftSide({
   icon: Icon,
-  text,
-  color = colors.icon.light.muted,
+    text,
+  color,
   style,
 }: InputLeftSideProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  const iconColor = color ?? colors.icon[t].muted
   const iconSize = 16
 
   return (
     <View style={[{ justifyContent: 'flex-start' }, style]}>
       {Icon && (
         <View style={{ width: iconSize, height: iconSize }}>
-          <Icon size={iconSize} color={color} />
+                    <Icon size={iconSize} color={iconColor} />
         </View>
       )}
       {text && (
         <Text
           style={{
             ...typography.body,
-            letterSpacing: 0,
-            color: colors.text.light.tertiary,
+                        letterSpacing: 0,
+            color: colors.text[t].tertiary,
           }}
         >
           {text}
@@ -191,17 +200,20 @@ export interface InputRightSideProps {
  * When onPress is provided, the icon is wrapped in a Pressable.
  */
 export function InputRightSide({
-  icon: Icon,
-  color = colors.icon.light.muted,
+    icon: Icon,
+  color,
   onPress,
   accessibilityLabel,
   style,
 }: InputRightSideProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  const iconColor = color ?? colors.icon[t].muted
   const iconSize = 16
 
   const iconContent = Icon ? (
     <View style={{ width: iconSize, height: iconSize }}>
-      <Icon size={iconSize} color={color} />
+      <Icon size={iconSize} color={iconColor} />
     </View>
   ) : null
 
