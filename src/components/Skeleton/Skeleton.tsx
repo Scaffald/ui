@@ -7,6 +7,7 @@ import type React from 'react'
 import { useEffect, useRef, useMemo, useState } from 'react'
 import { View, Animated, Easing, StyleSheet, Platform, type LayoutChangeEvent, type ViewStyle, type DimensionValue } from 'react-native'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius as radiusTokens } from '../../tokens/borders'
 import type {
@@ -137,16 +138,21 @@ export function Skeleton({
   const { translateX, onLayout } = useShimmerAnimation(animation, animationDuration)
 
   const computedRadius = borderRadius ?? SHAPE_RADIUS[shape]
+  // gray-200 was a pale bar on the dark ground, brighter than the content it
+  // stands in for (#1027). The muted ground reads as "something loads here"
+  // in both themes.
+  const { theme } = useThemeContext()
+  const baseColor = theme === 'dark' ? colors.bg.dark.muted : BASE_COLOR
 
   const containerStyle = useMemo<ViewStyle>(
     () => ({
       width,
       height,
       borderRadius: computedRadius,
-      backgroundColor: BASE_COLOR,
+      backgroundColor: baseColor,
       overflow: 'hidden',
     }),
-    [width, height, computedRadius]
+    [width, height, computedRadius, baseColor]
   )
 
   const pulseStyle = animation === 'pulse' ? {
@@ -265,8 +271,17 @@ export function SkeletonCard({
   style,
   testID,
 }: SkeletonCardProps): React.ReactElement {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
-    <View style={[styles.card, style]} testID={testID}>
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: colors.bg[t].default, borderColor: colors.border[t].default },
+        style,
+      ]}
+      testID={testID}
+    >
       {hasMedia && (
         <Skeleton
           width="100%"
@@ -455,12 +470,12 @@ export function SkeletonList({
 // ============================================================================
 
 const styles = StyleSheet.create({
+  // Colours are applied per theme in SkeletonCard: a module-level sheet
+  // cannot read the theme, and this one pinned the card white (#1027).
   card: {
-    backgroundColor: colors.bg.light.default,
     borderRadius: radiusTokens.l,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: colors.border.light.default,
   },
   cardContent: {
     padding: spacing[16],

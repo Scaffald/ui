@@ -18,6 +18,7 @@ import Svg, { Circle } from 'react-native-svg'
 import type { CircleChartProps } from './Chart.types'
 import { getCircleChartSize } from './Chart.utils'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { typography } from '../../tokens/typography'
 
 export function CircleChart({
@@ -28,6 +29,8 @@ export function CircleChart({
   showLabel = false,
   style,
 }: CircleChartProps) {
+  const { theme: __theme } = useThemeContext()
+  const t = __theme === 'dark' ? 'dark' : 'light'
   const clampedValue = Math.max(0, Math.min(100, value))
   const dimensions = getCircleChartSize(size)
   const { width, height, radius } = dimensions
@@ -77,7 +80,7 @@ export function CircleChart({
                 lineHeight: typography.body.lineHeight,
                 letterSpacing: typeof typography.body.letterSpacing === 'string' ? parseFloat(typography.body.letterSpacing) || 0 : typography.body.letterSpacing,
               },
-              { color: colors.text.light.primary },
+              { color: colors.text[t].primary },
             ]}
           >
             {clampedValue}%

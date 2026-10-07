@@ -5,6 +5,7 @@
 import { Row } from '../Layout'
 import { Text } from '../Typography'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import type { NotificationTagProps } from './NotificationTag.types'
@@ -27,6 +28,8 @@ export function NotificationTag({
   children,
   style,
 }: NotificationTagProps) {
+  const { theme: __theme } = useThemeContext()
+  const t = __theme === 'dark' ? 'dark' : 'light'
   const s = sizeStyles[size]
   return (
     <Row
@@ -43,7 +46,7 @@ export function NotificationTag({
         style={{
           fontSize: s.fontSize,
           fontWeight: '600',
-          color: colors.text.light.secondary,
+          color: colors.text[t].secondary,
         }}
       >
         {children}
