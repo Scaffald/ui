@@ -9,6 +9,7 @@ import { Paragraph, Text } from '../Typography'
 import { Button } from '../Button'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import { borderRadius } from '../../tokens/borders'
 import type { EmptyStateProps } from './States.types'
 
@@ -20,6 +21,10 @@ export function EmptyState({
   secondaryAction,
   children,
 }: EmptyStateProps) {
+  // The icon disc was gray-100 with a gray-600 glyph in both themes: a white
+  // circle on the dark ground (Scaffald/SaaS#1024 captures).
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack
       align="center"
@@ -32,12 +37,12 @@ export function EmptyState({
               width: 64,
               height: 64,
               borderRadius: borderRadius.max,
-              backgroundColor: colors.gray[100],
+              backgroundColor: colors.bg[t].muted,
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Icon size={32} color={colors.gray[600]} />
+            <Icon size={32} color={colors.icon[t].muted} />
           </View>
         </Row>
       )}
