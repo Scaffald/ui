@@ -18,6 +18,7 @@ export function AvatarGroup({
   containerStyle,
 }: AvatarGroupProps) {
   const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const childArray = Children.toArray(children)
   const visibleChildren = max ? childArray.slice(0, max) : childArray
   const remainingCount = max && childArray.length > max ? childArray.length - max : 0
@@ -64,9 +65,11 @@ export function AvatarGroup({
                 width: size,
                 height: size,
                 borderRadius: size / 2,
-                backgroundColor: colors.gray[200],
+                // gray[200] / gray[700] in both themes drew a pale chip on dark
+                // (Scaffald/SaaS#1088); same values in light.
+                backgroundColor: colors.bg[t].emphasis,
                 borderWidth: 2,
-                borderColor: colors.bg[theme].default,
+                borderColor: colors.bg[t].default,
               },
             ]}
           >
@@ -75,7 +78,7 @@ export function AvatarGroup({
                 styles.remainingText,
                 {
                   fontSize: size / 3,
-                  color: colors.gray[700],
+                  color: colors.text[t].secondary,
                   fontFamily: fontFamily.body,
                   fontWeight: fontWeight.medium,
                 },

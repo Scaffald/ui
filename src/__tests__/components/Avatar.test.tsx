@@ -6,7 +6,9 @@ import React from 'react'
 import { render, fireEvent } from '@testing-library/react-native'
 import { describe, it, expect, vi } from 'vitest'
 import { ThemeProvider } from "./../../theme"
-import { Avatar } from '../../components/Avatar'
+import { Avatar, AvatarGroup } from '../../components/Avatar'
+import { getAvatarColors } from '../../components/Avatar/Avatar'
+import { colors as tokenColors } from '../../tokens/colors'
 import type { AvatarSize, AvatarColor, AvatarStatus } from '../../components/Avatar'
 
 // Wrapper component for tests
@@ -73,6 +75,50 @@ describe('Avatar', () => {
         const { getByText } = render(<TestWrapper><Avatar color={color} initials="JD" /></TestWrapper>)
         expect(getByText('JD')).toBeTruthy()
       })
+    })
+  })
+
+  // Scaffald/SaaS#1088: the initials disc was gray[100] with gray[700] text in
+  // both themes — a bright disc on every dark screen. Asserted on the resolver:
+  // react-native-web puts rendered styles in classes jsdom will not resolve.
+  describe('getAvatarColors', () => {
+    it('leaves the light neutral disc on the same values', () => {
+      expect(getAvatarColors('gray', 'light')).toEqual({
+        backgroundColor: tokenColors.gray[100],
+        textColor: tokenColors.gray[700],
+        ringColor: tokenColors.gray[300],
+      })
+    })
+
+    it('reads the dark tokens for the neutral disc in dark', () => {
+      expect(getAvatarColors('gray', 'dark')).toEqual({
+        backgroundColor: tokenColors.bg.dark.muted,
+        textColor: tokenColors.text.dark.secondary,
+        ringColor: tokenColors.border.dark.muted,
+      })
+    })
+
+    it('inverts every coloured tint in dark', () => {
+      for (const color of ['primary', 'info', 'success', 'warning', 'error'] as const) {
+        const light = getAvatarColors(color, 'light')
+        const dark = getAvatarColors(color, 'dark')
+        expect(dark.backgroundColor, color).not.toBe(light.backgroundColor)
+        expect(dark.textColor, color).not.toBe(light.textColor)
+      }
+      expect(getAvatarColors('primary', 'dark').backgroundColor).toBe(tokenColors.primary[900])
+      expect(getAvatarColors('primary', 'dark').textColor).toBe(tokenColors.primary[300])
+    })
+
+    it('renders AvatarGroup with its overflow chip in dark', () => {
+      const { getByText } = render(
+        <ThemeProvider initialTheme="dark">
+          <AvatarGroup max={1}>
+            <Avatar initials="AB" />
+            <Avatar initials="CD" />
+          </AvatarGroup>
+        </ThemeProvider>
+      )
+      expect(getByText('+1')).toBeTruthy()
     })
   })
 
