@@ -11,6 +11,7 @@ import {
   TableColumnHeader,
   ExpandedTableRow,
 } from '../../../components/Table'
+import { EmptyState } from '../../../components/States'
 import { spacing } from '../../../tokens/spacing'
 import type { TableColumn } from '../../../components/Table'
 
@@ -78,6 +79,36 @@ export const Default: Story = {
             { label: 'Add New', onPress: () => console.log('Add New') },
           ]}
           pagination={{ totalPages: 5, currentPage: 1 }}
+        />
+      </View>
+    )
+  },
+}
+
+// Empty tables. With no search box and no actions there is no toolbar, so the
+// message sits directly in the card — no blank band above it
+// (Scaffald/SaaS#1102). A searchable table keeps its search box so a search
+// with no results can be cleared.
+export const Empty: Story = {
+  render: () => {
+    const [searchValue, setSearchValue] = useState('nothing-matches')
+    return (
+      <View style={[styles.container, { gap: spacing[24] }]}>
+        <Table columns={mockColumns} data={[]} emptyMessage="No files found" />
+        <Table
+          columns={mockColumns}
+          data={[]}
+          renderEmpty={() => (
+            <EmptyState title="No transactions yet" description="Payments will appear here." />
+          )}
+        />
+        <Table
+          columns={mockColumns}
+          data={[]}
+          searchable
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          emptyMessage="No results"
         />
       </View>
     )
