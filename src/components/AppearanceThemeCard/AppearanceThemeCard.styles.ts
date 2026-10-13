@@ -6,7 +6,10 @@ import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
-import type { AppearanceThemeCardStyleConfig, AppearanceThemeCardVariant } from './AppearanceThemeCard.types'
+import type {
+  AppearanceThemeCardStyleConfig,
+  AppearanceThemeCardVariant,
+} from './AppearanceThemeCard.types'
 import type { ResolvedThemeMode } from '../../tokens/colors'
 
 export function getAppearanceThemeCardStyles(

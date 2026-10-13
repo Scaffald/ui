@@ -5,12 +5,7 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 import { View, StyleSheet } from 'react-native'
-import {
-  Table,
-  TableCell,
-  TableColumnHeader,
-  ExpandedTableRow,
-} from '../../../components/Table'
+import { Table, TableCell, TableColumnHeader, ExpandedTableRow } from '../../../components/Table'
 import { EmptyState } from '../../../components/States'
 import { spacing } from '../../../tokens/spacing'
 import type { TableColumn } from '../../../components/Table'
@@ -157,11 +152,7 @@ export const CellTypes: Story = {
       </View>
 
       <View style={styles.section}>
-        <TableCell
-          type="labels"
-          labels={['Beyond UI', 'Figma', 'React']}
-          maxLabels={2}
-        />
+        <TableCell type="labels" labels={['Beyond UI', 'Figma', 'React']} maxLabels={2} />
       </View>
 
       <View style={styles.section}>
@@ -174,7 +165,10 @@ export const CellTypes: Story = {
 // Table with sorting
 export const WithSorting: Story = {
   render: () => {
-    const [sortConfig, setSortConfig] = useState<{ columnId: string | null; direction: 'asc' | 'desc' | null }>({
+    const [sortConfig, setSortConfig] = useState<{
+      columnId: string | null
+      direction: 'asc' | 'desc' | null
+    }>({
       columnId: null,
       direction: null,
     })
@@ -378,7 +372,10 @@ export const FullFeatured: Story = {
     const [searchValue, setSearchValue] = useState('')
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
-    const [sortConfig, setSortConfig] = useState<{ columnId: string | null; direction: 'asc' | 'desc' | null }>({
+    const [sortConfig, setSortConfig] = useState<{
+      columnId: string | null
+      direction: 'asc' | 'desc' | null
+    }>({
       columnId: null,
       direction: null,
     })
@@ -436,7 +433,11 @@ export const FullFeatured: Story = {
           }}
           sortConfig={sortConfig}
           onSort={(columnId, direction) => setSortConfig({ columnId, direction })}
-          pagination={{ totalPages: 10, currentPage: 1, onPageChange: (page) => console.log('Page:', page) }}
+          pagination={{
+            totalPages: 10,
+            currentPage: 1,
+            onPageChange: (page) => console.log('Page:', page),
+          }}
         />
       </View>
     )
@@ -592,10 +593,33 @@ export const AllCellTypesShowcase: Story = {
 
       <View style={styles.section}>
         <View style={styles.row}>
-          <TableCell type="text-default" text="Text Default" description="Description" width={192} />
-          <TableCell type="text-default" text="With Checkbox" showCheckbox checked={false} width={192} />
-          <TableCell type="text-default" text="With Radio" showRadio radioChecked={false} width={192} />
-          <TableCell type="text-default" text="With Switch" showSwitch switchChecked={false} width={192} />
+          <TableCell
+            type="text-default"
+            text="Text Default"
+            description="Description"
+            width={192}
+          />
+          <TableCell
+            type="text-default"
+            text="With Checkbox"
+            showCheckbox
+            checked={false}
+            width={192}
+          />
+          <TableCell
+            type="text-default"
+            text="With Radio"
+            showRadio
+            radioChecked={false}
+            width={192}
+          />
+          <TableCell
+            type="text-default"
+            text="With Switch"
+            showSwitch
+            switchChecked={false}
+            width={192}
+          />
         </View>
       </View>
 
@@ -632,7 +656,12 @@ export const AllCellTypesShowcase: Story = {
       <View style={styles.section}>
         <View style={styles.row}>
           <TableCell type="status" statusType="success" statusLabel="Active" width={140} />
-          <TableCell type="labels" labels={['Beyond UI', 'Figma', 'React']} maxLabels={2} width={215} />
+          <TableCell
+            type="labels"
+            labels={['Beyond UI', 'Figma', 'React']}
+            maxLabels={2}
+            width={215}
+          />
           <TableCell
             type="actions"
             actions={[

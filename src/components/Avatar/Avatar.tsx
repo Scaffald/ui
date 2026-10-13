@@ -134,7 +134,7 @@ export function Avatar({
 
   const { backgroundColor, textColor, ringColor } = useMemo(
     () => getAvatarColors(color, theme === 'dark' ? 'dark' : 'light'),
-    [color, theme],
+    [color, theme]
   )
 
   const avatarContent = (
@@ -347,7 +347,9 @@ export function Avatar({
           ]}
         >
           {typeof badge === 'string' || typeof badge === 'number' ? (
-            <Text style={[styles.badgeText, { fontSize: dimensions.badgeSize * 0.6 }]}>{String(badge)}</Text>
+            <Text style={[styles.badgeText, { fontSize: dimensions.badgeSize * 0.6 }]}>
+              {String(badge)}
+            </Text>
           ) : (
             badge
           )}
