@@ -92,6 +92,9 @@ export function InputExternalAddon({
     borderBottomRightRadius: borderRadius.none,
     minHeight: 44,
     justifyContent: 'center',
+    // The prefix keeps its width; the field beside it is the side that gives
+    // (Scaffald/SaaS#1089).
+    flexShrink: 0,
     ...(type === 'classic' ? shadows.button : {}),
   }
 
@@ -103,7 +106,9 @@ export function InputExternalAddon({
 
   return (
     <View style={[containerStyle, style]}>
-      <Text style={[textStyleBase, textStyle]}>{children}</Text>
+      <Text style={[textStyleBase, textStyle]} numberOfLines={1}>
+        {children}
+      </Text>
     </View>
   )
 }
