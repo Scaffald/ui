@@ -16,9 +16,11 @@ export function getAppearanceThemeCardStyles(
 ): AppearanceThemeCardStyleConfig {
   const isLight = theme === 'light'
 
+  // Height follows the content (preview + padded label) and the preview fills
+  // the card's width, so a caller can narrow the card — three across on a
+  // phone — without the preview overflowing it (Scaffald/SaaS#1090).
   const container: ViewStyle = {
     width: 160,
-    height: 124,
     borderRadius: borderRadius.m,
     overflow: 'hidden',
     backgroundColor: isLight ? colors.bg.light.default : colors.bg.dark.default,
@@ -33,7 +35,7 @@ export function getAppearanceThemeCardStyles(
   }
 
   const preview: ViewStyle = {
-    width: 160,
+    width: '100%',
     height: 100,
     borderRadius: borderRadius.m,
     overflow: 'hidden',
@@ -57,6 +59,9 @@ export function getAppearanceThemeCardStyles(
     fontSize: 14,
     fontWeight: typography.bodyMedium.fontWeight,
     lineHeight: 20,
+    // The label sat flush against the card's left and bottom edges (#1090).
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     color: isLight ? colors.text.light.primary : colors.text.dark.primary,
   }
 
