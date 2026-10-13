@@ -72,6 +72,28 @@ export const Default: Story = {
   ),
 }
 
+// Folder tabs with counts. The folder face is the serif; its counts must use
+// lining figures so "0" and "1" do not read as "o" and "ı" (Scaffald/SaaS#1101).
+export const FolderWithCounts: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <Tabs type="folder" defaultValue="all">
+        {[
+          ['all', 'All · 12'],
+          ['draft', 'Draft · 0'],
+          ['open', 'Open · 11'],
+          ['closed', 'Closed · 1'],
+          ['completed', 'Completed · 0'],
+        ].map(([value, label]) => (
+          <Tabs.Item key={value} value={value}>
+            <Tabs.Trigger>{label}</Tabs.Trigger>
+          </Tabs.Item>
+        ))}
+      </Tabs>
+    </View>
+  ),
+}
+
 // Controlled mode
 export const Controlled: Story = {
   render: () => {

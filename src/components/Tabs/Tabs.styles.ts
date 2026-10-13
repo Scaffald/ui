@@ -164,6 +164,11 @@ export function getTabTriggerStyles(
     fontWeight: sizeStyles.fontWeight,
     lineHeight: sizeStyles.lineHeight,
     textAlign: 'center',
+    // Labels carry counts ("Completed · 0"). The folder tabs set them in the
+    // serif, whose default old-style figures made 0 read as "o" and 1 as "ı"
+    // (Scaffald/SaaS#1101); lining, tabular figures also keep a tab's width
+    // steady as its count changes.
+    fontVariant: ['lining-nums', 'tabular-nums'],
   }
 
   // Color configuration based on color variant and state
