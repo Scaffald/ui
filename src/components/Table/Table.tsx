@@ -97,6 +97,16 @@ export function columnSizing(width: number | string | undefined): ViewStyle {
   return { flexGrow: 1, flexShrink: 0, flexBasis: 0, minWidth: DEFAULT_COLUMN_WIDTH }
 }
 
+/**
+ * Whether the toolbar above the table renders. It only exists when it has a
+ * search box or an action in it: empty, it is a 64px padded block and a
+ * hairline — the "empty header" above every Office table on an iPad (#768),
+ * and the blank band above every empty table's message (Scaffald/SaaS#1102).
+ */
+export function hasTableToolbar(showHeader: boolean, searchable: boolean, actionCount: number) {
+  return showHeader && (searchable || actionCount > 0)
+}
+
 export function stackedDataColumns(columns: TableColumn[], selectableRows = false): TableColumn[] {
   return columns.filter(
     (c) => Boolean(c.title) && !c.headerEmpty && !(selectableRows && c.showCheckbox)
@@ -429,7 +439,7 @@ export function Table({
   if (table.displayData.length === 0) {
     return (
       <View style={[styles.container, style]}>
-        {showHeader && (
+        {hasTableToolbar(showHeader, searchable, actions.length) && (
           <View style={[styles.header, headerStyle]}>
             <View style={styles.headerContent}>
               {searchable && (
@@ -490,7 +500,7 @@ export function Table({
       {/* The toolbar only exists when it has something in it. With neither a
           search box nor actions it was still a 64px padded block — the "empty
           header" above every Office table on an iPad (#768). */}
-      {showHeader && (searchable || actions.length > 0) && (
+      {hasTableToolbar(showHeader, searchable, actions.length) && (
         <View style={[styles.header, headerStyle]}>
           <View style={styles.headerContent}>
             {searchable && (

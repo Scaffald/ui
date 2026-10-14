@@ -38,14 +38,32 @@ const SettingsIcon = ({ size, color }: { size: number; color: string }) => (
 
 const HomeIcon = ({ size, color }: { size: number; color: string }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <Path d="M9 22V12H15V22" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <Path
+      d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M9 22V12H15V22"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </Svg>
 )
 
 const UserIcon = ({ size, color }: { size: number; color: string }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <Path
+      d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
     <Circle cx="12" cy="7" r="4" stroke={color} strokeWidth="2" />
   </Svg>
 )
@@ -61,12 +79,36 @@ export const Default: Story = {
         </Tabs.Item>
         <Tabs.Item value="tab2">
           <Tabs.Trigger>Transactions</Tabs.Trigger>
-          <Tabs.Content>Transactions content goes here. View all your transaction history.</Tabs.Content>
+          <Tabs.Content>
+            Transactions content goes here. View all your transaction history.
+          </Tabs.Content>
         </Tabs.Item>
         <Tabs.Item value="tab3">
           <Tabs.Trigger>Orders History</Tabs.Trigger>
           <Tabs.Content>Orders history content goes here. Track all your orders.</Tabs.Content>
         </Tabs.Item>
+      </Tabs>
+    </View>
+  ),
+}
+
+// Folder tabs with counts. The folder face is the serif; its counts must use
+// lining figures so "0" and "1" do not read as "o" and "ı" (Scaffald/SaaS#1101).
+export const FolderWithCounts: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <Tabs type="folder" defaultValue="all">
+        {[
+          ['all', 'All · 12'],
+          ['draft', 'Draft · 0'],
+          ['open', 'Open · 11'],
+          ['closed', 'Closed · 1'],
+          ['completed', 'Completed · 0'],
+        ].map(([value, label]) => (
+          <Tabs.Item key={value} value={value}>
+            <Tabs.Trigger>{label}</Tabs.Trigger>
+          </Tabs.Item>
+        ))}
       </Tabs>
     </View>
   ),
@@ -121,7 +163,9 @@ export const TypeVariants: Story = {
       <View style={{ marginTop: spacing[32] }} />
 
       <Text style={styles.variantTitle}>Line Type</Text>
-      <Text style={styles.variantDescription}>Border/underline indicator only, no background changes</Text>
+      <Text style={styles.variantDescription}>
+        Border/underline indicator only, no background changes
+      </Text>
       <Tabs type="line" defaultValue="tab1">
         <Tabs.Item value="tab1">
           <Tabs.Trigger>Tab 1</Tabs.Trigger>
@@ -433,8 +477,8 @@ export const BorderedContent: Story = {
             <View>
               <Text style={styles.contentTitle}>Summary Overview</Text>
               <Text style={styles.contentText}>
-                This is the summary content with bordered styling. The border, padding, and background
-                help visually group the content with its tab.
+                This is the summary content with bordered styling. The border, padding, and
+                background help visually group the content with its tab.
               </Text>
             </View>
           </Tabs.Content>
@@ -565,7 +609,9 @@ export const Playground: Story = {
             <Tabs.Content>
               <View style={styles.contentBox}>
                 <Text style={styles.contentTitle}>Home</Text>
-                <Text style={styles.contentText}>Welcome to the home tab. This is where you'll find your dashboard and overview.</Text>
+                <Text style={styles.contentText}>
+                  Welcome to the home tab. This is where you'll find your dashboard and overview.
+                </Text>
               </View>
             </Tabs.Content>
           </Tabs.Item>
@@ -574,7 +620,9 @@ export const Playground: Story = {
             <Tabs.Content>
               <View style={styles.contentBox}>
                 <Text style={styles.contentTitle}>Profile</Text>
-                <Text style={styles.contentText}>Manage your profile settings and preferences here.</Text>
+                <Text style={styles.contentText}>
+                  Manage your profile settings and preferences here.
+                </Text>
               </View>
             </Tabs.Content>
           </Tabs.Item>
@@ -583,7 +631,9 @@ export const Playground: Story = {
             <Tabs.Content>
               <View style={styles.contentBox}>
                 <Text style={styles.contentTitle}>Settings</Text>
-                <Text style={styles.contentText}>Configure your application settings and preferences.</Text>
+                <Text style={styles.contentText}>
+                  Configure your application settings and preferences.
+                </Text>
               </View>
             </Tabs.Content>
           </Tabs.Item>
@@ -663,4 +713,3 @@ const styles = StyleSheet.create({
     lineHeight: typography.small.lineHeight * 1.5,
   },
 })
-

@@ -5,7 +5,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { View, Text, Image, Pressable, StyleSheet, Platform } from 'react-native'
-import type { AvatarProps } from './Avatar.types'
+import type { AvatarColor, AvatarProps } from './Avatar.types'
 import { colors } from '../../tokens/colors'
 import { fontFamily, fontWeight } from '../../tokens/typography'
 import { useThemeContext } from '../../theme'
@@ -31,6 +31,39 @@ const STATUS_COLORS = {
   offline: colors.gray[400],
   busy: colors.error[500],
   away: colors.warning[500],
+}
+
+// Fill, initials and ring per colour, per theme. The fills were the light
+// ramp's 100 step in both themes, so every initials disc was the brightest
+// object on a dark screen (Scaffald/SaaS#1088). In dark the tint inverts: the
+// ramp's 900 step under its 300 step, as Chip does. The neutral disc reads the
+// semantic tokens, which resolve to the same gray[100]/gray[700] in light.
+export function getAvatarColors(color: AvatarColor, t: 'light' | 'dark') {
+  const ramp =
+    color === 'primary'
+      ? colors.primary
+      : color === 'info'
+        ? colors.blue
+        : color === 'success'
+          ? colors.green
+          : color === 'warning'
+            ? colors.warning
+            : color === 'error'
+              ? colors.error
+              : null
+  if (!ramp) {
+    return {
+      backgroundColor: colors.bg[t].muted,
+      textColor: colors.text[t].secondary,
+      ringColor: colors.border[t].muted,
+    }
+  }
+  const isDark = t === 'dark'
+  return {
+    backgroundColor: isDark ? ramp[900] : ramp[100],
+    textColor: isDark ? ramp[300] : ramp[700],
+    ringColor: isDark ? ramp[400] : ramp[600],
+  }
 }
 
 export function Avatar({
@@ -99,59 +132,10 @@ export function Avatar({
   const hasInitials = !!initials && initials.length > 0
   const hasIcon = !!icon
 
-  // Get background color based on color prop
-  const backgroundColor = useMemo(() => {
-    switch (color) {
-      case 'primary':
-        return colors.primary[100]
-      case 'info':
-        return colors.blue[100]
-      case 'success':
-        return colors.green[100]
-      case 'warning':
-        return colors.warning[100]
-      case 'error':
-        return colors.error[100]
-      default:
-        return colors.gray[100]
-    }
-  }, [color])
-
-  // Get text color based on color prop
-  const textColor = useMemo(() => {
-    switch (color) {
-      case 'primary':
-        return colors.primary[700]
-      case 'info':
-        return colors.blue[700]
-      case 'success':
-        return colors.green[700]
-      case 'warning':
-        return colors.warning[700]
-      case 'error':
-        return colors.error[700]
-      default:
-        return colors.gray[700]
-    }
-  }, [color])
-
-  // Get ring color
-  const ringColor = useMemo(() => {
-    switch (color) {
-      case 'primary':
-        return colors.primary[600]
-      case 'info':
-        return colors.blue[600]
-      case 'success':
-        return colors.green[600]
-      case 'warning':
-        return colors.warning[600]
-      case 'error':
-        return colors.error[600]
-      default:
-        return colors.gray[300]
-    }
-  }, [color])
+  const { backgroundColor, textColor, ringColor } = useMemo(
+    () => getAvatarColors(color, theme === 'dark' ? 'dark' : 'light'),
+    [color, theme]
+  )
 
   const avatarContent = (
     <View
@@ -363,7 +347,9 @@ export function Avatar({
           ]}
         >
           {typeof badge === 'string' || typeof badge === 'number' ? (
-            <Text style={[styles.badgeText, { fontSize: dimensions.badgeSize * 0.6 }]}>{String(badge)}</Text>
+            <Text style={[styles.badgeText, { fontSize: dimensions.badgeSize * 0.6 }]}>
+              {String(badge)}
+            </Text>
           ) : (
             badge
           )}

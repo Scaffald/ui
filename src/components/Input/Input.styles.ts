@@ -3,6 +3,7 @@
  * All styles mapped from Figma Forsured Design System
  */
 
+import { Platform } from 'react-native'
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ResolvedThemeMode } from '../../tokens/colors'
@@ -137,11 +138,16 @@ export function getInputStyles(
   // Line type has no border radius
   const inputBorderRadius = type === 'line' ? borderRadius.none : borderRadius.xxl
 
+  // Beside an external addon the field takes the rest of the row. It had no
+  // flex at all there, so CSS sized it to its content (a short field on web)
+  // and Yoga collapsed it to a sliver on iOS (Scaffald/SaaS#1089). `minWidth: 0`
+  // lets it shrink below its content so a long value clips instead of
+  // pushing the row wider.
   const inputContainer: ViewStyle = {
     ...baseInputContainer,
-    flex: hasExternalAddon ? undefined : 1, // Fill available space when no external addon
+    flex: 1,
     width: hasExternalAddon ? undefined : '100%', // Full width when no external addon
-    minWidth: hasExternalAddon ? undefined : '100%', // Ensure minimum width matches
+    minWidth: hasExternalAddon ? 0 : '100%', // Ensure minimum width matches
     backgroundColor,
     borderColor,
     borderRadius: hasExternalAddon && type === 'classic' ? undefined : inputBorderRadius,
@@ -155,6 +161,13 @@ export function getInputStyles(
   const inputText: TextStyle = {
     ...baseInputText,
     color: textColor,
+    // With an addon the row is tight, so a long value (a vanity URL slug)
+    // ellipsizes rather than running under the border. iOS's UITextField
+    // truncates the tail on its own once the field can shrink.
+    ...(hasExternalAddon && {
+      minWidth: 0,
+      ...(Platform.OS === 'web' && ({ textOverflow: 'ellipsis' } as TextStyle)),
+    }),
   }
 
   // External addon container (for prefixes like "https://")

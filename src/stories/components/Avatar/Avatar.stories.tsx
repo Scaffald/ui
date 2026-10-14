@@ -352,7 +352,17 @@ export const ThemeVariants: Story = {
             <Avatar src="https://i.pravatar.cc/150?img=7" status="online" size={48} />
             <Avatar initials="CD" verified size={48} />
           </View>
-          <AvatarGroup size={40} max={4} containerStyle={{ marginTop: spacing[16] }}>
+          {/* Every colour's initials disc, so the dark column shows the
+              inverted tints (Scaffald/SaaS#1088). */}
+          <View style={[styles.row, { marginTop: spacing[16] }]}>
+            <Avatar initials="GR" size={40} />
+            <Avatar initials="PR" color="primary" size={40} />
+            <Avatar initials="IN" color="info" size={40} />
+            <Avatar initials="SU" color="success" size={40} />
+            <Avatar initials="WA" color="warning" size={40} />
+            <Avatar initials="ER" color="error" size={40} />
+          </View>
+          <AvatarGroup size={40} max={3} containerStyle={{ marginTop: spacing[16] }}>
             <Avatar initials="AB" color="primary" />
             <Avatar initials="CD" color="success" />
             <Avatar initials="EF" color="warning" />

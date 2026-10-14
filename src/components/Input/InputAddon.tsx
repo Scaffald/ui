@@ -68,7 +68,7 @@ export interface InputExternalAddonProps {
 export function InputExternalAddon({
   children,
   type = 'classic',
-    borderColor,
+  borderColor,
   style,
   textStyle,
 }: InputExternalAddonProps) {
@@ -82,7 +82,7 @@ export function InputExternalAddon({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderLeftWidth: 1,
-        borderRightWidth: 0,
+    borderRightWidth: 0,
     borderColor: borderColor ?? colors.border[t].default,
     paddingHorizontal: spacing[12],
     paddingVertical: spacing[8],
@@ -92,10 +92,13 @@ export function InputExternalAddon({
     borderBottomRightRadius: borderRadius.none,
     minHeight: 44,
     justifyContent: 'center',
+    // The prefix keeps its width; the field beside it is the side that gives
+    // (Scaffald/SaaS#1089).
+    flexShrink: 0,
     ...(type === 'classic' ? shadows.button : {}),
   }
 
-    const textStyleBase: TextStyle = {
+  const textStyleBase: TextStyle = {
     ...typography.body,
     letterSpacing: 0,
     color: colors.text[t].tertiary,
@@ -103,7 +106,9 @@ export function InputExternalAddon({
 
   return (
     <View style={[containerStyle, style]}>
-      <Text style={[textStyleBase, textStyle]}>{children}</Text>
+      <Text style={[textStyleBase, textStyle]} numberOfLines={1}>
+        {children}
+      </Text>
     </View>
   )
 }
@@ -134,12 +139,7 @@ export interface InputLeftSideProps {
  * Left Side (Leading) component
  * Displays icon or text on the left side of the input
  */
-export function InputLeftSide({
-  icon: Icon,
-    text,
-  color,
-  style,
-}: InputLeftSideProps) {
+export function InputLeftSide({ icon: Icon, text, color, style }: InputLeftSideProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
   const iconColor = color ?? colors.icon[t].muted
@@ -149,14 +149,14 @@ export function InputLeftSide({
     <View style={[{ justifyContent: 'flex-start' }, style]}>
       {Icon && (
         <View style={{ width: iconSize, height: iconSize }}>
-                    <Icon size={iconSize} color={iconColor} />
+          <Icon size={iconSize} color={iconColor} />
         </View>
       )}
       {text && (
         <Text
           style={{
             ...typography.body,
-                        letterSpacing: 0,
+            letterSpacing: 0,
             color: colors.text[t].tertiary,
           }}
         >
@@ -200,7 +200,7 @@ export interface InputRightSideProps {
  * When onPress is provided, the icon is wrapped in a Pressable.
  */
 export function InputRightSide({
-    icon: Icon,
+  icon: Icon,
   color,
   onPress,
   accessibilityLabel,

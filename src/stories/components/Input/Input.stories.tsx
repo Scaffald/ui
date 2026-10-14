@@ -130,10 +130,48 @@ export const WithHelperText: Story = {
   },
 }
 
+// An external addon (a URL prefix) beside the field. The field must take the
+// rest of the row at any width, and a long value must clip with an ellipsis
+// rather than collapse (iOS) or stop at its content width (web)
+// (Scaffald/SaaS#1089). The narrow column is a 390pt phone's card.
+export const WithExternalAddon: Story = {
+  render: () => {
+    const [value, setValue] = useState('zach')
+    return (
+      <View style={styles.container}>
+        <Input label="Your Profile URL" value="https://scaffald.com/users/zach" editable={false} />
+        <Input
+          label="Profile Vanity URL"
+          externalAddon="scaffald.com/users/"
+          value={value}
+          onChangeText={setValue}
+        />
+        <Input
+          label="Long value"
+          externalAddon="scaffald.com/users/"
+          value="a-very-long-vanity-slug-that-overflows-the-field"
+          editable={false}
+        />
+        <View style={styles.narrow}>
+          <Input
+            label="Phone width"
+            externalAddon="scaffald.com/users/"
+            value="zach-sullivan-construction"
+            editable={false}
+          />
+        </View>
+      </View>
+    )
+  },
+}
+
 const styles = StyleSheet.create({
   container: {
     gap: spacing[16],
     padding: spacing[16],
     width: 400,
+  },
+  narrow: {
+    width: 300,
   },
 })

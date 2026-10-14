@@ -82,3 +82,38 @@ describe('Input sharing a Row with a sibling', () => {
     expect(() => getByText('__never__')).toThrow()
   })
 })
+
+// Scaffald/SaaS#1089: beside an external addon the field had no flex, so CSS
+// sized it to its content and Yoga collapsed it to a ~20pt sliver on iOS.
+describe('Input with an external addon', () => {
+  const field = (state: InputState = 'default', type: InputType = 'classic') =>
+    getInputStyles(state, type, false, true, 'light')
+
+  it('takes the rest of the row', () => {
+    for (const state of STATES) {
+      for (const type of TYPES) {
+        expect(field(state, type).input.flex, `${state}/${type}`).toBe(1)
+      }
+    }
+  })
+
+  it('can shrink below its content so a long value clips', () => {
+    expect(field().input.minWidth).toBe(0)
+    expect(field().inputText.minWidth).toBe(0)
+  })
+
+  it('leaves the addon-less field on its full-width floor', () => {
+    const plain = getInputStyles('default', 'classic', false, false, 'light')
+    expect(plain.input.flex).toBe(1)
+    expect(plain.input.minWidth).toBe('100%')
+    expect(plain.inputText.minWidth).toBeUndefined()
+  })
+
+  it('renders the prefix and the value', () => {
+    const { getByText, getByDisplayValue } = render(
+      <Input externalAddon="scaffald.com/users/" value="zach" editable={false} />,
+    )
+    expect(getByText('scaffald.com/users/')).toBeTruthy()
+    expect(getByDisplayValue('zach')).toBeTruthy()
+  })
+})
