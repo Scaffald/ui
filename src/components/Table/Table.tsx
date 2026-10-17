@@ -5,10 +5,10 @@
  * pagination, not virtualised.
  */
 
-import { Fragment, useCallback, useMemo, useState } from 'react'
+import { Fragment, useCallback, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { View, Text, ScrollView, Pressable, Platform } from 'react-native'
-import type { LayoutChangeEvent, ViewStyle } from 'react-native'
+import type { ViewStyle } from 'react-native'
 import type { TableColumn, TableProps, TableRowData } from './Table.types'
 import { getTableStyles } from './Table.styles'
 import { useStyles } from '../../hooks'
@@ -103,6 +103,41 @@ export function columnSizing(width: number | string | undefined): ViewStyle {
  * hairline — the "empty header" above every Office table on an iPad (#768),
  * and the blank band above every empty table's message (Scaffald/SaaS#1102).
  */
+/**
+ * The columns' natural total: declared pixel widths as given, anything else
+ * (undeclared, percentage) at `DEFAULT_COLUMN_WIDTH`. Below this the grid
+ * scrolls sideways rather than squeezing a column under its minimum.
+ */
+export function totalColumnWidth(columns: Array<Pick<TableColumn, 'width'>>): number {
+  return columns.reduce(
+    (sum, col) => sum + (typeof col.width === 'number' ? col.width : DEFAULT_COLUMN_WIDTH),
+    0
+  )
+}
+
+/**
+ * How the web grid fills its scroller (Scaffald/SaaS#1298).
+ *
+ * The grid's rows sit in a horizontal ScrollView. They used to take a width
+ * of `max(columns, measured body width)`, with the body measured by
+ * `onLayout`. When that measurement never landed — react-native-web reports
+ * layout from a ResizeObserver plus a timer, neither of which runs before
+ * hydration or in a background tab — the body width stayed 0 and the rows
+ * were only as wide as their columns: CMS Workers drew ~500px of table in a
+ * 1076px column.
+ *
+ * So the fill is plain layout, with nothing to measure. The scroller's content
+ * is at least as wide as the scroller (`minWidth: '100%'`), and the rows grow
+ * into it (`flexGrow: 1`) but never below the columns' total — past that the
+ * content is wider than the scroller and it scrolls.
+ */
+export function gridFill(columnsWidth: number): { content: ViewStyle; rows: ViewStyle } {
+  return {
+    content: { minWidth: '100%' },
+    rows: { flexGrow: 1, minWidth: columnsWidth },
+  }
+}
+
 export function hasTableToolbar(showHeader: boolean, searchable: boolean, actionCount: number) {
   return showHeader && (searchable || actionCount > 0)
 }
@@ -160,14 +195,6 @@ export function Table({
   // to "more stages", and the same reason Lanes exists.
   const stacked = shouldStackTable(Platform.OS, viewportWidth, stackBelow)
 
-  // The grid's rows are as wide as the body or the columns, whichever is
-  // more. The body's width is only known once it is laid out; until then the
-  // rows take the columns' total, which is what they were always given.
-  const [bodyWidth, setBodyWidth] = useState(0)
-  const onBodyLayout = useCallback((event: LayoutChangeEvent) => {
-    setBodyWidth(event.nativeEvent.layout.width)
-  }, [])
-
   const table = useTable({
     columns,
     data,
@@ -184,15 +211,10 @@ export function Table({
     columnVisibility,
   })
 
-  // Calculate total column width for proper horizontal scrolling
-  const totalColumnWidth = useMemo(
-    () =>
-      table.visibleColumns.reduce((sum, col) => {
-        if (typeof col.width === 'number') {
-          return sum + col.width
-        }
-        return sum + DEFAULT_COLUMN_WIDTH
-      }, 0),
+  // The grid's rows are as wide as the body or the columns, whichever is
+  // more — see `gridFill`.
+  const fill = useMemo(
+    () => gridFill(totalColumnWidth(table.visibleColumns)),
     [table.visibleColumns]
   )
 
@@ -533,7 +555,7 @@ export function Table({
       )}
 
       {/* Stacked rows are full-width cards, so the horizontal scroller and the
-          fixed `totalColumnWidth` would reintroduce exactly the overflow the
+          columns' minimum width would reintroduce exactly the overflow the
           stacking removes. The column header goes too: it labels columns that
           no longer exist as columns, and each card carries its own labels. */}
       {stacked ? (
@@ -571,14 +593,9 @@ export function Table({
           style={[styles.body, bodyStyle]}
           horizontal
           showsHorizontalScrollIndicator={false}
-          onLayout={onBodyLayout}
+          contentContainerStyle={fill.content}
         >
-          <View
-            style={{
-              width: Math.max(totalColumnWidth, bodyWidth) || undefined,
-              minWidth: totalColumnWidth,
-            }}
-          >
+          <View style={fill.rows}>
             {renderHeader()}
             {table.displayData.map((item, index) => (
               <Fragment key={getRowIdProp?.(item, index) ?? item.id ?? String(index)}>

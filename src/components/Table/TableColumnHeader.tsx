@@ -87,7 +87,8 @@ export function TableColumnHeader({
     return <View style={[styles.container, style]} />
   }
 
-  const Container = sortable && onSort ? Pressable : View
+  const pressable = sortable && !!onSort
+  const Container = pressable ? Pressable : View
 
   return (
     <Container
@@ -98,11 +99,19 @@ export function TableColumnHeader({
           onMouseLeave: () => setIsHovered(false),
         } as object))}
       onPress={sortable ? handleSort : undefined}
-      style={({ pressed }) => [
-        styles.container,
-        sortable && pressed && Platform.OS !== 'web' && { opacity: 0.8 },
-        style,
-      ]}
+      // Only a Pressable calls a style function. A plain View was handed the
+      // same function and dropped it, so an unsortable heading lost its
+      // padding and its column width and collapsed to its text, out of line
+      // with the cells under it (Scaffald/SaaS#1298).
+      style={
+        pressable
+          ? ({ pressed }: { pressed: boolean }) => [
+              styles.container,
+              pressed && Platform.OS !== 'web' && { opacity: 0.8 },
+              style,
+            ]
+          : [styles.container, style]
+      }
       {...pressableProps}
     >
       {/* Checkbox */}

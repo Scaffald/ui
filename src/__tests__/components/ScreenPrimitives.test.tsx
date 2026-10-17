@@ -159,7 +159,9 @@ describe('Lane', () => {
   it('is only pressable when it has a press handler', () => {
     const onPress = vi.fn()
     wrap(<Lane title="Alice Chen" onPress={onPress} />)
-    fireEvent.click(screen.getByRole('button'))
+    // A link, not a button: the row opens a record, and a button row nested
+    // every action button inside it (Scaffald/SaaS#1288).
+    fireEvent.click(screen.getByRole('link'))
     expect(onPress).toHaveBeenCalledTimes(1)
   })
 })

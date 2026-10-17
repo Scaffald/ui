@@ -67,4 +67,27 @@ describe('ScreenHeader', () => {
     renderAt(1440)
     expect(screen.queryByLabelText(/^Back to/)).toBeNull()
   })
+
+  it('draws a leading element beside the kicker, title and tip, after the back link (#1288)', () => {
+    renderAt(1440, {
+      back: { label: 'Applications list', onPress: () => {} },
+      leading: <span>MW</span>,
+    })
+    expect(order('Applications list', 'MW', 'Employer view', 'Applications', 'Move candidates between stages.')).toEqual([
+      'Applications list',
+      'MW',
+      'Employer view',
+      'Applications',
+      'Move candidates between stages.',
+    ])
+    // Kicker, title and tip share one column beside it.
+    const column = screen.getByText('MW').parentElement?.nextElementSibling
+    expect(column?.textContent).toContain('Employer view')
+    expect(column?.textContent).toContain('Move candidates between stages.')
+  })
+
+  it('draws no leading element unless asked', () => {
+    const { container } = renderAt(1440)
+    expect(container.textContent).not.toContain('MW')
+  })
 })
