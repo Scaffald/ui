@@ -64,14 +64,30 @@ export interface LaneProps {
    * wrong place to be guessing what a value is.
    */
   columns?: ReactNode[]
-  /** Right-aligned controls — a Move menu, an overflow button. */
+  /**
+   * Right-aligned controls — a Move menu, an overflow button. They sit beside
+   * the pressable part of the row, never inside it, so a press on one does not
+   * also open the row and no button ends up nested in another.
+   */
   actions?: ReactNode
   /** Why this row is where it is: "Denver County backlog — chase runner". */
   note?: ReactNode
+  /**
+   * Opens the row. The identity, columns and note become one pressable area;
+   * `actions` stay outside it.
+   */
   onPress?: () => void
+  /**
+   * Role of the pressable area. Defaults to `link`, since a row usually opens
+   * a record; use `button` for a row that acts in place (selects a worker).
+   */
+  accessibilityRole?: 'link' | 'button'
+  /** What pressing the row does, for assistive tech: "Open Alice Chen, Site Lead". */
+  accessibilityLabel?: string
   /** Width under which the row stacks instead of scrolling sideways. */
   stackBelow?: number
   selected?: boolean
   style?: ViewStyle
+  /** On the row; the pressable area, when there is one, is `${testID}-open`. */
   testID?: string
 }

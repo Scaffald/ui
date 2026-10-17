@@ -37,6 +37,7 @@ import type { ScreenHeaderProps } from './ScreenHeader.types'
 
 export function ScreenHeader({
   back,
+  leading,
   kicker,
   title,
   tip,
@@ -57,29 +58,9 @@ export function ScreenHeader({
   // instead, which is where the prototype's phone layout puts its controls.
   const actionsBelow = width > 0 && width < 640
 
-  return (
-    <View style={[styles.root, style]} testID={testID}>
-      {back ? (
-        <Pressable
-          onPress={back.onPress}
-          accessibilityRole="link"
-          accessibilityLabel={`Back to ${back.label}`}
-          hitSlop={8}
-          style={styles.back}
-        >
-          <ArrowLeft size={14} color={colors.text[theme].secondary} />
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              lineHeight: lineHeight.sm,
-              color: colors.text[theme].secondary,
-            }}
-          >
-            {back.label}
-          </Text>
-        </Pressable>
-      ) : null}
-
+  // Kicker → title → tip: the part a `leading` element sits beside.
+  const text = (
+    <>
       {kicker ? (
         <Text
           style={{
@@ -164,6 +145,43 @@ export function ScreenHeader({
           ) : null}
         </View>
       ) : null}
+    </>
+  )
+
+  return (
+    <View style={[styles.root, style]} testID={testID}>
+      {back ? (
+        <Pressable
+          onPress={back.onPress}
+          accessibilityRole="link"
+          accessibilityLabel={`Back to ${back.label}`}
+          hitSlop={8}
+          style={styles.back}
+        >
+          <ArrowLeft size={14} color={colors.text[theme].secondary} />
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              lineHeight: lineHeight.sm,
+              color: colors.text[theme].secondary,
+            }}
+          >
+            {back.label}
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {leading ? (
+        // The leading slot (an avatar) sits beside kicker, title and tip as a
+        // block, the way the prototype's candidate header draws its 48px
+        // avatar beside the name and the line under it (Scaffald/SaaS#1288).
+        <View style={styles.leadingRow}>
+          <View style={styles.leading}>{leading}</View>
+          <View style={styles.leadingText}>{text}</View>
+        </View>
+      ) : (
+        text
+      )}
 
       {actions && actionsBelow ? (
         <View style={[styles.actions, styles.actionsBelow]}>{actions}</View>
@@ -232,6 +250,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[8],
     paddingTop: spacing[2],
+  },
+  leadingRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing[16],
+  },
+  leading: {
+    flexShrink: 0,
+  },
+  leadingText: {
+    flex: 1,
+    minWidth: 0,
+    gap: spacing[8],
   },
   slot: {
     width: '100%',

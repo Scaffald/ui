@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { Lane } from '../Lane'
 
@@ -75,3 +75,66 @@ describe('Lane columns', () => {
     ).toThrow(/Objects are not valid as a React child/)
   })
 })
+
+/**
+ * A pressable row is not a button (Scaffald/SaaS#1288).
+ *
+ * The whole row used to be a button-role Pressable — a <button> on web — so a
+ * Move menu or an Edit button in `actions` was a button inside a button.
+ */
+describe('Lane press area', () => {
+  const renderPressable = (onPress = vi.fn(), onAction = vi.fn()) => {
+    mockWidth.value = 1440
+    render(
+      <Lane
+        testID="row"
+        title="Alice Chen"
+        subtitle="Site Electrical Lead"
+        age="8d"
+        columns={[<span key="a">Score 88</span>]}
+        onPress={onPress}
+        accessibilityLabel="Open Alice Chen"
+        actions={
+          <button type="button" onClick={onAction}>
+            Move
+          </button>
+        }
+      />,
+    )
+    return { onPress, onAction }
+  }
+
+  it('is a link, not a button, and carries its label', () => {
+    renderPressable()
+    const open = screen.getByTestId('row-open')
+    expect(open.getAttribute('role')).toBe('link')
+    expect(open.tagName).not.toBe('BUTTON')
+    expect(open.getAttribute('aria-label')).toBe('Open Alice Chen')
+  })
+
+  it('keeps the actions outside the press area', () => {
+    renderPressable()
+    const open = screen.getByTestId('row-open')
+    const move = screen.getByText('Move')
+    expect(open.contains(move)).toBe(false)
+    expect(screen.getByTestId('row').contains(move)).toBe(true)
+    expect(move.closest('button')?.parentElement?.closest('button')).toBeNull()
+  })
+
+  it('opens from the row and not from an action', () => {
+    const { onPress, onAction } = renderPressable()
+    fireEvent.click(screen.getByText('Move'))
+    expect(onAction).toHaveBeenCalledTimes(1)
+    expect(onPress).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByText('Alice Chen'))
+    expect(onPress).toHaveBeenCalledTimes(1)
+  })
+
+  it('has no press area without onPress', () => {
+    mockWidth.value = 1440
+    render(<Lane testID="row" title="Alice Chen" />)
+    expect(screen.queryByTestId('row-open')).toBeNull()
+    expect(screen.queryByRole('link')).toBeNull()
+  })
+})
+

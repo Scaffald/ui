@@ -112,6 +112,8 @@ export function Lane({
   actions,
   note,
   onPress,
+  accessibilityRole = 'link',
+  accessibilityLabel,
   stackBelow = 768,
   selected = false,
   style,
@@ -123,18 +125,9 @@ export function Lane({
 
   const visibleColumns = columns ?? []
 
-  const body = (
-    <View
-      style={[
-        styles.row,
-        stacked && styles.rowStacked,
-        {
-          borderBottomColor: colors.border[theme].default,
-          backgroundColor: selected ? colors.bg[theme].selected : 'transparent',
-        },
-        style,
-      ]}
-    >
+  // Everything but the actions: the part of the row that opens it.
+  const main = (
+    <>
       <View style={[styles.identity, stacked && styles.identityStacked]}>
         {age ? (
           <View style={[styles.age, stacked && styles.ageStacked]}>
@@ -218,22 +211,50 @@ export function Lane({
           )}
         </View>
       ) : null}
+    </>
+  )
+
+  // The press covers the identity, columns and note — never the actions.
+  //
+  // This used to wrap the whole row in a Pressable with the button role, which
+  // react-native-web renders as a <button>. Any control in `actions` (a Move
+  // menu, an Edit button) then became a button inside a button: invalid HTML,
+  // which the server-rendered page's parser splits apart, and a row whose
+  // keyboard and screen-reader behaviour depended on which button won
+  // (Scaffald/SaaS#1288). Callers worked around it with a link-role wrapper
+  // of their own (#1285). Now the actions sit beside the pressable area, so a
+  // press on them never reaches the row, and the pressable area is a link by
+  // default — a row opens a record — which renders as a <div>.
+  return (
+    <View
+      testID={testID}
+      style={[
+        styles.row,
+        stacked && styles.rowStacked,
+        {
+          borderBottomColor: colors.border[theme].default,
+          backgroundColor: selected ? colors.bg[theme].selected : 'transparent',
+        },
+        style,
+      ]}
+    >
+      {onPress ? (
+        <Pressable
+          onPress={onPress}
+          testID={testID ? `${testID}-open` : undefined}
+          accessibilityRole={accessibilityRole}
+          accessibilityLabel={accessibilityLabel}
+          accessibilityState={{ selected }}
+          style={[styles.main, stacked && styles.mainStacked]}
+        >
+          {main}
+        </Pressable>
+      ) : (
+        <View style={[styles.main, stacked && styles.mainStacked]}>{main}</View>
+      )}
 
       {actions ? <View style={styles.actions}>{actions}</View> : null}
     </View>
-  )
-
-  if (!onPress) return <View testID={testID}>{body}</View>
-
-  return (
-    <Pressable
-      onPress={onPress}
-      testID={testID}
-      accessibilityRole="button"
-      accessibilityState={{ selected }}
-    >
-      {body}
-    </Pressable>
   )
 }
 
@@ -283,6 +304,21 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     gap: spacing[8],
     paddingVertical: spacing[16],
+  },
+  // Identity, columns and note — the pressable part of the row. It takes
+  // the row's slack so the actions stay at the right edge.
+  main: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[16],
+    flexGrow: 1,
+    flexShrink: 1,
+    minWidth: 0,
+  },
+  mainStacked: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: spacing[8],
   },
   identity: {
     flexDirection: 'row',

@@ -28,6 +28,12 @@ export interface ScreenHeaderProps {
    */
   back?: ScreenHeaderBack
   /**
+   * Drawn beside the kicker, title and tip — a candidate's or worker's avatar
+   * on their detail screen, as the prototype's candidate header does. Leave it
+   * out on list and top-level screens.
+   */
+  leading?: ReactNode
+  /**
    * Uppercase letterspaced line above the title — the screen's context, not a
    * repeat of the title. "Employer view — applicant workflow".
    */

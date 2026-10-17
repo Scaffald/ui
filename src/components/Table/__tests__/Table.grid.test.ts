@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_COLUMN_WIDTH, columnSizing } from '../Table'
+import { DEFAULT_COLUMN_WIDTH, columnSizing, gridFill, totalColumnWidth } from '../Table'
 import { getTableStyles } from '../Table.styles'
 
 /**
@@ -39,5 +39,43 @@ describe('table containers', () => {
     expect(styles.stackedContainer).not.toHaveProperty('flex')
     expect(styles.body).not.toHaveProperty('flex')
     expect(styles.body.flexGrow).toBe(0)
+  })
+})
+
+/**
+ * The grid fills its container without measuring it (#1298).
+ *
+ * The rows used to take `max(columns, onLayout width)`; when the measurement
+ * never arrived the width stayed 0 and CMS Workers drew ~500px of table in a
+ * 1076px column. The rows render through a plain map now, but jsdom does no
+ * layout, so the rule is pinned here and the rendered result was measured in
+ * Chromium (a 3-column table filled 1076px; 12 × 160px columns scrolled at
+ * 1920px inside the same 1076px).
+ */
+describe('gridFill', () => {
+  it('makes the scroller content at least as wide as the scroller', () => {
+    expect(gridFill(450).content).toEqual({ minWidth: '100%' })
+  })
+
+  it('lets the rows grow into that width but never below the columns', () => {
+    expect(gridFill(450).rows).toEqual({ flexGrow: 1, minWidth: 450 })
+  })
+
+  it('sets no fixed width, so nothing waits on a measurement', () => {
+    const { content, rows } = gridFill(1920)
+    expect(content).not.toHaveProperty('width')
+    expect(rows).not.toHaveProperty('width')
+  })
+})
+
+describe('totalColumnWidth', () => {
+  it('adds declared pixel widths and counts anything else at the default', () => {
+    expect(totalColumnWidth([{ width: 200 }, {}, { width: '20%' }])).toBe(
+      200 + DEFAULT_COLUMN_WIDTH * 2,
+    )
+  })
+
+  it('is 0 with no columns', () => {
+    expect(totalColumnWidth([])).toBe(0)
   })
 })
