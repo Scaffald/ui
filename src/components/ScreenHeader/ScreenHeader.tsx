@@ -25,8 +25,9 @@
  */
 
 import { Pressable, StyleSheet, View } from 'react-native'
-import { ArrowRight, ChevronUp } from 'lucide-react-native'
+import { ArrowLeft, ArrowRight, ChevronUp } from 'lucide-react-native'
 import { useThemeContext } from '../../theme'
+import { useResponsive } from '../../hooks/useResponsive'
 import { colors } from '../../tokens/colors'
 import { fontSize, fontWeight, lineHeight } from '../../tokens/typography'
 import { spacing } from '../../tokens/spacing'
@@ -35,6 +36,7 @@ import { H2 } from '../Typography/Heading'
 import type { ScreenHeaderProps } from './ScreenHeader.types'
 
 export function ScreenHeader({
+  back,
   kicker,
   title,
   tip,
@@ -47,10 +49,37 @@ export function ScreenHeader({
   testID,
 }: ScreenHeaderProps) {
   const { theme } = useThemeContext()
+  const { width } = useResponsive()
   const showTip = tip != null && !collapsed
+  // On a phone the title row wraps, and actions that wrap land between the
+  // title and its tip — "Good afternoon, Zach." / two buttons / "Finish your
+  // profile…" (#1161). Below the phone breakpoint they follow the tip
+  // instead, which is where the prototype's phone layout puts its controls.
+  const actionsBelow = width > 0 && width < 640
 
   return (
     <View style={[styles.root, style]} testID={testID}>
+      {back ? (
+        <Pressable
+          onPress={back.onPress}
+          accessibilityRole="link"
+          accessibilityLabel={`Back to ${back.label}`}
+          hitSlop={8}
+          style={styles.back}
+        >
+          <ArrowLeft size={14} color={colors.text[theme].secondary} />
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              lineHeight: lineHeight.sm,
+              color: colors.text[theme].secondary,
+            }}
+          >
+            {back.label}
+          </Text>
+        </Pressable>
+      ) : null}
+
       {kicker ? (
         <Text
           style={{
@@ -88,7 +117,7 @@ export function ScreenHeader({
             </Pressable>
           ) : null}
         </View>
-        {actions ? <View style={styles.actions}>{actions}</View> : null}
+        {actions && !actionsBelow ? <View style={styles.actions}>{actions}</View> : null}
       </View>
 
       {showTip ? (
@@ -136,6 +165,10 @@ export function ScreenHeader({
         </View>
       ) : null}
 
+      {actions && actionsBelow ? (
+        <View style={[styles.actions, styles.actionsBelow]}>{actions}</View>
+      ) : null}
+
       {children ? <View style={styles.slot}>{children}</View> : null}
     </View>
   )
@@ -159,6 +192,13 @@ const styles = StyleSheet.create({
     gap: spacing[8],
     flexShrink: 1,
   },
+  back: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: spacing[4],
+    marginBottom: spacing[4],
+  },
   caret: {
     padding: spacing[2],
   },
@@ -169,6 +209,13 @@ const styles = StyleSheet.create({
     // The title wraps and truncates; controls do not. Without this a
     // segmented control gets squeezed until its last segment reads "Metr…".
     flexShrink: 0,
+  },
+  // Below the tip on a phone: the controls may wrap onto a second line here,
+  // under each other, without splitting the header's text.
+  actionsBelow: {
+    flexWrap: 'wrap',
+    flexShrink: 1,
+    marginTop: spacing[4],
   },
   tipRow: {
     flexDirection: 'row',

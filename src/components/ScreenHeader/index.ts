@@ -1,2 +1,2 @@
 export { ScreenHeader } from './ScreenHeader'
-export type { ScreenHeaderProps, ScreenHeaderPager } from './ScreenHeader.types'
+export type { ScreenHeaderBack, ScreenHeaderProps, ScreenHeaderPager } from './ScreenHeader.types'

@@ -12,7 +12,21 @@ export interface ScreenHeaderPager {
   accessibilityLabel?: string
 }
 
+export interface ScreenHeaderBack {
+  /** The parent screen's name, as the nav calls it: "Applications". */
+  label: string
+  /** Navigate to the parent. A named parent, not history-back. */
+  onPress: () => void
+}
+
 export interface ScreenHeaderProps {
+  /**
+   * A drill-in's way back: "← Applications" above the kicker. The prototype
+   * uses this on every detail and flow screen instead of a breadcrumb
+   * (#1163); top-level screens leave it out, because the nav already says
+   * where you are.
+   */
+  back?: ScreenHeaderBack
   /**
    * Uppercase letterspaced line above the title — the screen's context, not a
    * repeat of the title. "Employer view — applicant workflow".
@@ -33,7 +47,11 @@ export interface ScreenHeaderProps {
   onToggleCollapsed?: () => void
   /** Cycles between several tips, rendered as "1 / 5 →" beside the tip. */
   pager?: ScreenHeaderPager
-  /** Trailing controls on the title row — "Post a job", view switches. */
+  /**
+   * Trailing controls on the title row — "Post a job", view switches. On a
+   * phone they move below the tip, so the header still reads kicker → title →
+   * tip (#1161).
+   */
   actions?: ReactNode
   /** Rendered full-width under the tip: transparency banners, stat strips. */
   children?: ReactNode

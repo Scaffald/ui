@@ -80,7 +80,13 @@ export function MetricBlock({
 
       {delta != null ? (
         typeof delta === 'string' || typeof delta === 'number' ? (
-          <Text style={{ fontSize: fontSize.sm, lineHeight: lineHeight.sm, color: toneColor(tone, theme) }}>
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              lineHeight: lineHeight.sm,
+              color: toneColor(tone, theme),
+            }}
+          >
             {delta}
           </Text>
         ) : (
@@ -89,6 +95,35 @@ export function MetricBlock({
       ) : null}
     </View>
   )
+}
+
+/** Where one cell of a MetricRow sits, and which hairlines it draws. */
+export interface MetricCellPlacement {
+  /** `row` = desktop flex column, `half` = phone pair, `full` = a whole phone row. */
+  span: 'row' | 'half' | 'full'
+  side: 'left' | 'right' | null
+  ruleLeft: boolean
+  ruleTop: boolean
+}
+
+/**
+ * The phone grid, as a pure rule so it can be tested without a layout engine.
+ * Desktop: one row, a rule before every cell but the first. Phone: pairs, a
+ * rule inside each pair and above every pair but the first, an odd last cell
+ * on its own full row. Very narrow: one per row.
+ */
+export function metricCellPlacement(
+  index: number,
+  count: number,
+  width: number
+): MetricCellPlacement {
+  const phone = width > 0 && width < 640
+  if (!phone) return { span: 'row', side: null, ruleLeft: index > 0, ruleTop: false }
+  if (width < 300) return { span: 'full', side: null, ruleLeft: false, ruleTop: index > 0 }
+  const lone = index === count - 1 && count % 2 === 1
+  if (lone) return { span: 'full', side: null, ruleLeft: false, ruleTop: index > 0 }
+  const right = index % 2 === 1
+  return { span: 'half', side: right ? 'right' : 'left', ruleLeft: right, ruleTop: index >= 2 }
 }
 
 export function MetricRow({
@@ -103,13 +138,20 @@ export function MetricRow({
   const hairline = colors.border[theme].default
   const items = Children.toArray(children).filter(isValidElement)
 
-  // Vertical rules only survive while the row is genuinely one row. Once the
-  // cells wrap, a left border on the first cell of the second line reads as a
-  // stray divider hanging off the edge — the exact orphan the prototype's
-  // audit flagged on the admin stat row. Below the wrap threshold the cells
-  // stack and separate horizontally instead, which is what the prototype's
-  // own mobile layout does.
-  const stacked = width > 0 && width < 640
+  // Vertical rules only survive while the row is genuinely one row. Once
+  // cells wrap freely, a left border on the first cell of the second line
+  // reads as a stray divider hanging off the edge — the orphan the
+  // prototype's audit flagged on the admin stat row.
+  //
+  // So below the wrap threshold the layout is explicit rather than wrapped:
+  // the prototype's phone layout is a two-column grid (`statCols:
+  // s.mobile ? '1fr 1fr'`), with a vertical hairline inside each pair and a
+  // horizontal one between pairs. An odd last figure takes the full row, so
+  // there is never a half row with a rule beside nothing. Only on a very
+  // narrow screen does it fall back to one figure per row (#1164 — this used
+  // to be one per row at every phone width, and claimed to match the
+  // prototype while doing so).
+  const count = items.length
 
   return (
     <View
@@ -124,23 +166,29 @@ export function MetricRow({
         style,
       ]}
     >
-      {items.map((child, i) => (
-        <View
-          // A static, ordered list of stats with no id to key on and no
-          // reordering — the index is a stable identity here.
-          key={i}
-          style={[
-            styles.cell,
-            stacked ? styles.cellStacked : { minWidth: minColumnWidth },
-            i > 0 &&
-              (stacked
-                ? { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: hairline }
-                : { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: hairline }),
-          ]}
-        >
-          {child}
-        </View>
-      ))}
+      {items.map((child, i) => {
+        const at = metricCellPlacement(i, count, width)
+        const cellStyle = [
+          styles.cell,
+          at.span === 'row' && { minWidth: minColumnWidth },
+          at.span === 'half' && styles.cellHalf,
+          at.span === 'full' && styles.cellFull,
+          at.side === 'left' && styles.cellLeft,
+          at.side === 'right' && styles.cellRight,
+          at.ruleLeft && { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: hairline },
+          at.ruleTop && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: hairline },
+        ]
+        return (
+          <View
+            // A static, ordered list of stats with no id to key on and no
+            // reordering — the index is a stable identity here.
+            key={i}
+            style={cellStyle}
+          >
+            {child}
+          </View>
+        )
+      })}
     </View>
   )
 }
@@ -161,7 +209,18 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[16],
     paddingHorizontal: spacing[20],
   },
-  cellStacked: {
+  // Phone cells: half the row each, or the whole row for an odd last figure.
+  // The left cell sits on the gutter like a full-width one; padding goes only
+  // inside the pair, keeping each figure off the rule between them.
+  cellHalf: {
+    flexBasis: '50%',
+    flexGrow: 0,
+    paddingHorizontal: 0,
+    paddingVertical: spacing[12],
+  },
+  cellLeft: { paddingRight: spacing[12] },
+  cellRight: { paddingLeft: spacing[12] },
+  cellFull: {
     flexBasis: '100%',
     paddingHorizontal: 0,
     paddingVertical: spacing[12],

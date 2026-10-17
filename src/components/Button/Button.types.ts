@@ -50,7 +50,7 @@ export interface ButtonProps extends Omit<PressableProps, 'style' | 'children'> 
 
   /**
    * Color variant
-   * @default 'gray'
+   * @default 'primary' when variant is 'filled', otherwise 'gray'
    */
   color?: ButtonColor
 
