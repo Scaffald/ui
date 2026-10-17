@@ -824,6 +824,7 @@ export { ScreenHeader } from "./components/ScreenHeader";
 export { TextLink } from "./components/TextLink";
 export type { TextLinkProps } from "./components/TextLink";
 export type {
+  ScreenHeaderBack,
   ScreenHeaderPager,
   ScreenHeaderProps,
 } from "./components/ScreenHeader";

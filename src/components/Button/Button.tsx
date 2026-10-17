@@ -38,29 +38,38 @@ import { getButtonStyles, getButtonIconSize } from './Button.styles'
 import { useThemeContext } from '../../theme'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 
-export const Button = forwardRef<View, ButtonProps>(function Button({
-  children,
-  color = 'gray',
-  // Outlined by default: the prototype draws actions as a 1px outline on
-  // transparent and reserves a solid fill for the one or two CTAs a screen
-  // genuinely leads with. Pass `variant="filled"` for those.
-  variant = 'outline',
-  size = 'md',
-  disabled = false,
-  fullWidth = false,
-  iconStart: IconStart,
-  iconEnd: IconEnd,
-  iconOnly = false,
-  loading = false,
-  destructive = false,
-  style,
-  textStyle,
-  iconColor: iconColorOverride,
-  onPress,
-  ...pressableProps
-}, ref) {
+export const Button = forwardRef<View, ButtonProps>(function Button(
+  {
+    children,
+    color: colorProp,
+    // Outlined by default: the prototype draws actions as a 1px outline on
+    // transparent and reserves a solid fill for the one or two CTAs a screen
+    // genuinely leads with. Pass `variant="filled"` for those.
+    variant = 'outline',
+    size = 'md',
+    disabled = false,
+    fullWidth = false,
+    iconStart: IconStart,
+    iconEnd: IconEnd,
+    iconOnly = false,
+    loading = false,
+    destructive = false,
+    style,
+    textStyle,
+    iconColor: iconColorOverride,
+    onPress,
+    ...pressableProps
+  },
+  ref
+) {
   const isDisabled = disabled || loading
   const { theme } = useThemeContext()
+  // A solid fill is reserved for the one CTA a screen leads with, which is
+  // always the primary action — so an unspecified colour on a filled button
+  // means primary. It used to default to gray for every variant, and each
+  // filled button that forgot `color` rendered near-black (#1105, #1166).
+  // Outline and text buttons keep the neutral default.
+  const color = colorProp ?? (variant === 'filled' ? 'primary' : 'gray')
   const { isHovered, interactiveProps } = useInteractiveState(isDisabled)
 
   // Get styles based on current props and theme
@@ -81,8 +90,10 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
     typeof children === 'string'
       ? children
       : Array.isArray(children)
-        ? children.filter((child): child is string => typeof child === 'string').join(' ').trim() ||
-          undefined
+        ? children
+            .filter((child): child is string => typeof child === 'string')
+            .join(' ')
+            .trim() || undefined
         : undefined
 
   return (
