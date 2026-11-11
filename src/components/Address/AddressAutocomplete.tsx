@@ -1,48 +1,46 @@
 /**
  * AddressAutocomplete – input with address suggestions dropdown.
  * Provider-agnostic: pass a GeocodingProvider (e.g. from your Mapbox adapter).
- * On web, the dropdown is rendered via a portal into document.body so it always stacks on top.
+ * The suggestions are an AnchoredOverlay: on web they portal into document.body
+ * and follow the input as the page scrolls, so they always stack on top.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { View, ScrollView, Pressable, Text, type ViewStyle } from 'react-native'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { View, Pressable, Text } from 'react-native'
 import { Input } from '../Input'
+import { Spinner } from '../Spinner'
+import { AnchoredOverlay, getMenuItemStyle, useListboxNavigation } from '../AnchoredOverlay'
 import { useAddressAutocomplete } from './useAddressAutocomplete'
 import type { AddressAutocompleteProps, AddressResult } from './Address.types'
-import { Platform } from '../../platform/Platform'
 import { useHoverState } from '../../platform/web/useHoverState'
-
-const DROPDOWN_Z = 2147483647
-
-function getCreatePortal(): typeof import('react-dom').createPortal | null {
-  if (Platform.OS !== 'web' || typeof document === 'undefined') return null
-  try {
-    return require('react-dom').createPortal
-  } catch {
-    return null
-  }
-}
+import { useThemeContext } from '../../theme'
+import { colors } from '../../tokens/colors'
+import { fontSize } from '../../tokens/typography'
+import { spacing } from '../../tokens/spacing'
 
 function ResultItem({
   address,
   onSelect,
+  active,
+  optionProps,
 }: {
   address: AddressResult
   onSelect: () => void
+  active: boolean
+  optionProps: ReturnType<ReturnType<typeof useListboxNavigation>['getOptionProps']>
 }) {
+  const { theme } = useThemeContext()
   const { isHovered, hoverProps } = useHoverState()
   return (
     <Pressable
       onPress={onSelect}
       {...hoverProps}
-      style={({ pressed }) => ({
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-        backgroundColor:
-          pressed || isHovered ? '#f3f4f6' : 'transparent',
-      })}
+      {...optionProps}
+      style={({ pressed }) => getMenuItemStyle(theme, { active: active || isHovered, pressed })}
     >
-      <Text style={{ fontSize: 14, color: '#111827' }}>{address.formattedAddress}</Text>
+      <Text style={{ fontSize: fontSize.md, color: colors.text[theme].primary }}>
+        {address.formattedAddress}
+      </Text>
     </Pressable>
   )
 }
@@ -64,12 +62,7 @@ export function AddressAutocomplete({
   const [inputValue, setInputValue] = useState(controlledValue ?? '')
   const [open, setOpen] = useState(false)
   const containerRef = useRef<View>(null)
-  const dropdownRef = useRef<View>(null)
-  const [dropdownLayout, setDropdownLayout] = useState<{
-    top: number
-    left: number
-    width: number
-  } | null>(null)
+  const listboxId = `address-results-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
   const {
     results,
     loading,
@@ -90,43 +83,10 @@ export function AddressAutocomplete({
     if (controlledValue !== undefined) setInputValue(controlledValue)
   }, [controlledValue])
 
-  useEffect(() => {
-    if (!showList || !Platform.isWeb) {
-      setDropdownLayout(null)
-      return
-    }
-    const node = containerRef.current as unknown as HTMLElement | null
-    if (node?.getBoundingClientRect) {
-      const raf = requestAnimationFrame(() => {
-        const rect = node.getBoundingClientRect()
-        setDropdownLayout({
-          top: rect.bottom + 4,
-          left: rect.left,
-          width: rect.width,
-        })
-      })
-      return () => cancelAnimationFrame(raf)
-    }
-    setDropdownLayout(null)
-  }, [showList])
-
-  // Dismiss dropdown when user clicks outside (input or dropdown)
-  useEffect(() => {
-    if (!showList || !Platform.isWeb) return
-    const handlePointerDown = (e: PointerEvent) => {
-      const target = e.target as Node
-      const containerEl = containerRef.current as unknown as HTMLElement | null
-      const dropdownEl = dropdownRef.current as unknown as HTMLElement | null
-      const inContainer = containerEl?.contains?.(target)
-      const inDropdown = dropdownEl?.contains?.(target)
-      if (!inContainer && !inDropdown) {
-        setOpen(false)
-        clearResults()
-      }
-    }
-    document.addEventListener('pointerdown', handlePointerDown, true)
-    return () => document.removeEventListener('pointerdown', handlePointerDown, true)
-  }, [showList, clearResults])
+  const handleClose = useCallback(() => {
+    setOpen(false)
+    clearResults()
+  }, [clearResults])
 
   const handleChange = useCallback(
     (text: string) => {
@@ -150,87 +110,19 @@ export function AddressAutocomplete({
     [onChange, onAddressSelect, clearResults]
   )
 
+  const nav = useListboxNavigation({
+    id: listboxId,
+    itemCount: loading ? 0 : results.length,
+    open: showList,
+    onSelectIndex: (index) => {
+      const address = results[index]
+      if (address) handleSelect(address)
+    },
+    onClose: handleClose,
+  })
+
   const displayError =
     typeof error === 'string' ? error : (errorMessage ?? searchError ?? undefined)
-
-  const isWebFixed = Platform.isWeb && dropdownLayout && showList
-  const dropdownStyle = (isWebFixed
-    ? {
-        position: 'fixed' as const,
-        top: dropdownLayout.top,
-        left: dropdownLayout.left,
-        width: dropdownLayout.width,
-        height: 240,
-        zIndex: DROPDOWN_Z,
-        marginTop: 0,
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#e5e7eb',
-        overflow: 'hidden' as const,
-        elevation: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-      }
-    : {
-        position: 'absolute' as const,
-        top: '100%',
-        left: 0,
-        right: 0,
-        marginTop: 4,
-        maxHeight: 240,
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#e5e7eb',
-        overflow: 'hidden' as const,
-        zIndex: DROPDOWN_Z,
-        elevation: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-      }) as ViewStyle
-
-  const dropdownContent = showList ? (
-    <View ref={dropdownRef} style={dropdownStyle} collapsable={false}>
-      {loading ? (
-        <View style={{ padding: 16, alignItems: 'center' }}>
-          <View
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: 10,
-              borderWidth: 2,
-              borderColor: '#3b82f6',
-              borderTopColor: 'transparent',
-            }}
-          />
-        </View>
-      ) : (
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={true}
-          nestedScrollEnabled
-          style={{ flexGrow: 0, maxHeight: 236 }}
-          contentContainerStyle={{ paddingBottom: 8 }}
-        >
-          {results.map((addr) => (
-            <ResultItem
-              key={addr.id}
-              address={addr}
-              onSelect={() => handleSelect(addr)}
-            />
-          ))}
-        </ScrollView>
-      )}
-    </View>
-  ) : null
-
-  const createPortal = getCreatePortal()
-  const usePortal = Platform.isWeb && showList && dropdownLayout && createPortal && document?.body
 
   return (
     <View
@@ -249,10 +141,31 @@ export function AddressAutocomplete({
         error={Boolean(displayError)}
         errorMessage={displayError}
         disabled={disabled}
+        {...nav.inputProps}
       />
-      {usePortal && document.body
-        ? createPortal(dropdownContent, document.body)
-        : dropdownContent}
+      <AnchoredOverlay
+        anchorRef={containerRef}
+        open={showList}
+        onRequestClose={handleClose}
+        maxHeight={240}
+        {...nav.listboxProps}
+      >
+        {loading ? (
+          <View style={{ padding: spacing[16], alignItems: 'center' }}>
+            <Spinner size="sm" />
+          </View>
+        ) : (
+          results.map((addr, index) => (
+            <ResultItem
+              key={addr.id}
+              address={addr}
+              onSelect={() => handleSelect(addr)}
+              active={nav.activeIndex === index}
+              optionProps={nav.getOptionProps(index)}
+            />
+          ))
+        )}
+      </AnchoredOverlay>
     </View>
   )
 }

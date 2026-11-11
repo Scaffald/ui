@@ -534,6 +534,26 @@ export type {
   ViewportBounds,
 } from "./components/Maps";
 
+// AnchoredOverlay — menus that portal above the page on web (Scaffald/SaaS#1330)
+export {
+  AnchoredOverlay,
+  ANCHORED_OVERLAY_Z_INDEX,
+  computeAnchoredPlacement,
+  getMenuSurfaceStyle,
+  getMenuItemStyle,
+  useListboxNavigation,
+  getListboxOptionId,
+} from "./components/AnchoredOverlay";
+export type {
+  AnchoredOverlayProps,
+  AnchoredOverlayRenderInfo,
+  AnchoredPlacement,
+  MenuItemState,
+  UseListboxNavigationOptions,
+  ListboxInputProps,
+  ListboxOptionProps,
+} from "./components/AnchoredOverlay";
+
 export {
   AddressAutocomplete,
   AddressForm,
