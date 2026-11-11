@@ -209,10 +209,21 @@ export function AnchoredOverlay({
       if (anchorEl) observer.observe(anchorEl)
       if (overlayEl) observer.observe(overlayEl)
     }
+    // Content changes too. A "Searching…" row and a full result list can both
+    // fill the clamped maxHeight, so the box never changes size and the
+    // ResizeObserver never fires. Re-measuring on mutation is what lets a menu
+    // near the bottom flip above once its results arrive.
+    let mutations: MutationObserver | null = null
+    const overlayNode = asElement(overlayRef.current)
+    if (overlayNode && typeof MutationObserver !== 'undefined') {
+      mutations = new MutationObserver(schedule)
+      mutations.observe(overlayNode, { childList: true, subtree: true, characterData: true })
+    }
     return () => {
       window.removeEventListener('scroll', schedule, true)
       window.removeEventListener('resize', schedule)
       observer?.disconnect()
+      mutations?.disconnect()
       if (frame) cancelAnimationFrame(frame)
     }
   }, [isPortal, measure, anchorRef])

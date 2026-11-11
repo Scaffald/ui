@@ -158,6 +158,26 @@ describe('AnchoredOverlay (web)', () => {
     expect(style.width).toBe('300px')
   })
 
+  it('re-measures when its content changes, not only when it resizes', async () => {
+    // A "Searching…" row and a full result list can both fill the clamped
+    // maxHeight, so no ResizeObserver fires when results arrive; without a
+    // re-measure a menu near the bottom never flips above (#1330 smoke test).
+    const measured = vi.fn()
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: HTMLElement,
+    ) {
+      if (this.getAttribute('data-testid') === 'anchor') measured()
+      return { top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect
+    })
+    const { getByTestId } = render(<Harness />)
+    const before = measured.mock.calls.length
+    await act(async () => {
+      getByTestId('row').appendChild(document.createTextNode('more results'))
+      await new Promise((resolve) => setTimeout(resolve, 50))
+    })
+    expect(measured.mock.calls.length).toBeGreaterThan(before)
+  })
+
   it('renders nothing when closed', () => {
     const { queryByTestId } = render(<Harness open={false} />)
     expect(queryByTestId('overlay')).toBeNull()
