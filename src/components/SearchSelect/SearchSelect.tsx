@@ -22,15 +22,8 @@
  * ```
  */
 
-import {
-  View,
-  TextInput,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Platform,
-  Text as RNText,
-} from 'react-native'
+import { useId, useMemo, useRef } from 'react'
+import { View, TextInput, Pressable, StyleSheet, Text as RNText } from 'react-native'
 import type { SearchSelectProps, SearchSelectOption } from './SearchSelect.types'
 import { useThemeContext } from '../../theme'
 import { useStyles } from '../../hooks'
@@ -42,6 +35,8 @@ import { Text, Caption } from '../Typography'
 import { Label } from '../Typography'
 import { Spinner } from '../Spinner'
 import { webStyle } from '../../utils/webStyles'
+import { AnchoredOverlay, useListboxNavigation } from '../AnchoredOverlay'
+import type { ListboxOptionProps } from '../AnchoredOverlay'
 
 // ============================================================================
 // SearchSelect Component
@@ -85,6 +80,29 @@ export function SearchSelect({
 
   const hasError = error || !!errorMessage
   const styles = useStyles(getStyles, [theme, size, disabled, hasError, select.isOpen] as const)
+  const triggerRef = useRef<View>(null)
+  const listboxId = `search-select-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
+
+  // Options in the order they are drawn, for arrow-key navigation.
+  const flatOptions = useMemo(
+    () => [
+      ...select.groupedOptions.ungrouped,
+      ...Object.values(select.groupedOptions.groups).flat(),
+    ],
+    [select.groupedOptions]
+  )
+  const showOptions = !loading && flatOptions.length > 0
+  const nav = useListboxNavigation({
+    id: listboxId,
+    itemCount: showOptions ? flatOptions.length : 0,
+    open: select.isOpen,
+    onSelectIndex: (index) => {
+      const option = flatOptions[index]
+      if (option && !option.disabled) select.handleSelect(option.value)
+    },
+    onClose: select.handleClose,
+  })
+  const optionIndex = (option: SearchSelectOption) => flatOptions.indexOf(option)
 
   return (
     <View style={[styles.container, style]} testID={testID}>
@@ -96,6 +114,7 @@ export function SearchSelect({
 
       {/* Trigger */}
       <Pressable
+        ref={triggerRef}
         style={styles.trigger}
         onPress={select.handleToggle}
         disabled={disabled}
@@ -111,6 +130,7 @@ export function SearchSelect({
             placeholder={searchPlaceholder}
             placeholderTextColor={colors.text[theme].tertiary}
             autoFocus
+            {...nav.inputProps}
           />
         ) : (
           <RNText
@@ -133,73 +153,76 @@ export function SearchSelect({
         </View>
       </Pressable>
 
-      {/* Dropdown */}
-      {select.isOpen && (
-        <>
-          {/* Backdrop */}
-          <Pressable style={styles.backdrop} onPress={select.handleClose} />
-
-          {/* Options list */}
-          <View style={styles.dropdown}>
-            <ScrollView
-              style={{ maxHeight: maxDropdownHeight }}
-              keyboardShouldPersistTaps="handled"
-            >
-              {loading ? (
-                <View style={styles.loadingContainer}>
-                  <Spinner size="sm" />
-                  <Text size="sm" color="secondary">
-                    {loadingText}
-                  </Text>
-                </View>
-              ) : select.filteredOptions.length === 0 ? (
-                <View style={styles.noResults}>
-                  <Text size="sm" color="secondary">
-                    {noResultsText}
-                  </Text>
-                </View>
-              ) : (
-                <>
-                  {/* Ungrouped options */}
-                  {select.groupedOptions.ungrouped.map((option) => (
-                    <OptionItem
-                      key={option.value}
-                      option={option}
-                      isSelected={select.selectedValues.includes(option.value)}
-                      onSelect={select.handleSelect}
-                      theme={theme}
-                      multiple={multiple}
-                      renderOption={renderOption}
-                    />
-                  ))}
-
-                  {/* Grouped options */}
-                  {Object.entries(select.groupedOptions.groups).map(([group, groupOptions]) => (
-                    <View key={group}>
-                      <View style={styles.groupHeader}>
-                        <Text size="xs" weight="medium" color="secondary">
-                          {group}
-                        </Text>
-                      </View>
-                      {groupOptions.map((option) => (
-                        <OptionItem
-                          key={option.value}
-                          option={option}
-                          isSelected={select.selectedValues.includes(option.value)}
-                          onSelect={select.handleSelect}
-                          theme={theme}
-                          multiple={multiple}
-                          renderOption={renderOption}
-                        />
-                      ))}
-                    </View>
-                  ))}
-                </>
-              )}
-            </ScrollView>
+      {/* Dropdown — portalled above the page on web (AnchoredOverlay) */}
+      <AnchoredOverlay
+        anchorRef={triggerRef}
+        open={select.isOpen}
+        onRequestClose={select.handleClose}
+        maxHeight={maxDropdownHeight}
+        {...nav.listboxProps}
+      >
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <Spinner size="sm" />
+            <Text size="sm" color="secondary">
+              {loadingText}
+            </Text>
           </View>
-        </>
-      )}
+        ) : select.filteredOptions.length === 0 ? (
+          <View style={styles.noResults}>
+            <Text size="sm" color="secondary">
+              {noResultsText}
+            </Text>
+          </View>
+        ) : (
+          <>
+            {/* Ungrouped options */}
+            {select.groupedOptions.ungrouped.map((option) => (
+              <OptionItem
+                key={option.value}
+                option={option}
+                isSelected={select.selectedValues.includes(option.value)}
+                isActive={nav.activeIndex === optionIndex(option)}
+                optionProps={nav.getOptionProps(
+                  optionIndex(option),
+                  select.selectedValues.includes(option.value)
+                )}
+                onSelect={select.handleSelect}
+                theme={theme}
+                multiple={multiple}
+                renderOption={renderOption}
+              />
+            ))}
+
+            {/* Grouped options */}
+            {Object.entries(select.groupedOptions.groups).map(([group, groupOptions]) => (
+              <View key={group}>
+                <View style={styles.groupHeader}>
+                  <Text size="xs" weight="medium" color="secondary">
+                    {group}
+                  </Text>
+                </View>
+                {groupOptions.map((option) => (
+                  <OptionItem
+                    key={option.value}
+                    option={option}
+                    isSelected={select.selectedValues.includes(option.value)}
+                    isActive={nav.activeIndex === optionIndex(option)}
+                    optionProps={nav.getOptionProps(
+                      optionIndex(option),
+                      select.selectedValues.includes(option.value)
+                    )}
+                    onSelect={select.handleSelect}
+                    theme={theme}
+                    multiple={multiple}
+                    renderOption={renderOption}
+                  />
+                ))}
+              </View>
+            ))}
+          </>
+        )}
+      </AnchoredOverlay>
 
       {/* Helper/Error text */}
       {(errorMessage || helperText) && (
@@ -218,6 +241,9 @@ export function SearchSelect({
 interface OptionItemProps {
   option: SearchSelectOption
   isSelected: boolean
+  /** Highlighted by the keyboard. */
+  isActive?: boolean
+  optionProps?: ListboxOptionProps
   onSelect: (value: string) => void
   theme: 'light' | 'dark'
   multiple: boolean
@@ -227,17 +253,21 @@ interface OptionItemProps {
 function OptionItem({
   option,
   isSelected,
+  isActive = false,
+  optionProps,
   onSelect,
   theme,
   multiple,
   renderOption,
 }: OptionItemProps) {
   const styles = useStyles(getOptionStyles, [theme, isSelected, option.disabled] as const)
+  const rowStyle = [styles.option, isActive && !isSelected && styles.optionActive]
 
   if (renderOption) {
     return (
       <Pressable
-        style={styles.option}
+        {...optionProps}
+        style={rowStyle}
         onPress={() => !option.disabled && onSelect(option.value)}
         disabled={option.disabled}
       >
@@ -248,7 +278,8 @@ function OptionItem({
 
   return (
     <Pressable
-      style={styles.option}
+      {...optionProps}
+      style={rowStyle}
       onPress={() => !option.disabled && onSelect(option.value)}
       disabled={option.disabled}
     >
@@ -340,38 +371,6 @@ function getStyles(
       fontSize: 10,
       color: colors.text[theme].secondary,
     },
-    backdrop: {
-      ...StyleSheet.absoluteFill,
-      ...webStyle({ position: 'fixed' }),
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    },
-    dropdown: {
-      position: 'absolute',
-      top: '100%',
-      left: 0,
-      right: 0,
-      marginTop: spacing[4],
-      backgroundColor: colors.bg[theme].default,
-      borderWidth: borderWidth.thin,
-      borderColor: colors.border[theme].default,
-      borderRadius: borderRadius.s,
-      zIndex: 1000,
-      ...Platform.select({
-        web: webStyle({
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        }),
-        default: {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.15,
-          shadowRadius: 12,
-          elevation: 8,
-        },
-      }),
-    },
     loadingContainer: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -404,6 +403,9 @@ function getOptionStyles(theme: 'light' | 'dark', isSelected: boolean, disabled?
       paddingVertical: spacing[10],
       backgroundColor: isSelected ? colors.bg[theme].subtle : colors.bg[theme].default,
       opacity: disabled ? 0.5 : 1,
+    },
+    optionActive: {
+      backgroundColor: colors.bg[theme].muted,
     },
     optionContent: {
       flexDirection: 'row',
