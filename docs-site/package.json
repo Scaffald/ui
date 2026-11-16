@@ -30,7 +30,6 @@
     "@docusaurus/core": "3.9.2",
     "@docusaurus/preset-classic": "3.9.2",
     "@mdx-js/react": "^3.0.0",
-    "@scaffald/docs-shared": "workspace:*",
     "@scaffald/ui": "workspace:*",
     "clsx": "^2.0.0",
     "lucide-react-native": "^0.562.0",
