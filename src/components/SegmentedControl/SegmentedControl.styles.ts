@@ -39,8 +39,15 @@ export function getSegmentedControlStyles(theme: ResolvedThemeMode): SegmentedCo
     overflow: 'hidden',
   }
 
+  // Grow from the label's own width, not from zero. With `flex: 1` (basis 0)
+  // inside the content-sized container every segment got an equal share of
+  // the total, so the longest label ellipsized ("Create a…", #1361). With a
+  // content basis the control fits its labels, and still fills any extra
+  // width a caller gives it (alignSelf: 'stretch', an explicit width).
   const segment: ViewStyle = {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 'auto',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 7,
